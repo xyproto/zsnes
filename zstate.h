@@ -1,4 +1,3 @@
-// Looks good
 #ifndef ZSTATE_H
 #define ZSTATE_H
 
@@ -25,5 +24,7 @@ extern uint32_t newest_zst;
 
 extern char spcsaved[16];
 extern u4 Totalbyteloaded;
+
+uint64_t zst_state_hash(void);
 
 #endif

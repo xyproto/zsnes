@@ -1,25 +1,3 @@
-// Looks good
-/*
-Copyright (C) 1997-2008 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
-
-http://www.zsnes.com
-http://sourceforge.net/projects/zsnes
-https://zsnes.bountysource.com
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-version 2 as published by the Free Software Foundation.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
-
 #include "types.h" /* IGNORE_RESULT */
 
 #ifdef __UNIXSDL__
@@ -574,12 +552,106 @@ static void state_size_tally(uint8_t** dest, void* src, size_t len)
     state_size += len;
 }
 
+/* FNV-1a over the same blocks the rewind snapshot saves, which is exactly the
+   state one frame of emulation may depend on. Netplay lives or dies on two
+   builds agreeing here, so it is worth being able to ask them. */
+static uint64_t state_hash_acc;
+
+static int state_hash_blocks;
+static unsigned state_hash_index;
+
+static void state_hash_tally(uint8_t** dest, void* src, size_t len)
+{
+    uint8_t const* p = (uint8_t const*)src;
+    uint64_t block = 0xCBF29CE484222325ull;
+    size_t i;
+
+    (void)dest;
+    for (i = 0; i < len; i++) {
+        state_hash_acc = (state_hash_acc ^ p[i]) * 0x100000001B3ull;
+        block = (block ^ p[i]) * 0x100000001B3ull;
+    }
+    if (state_hash_blocks) {
+        size_t const n = len <= 256 ? len : 16;
+        size_t j;
+
+        printf("BLOCK %3u len=%-8zu hash=%016llx  ", state_hash_index, len,
+            (unsigned long long)block);
+        for (j = 0; j < n; j++) {
+            printf("%02x", p[j]);
+        }
+        printf("\n");
+    }
+    state_hash_index++;
+}
+
+#ifdef ZSNES_DEBUG_HOOKS
+/* ZSNES_STATE_HASH=N: print the guest state hash at emulated frame N and stop.
+   Counted on the vblank NMI, which is emulation's own clock. */
+void zst_state_hash_tick(void)
+{
+    static int at = -2;
+    static unsigned frame;
+
+    if (at == -2) {
+        char const* const e = getenv("ZSNES_STATE_HASH");
+
+        at = e ? atoi(e) : -1;
+    }
+    if (at >= 0 && frame == (unsigned)at) {
+        printf("STATEHASH frame=%d hash=%016llx\n", at,
+            (unsigned long long)zst_state_hash());
+        fflush(stdout);
+        exit(0);
+    }
+    frame++;
+}
+#endif
+
+/* Only what the guest can see: the memories and the processor registers.
+   Deliberately not the rewind snapshot, which is the emulator's own
+   bookkeeping and carries host pointers - BRRBuffer and two pointer-valued
+   fields in it were measured varying between runs of the same binary, so a
+   hash over it says nothing about whether two builds agree. */
+uint64_t zst_state_hash(void)
+{
+    uint8_t* dummy = 0;
+
+    state_hash_acc = 0xCBF29CE484222325ull;
+    state_hash_index = 0;
+    state_hash_blocks = getenv("ZSNES_STATE_HASH_BLOCKS") != 0;
+
+    state_hash_tally(&dummy, wramdata, 8192 * 16); /* 0 wram */
+    state_hash_tally(&dummy, vram, 4096 * 16); /* 1 vram */
+    state_hash_tally(&dummy, spcram_run, PHspcsave); /* 2 spc  */
+    state_hash_tally(&dummy, &DSPMem, sizeof(DSPMem)); /* 3 dsp */
+
+    /* The 65816's architectural registers. */
+    state_hash_tally(&dummy, &xa, 4);
+    state_hash_tally(&dummy, &xx, 4);
+    state_hash_tally(&dummy, &xy, 4);
+    state_hash_tally(&dummy, &xd, 4);
+    state_hash_tally(&dummy, &xs, 4);
+    state_hash_tally(&dummy, &xdb, 4);
+    state_hash_tally(&dummy, &xpb, 4);
+    state_hash_tally(&dummy, &xpc, 2);
+    state_hash_tally(&dummy, &xp, 1);
+    state_hash_tally(&dummy, &xe, 1);
+
+    return state_hash_acc;
+}
+
 void InitRewindVars(void)
 {
     uint8_t almost_useless_array[1]; // An array is needed for copy_state_data to give the correct size
     state_size = 0;
     copy_state_data(almost_useless_array, state_size_tally, csm_save_rewind);
     rewind_state_size = state_size;
+#ifdef ZSNES_DEBUG_HOOKS
+    if (getenv("ZSNES_STATE_SIZE")) {
+        fprintf(stderr, "rewind state: %zu bytes\n", rewind_state_size);
+    }
+#endif
 
     SetupRewindBuffer();
     LatestRewindPos = 0;
