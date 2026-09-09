@@ -1,5 +1,6 @@
 # TODO
 
+- [ ] Fix issues with fullscreen toggle + adjusting video filter/CRT settings.
 - [ ] Confirm the DSP4 division table on a DSP4 cart. `floor(0x8000/n)` verified, but not the chip's rounding.
 - [ ] Fix Super Mario RPG hanging in the attract demo at frame 19956, force-blank never cleared. Needs a reference trace.
 - [ ] Retire the old graphics engine (`newengen=0` + `bgfixer`).
