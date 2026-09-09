@@ -121,6 +121,17 @@ extern u1 GUISMODE[]; // Win Stretched Modes
 extern u1 GUII2VID[]; // Interpolation
 #endif
 
+/* The displays the machine has, and which one to open on. Every port answers
+   these: the GUI's Monitors tab, the mouse handler and the -mo flag all call
+   them without knowing which platform is underneath. A port with no display
+   enumeration reports a single monitor and no HDR. */
+u4 VideoMonitorCount(void);
+char const* VideoMonitorName(u4 i);
+void VideoMonitorID(u4 i, char* out, u4 len);
+u4 VideoMonitorSelected(void);
+void VideoMonitorSelect(u4 i);
+int VideoMonitorHDR(void);
+
 // Input Device Names
 extern char const GUIInputNames[][17];
 

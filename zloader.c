@@ -2,7 +2,6 @@
 #include "gblhdr.h"
 #ifdef __UNIXSDL__
 #include "unix/sdllink.h"
-#include "gui/guifuncs.h"
 #endif
 
 #ifdef __LIBAO__
@@ -34,6 +33,7 @@
 #include "c_intrf.h"
 #include "cfg.h"
 #include "gui/c_gui.h"
+#include "gui/guifuncs.h"
 #include "init.h"
 #include "initc.h"
 #include "input.h"

@@ -1,6 +1,7 @@
 #ifndef SDLLINK_H
 #define SDLLINK_H
 
+#include "../c_intrf.h" /* the monitor queries this layer implements */
 #include "../types.h"
 
 #include <stdint.h>
@@ -10,12 +11,8 @@ void sem_sleep(void);
 /* Monitors, as SDL lists them this run. MonitorID names one by a short ID
    taken from its name, which survives the renumbering SDL does each run. */
 struct SDL_Window;
-u4 VideoMonitorCount(void);
-char const* VideoMonitorName(u4 i);
-void VideoMonitorID(u4 i, char* out, u4 len);
-u4 VideoMonitorSelected(void);
-void VideoMonitorSelect(u4 i);
-int VideoMonitorHDR(void);
+/* The monitor queries themselves are declared in c_intrf.h: every port
+   answers them. This one is SDL's own. */
 void PlaceWindowOnMonitor(struct SDL_Window* win);
 
 #ifdef ZSNES_DEBUG_HOOKS

@@ -186,6 +186,44 @@ static void InitializeGfxStuff(void)
     Init_2xSaI(converta != 1 ? 565 : 555);
 }
 
+/* The Windows port opens on whichever display Windows gives it and has no
+   display enumeration of its own, so it reports one monitor and no HDR. The
+   GUI's Monitors tab and the -mo flag then have a single entry to show rather
+   than an empty list. */
+u4 VideoMonitorCount(void)
+{
+    return 1;
+}
+
+char const* VideoMonitorName(u4 const i)
+{
+    (void)i;
+    return "Primary display";
+}
+
+void VideoMonitorID(u4 const i, char* const out, u4 const len)
+{
+    (void)i;
+    if (out && len) {
+        snprintf(out, len, "%s", "primary");
+    }
+}
+
+u4 VideoMonitorSelected(void)
+{
+    return 0;
+}
+
+void VideoMonitorSelect(u4 const i)
+{
+    (void)i;
+}
+
+int VideoMonitorHDR(void)
+{
+    return 0;
+}
+
 void initvideo(void)
 {
     static u4 firstvideo = 1;
