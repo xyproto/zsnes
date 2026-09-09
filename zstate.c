@@ -588,10 +588,12 @@ static void state_hash_tally(uint8_t** dest, void* src, size_t len)
 #ifdef ZSNES_DEBUG_HOOKS
 /* ZSNES_STATE_HASH=N: print the guest state hash at emulated frame N and stop.
    Counted on the vblank NMI, which is emulation's own clock. */
+unsigned zsnes_emulated_frame; /* NMIs since reset; emulation's own clock */
+
 void zst_state_hash_tick(void)
 {
     static int at = -2;
-    static unsigned frame;
+    unsigned const frame = zsnes_emulated_frame;
 
     if (at == -2) {
         char const* const e = getenv("ZSNES_STATE_HASH");
@@ -604,7 +606,7 @@ void zst_state_hash_tick(void)
         fflush(stdout);
         exit(0);
     }
-    frame++;
+    zsnes_emulated_frame++;
 }
 #endif
 

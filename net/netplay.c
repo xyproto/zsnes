@@ -541,6 +541,12 @@ void NetplaySyncInputs(unsigned int* joy_a, unsigned int* joy_b)
     if (NetplaySessionState != NETPLAY_CONNECTED || NetplayClientSocket < 0)
         return;
 
+#ifdef ZSNES_DEBUG_HOOKS
+    /* The pads as they arrived, before netplay substitutes its own; the trace
+       below reports them and nothing else reads them. */
+    u4 const in_a = (u4)*joy_a;
+    u4 const in_b = (u4)*joy_b;
+#endif
     u4 const raw = NetplayHostRole != 0 ? (u4)*joy_a : (u4)*joy_b;
 
     // Delay local input by NETPLAY_INPUT_DELAY frames so the peer has time to
@@ -637,6 +643,33 @@ void NetplaySyncInputs(unsigned int* joy_a, unsigned int* joy_b)
         *joy_b = NetplayRemoteJoy;
     else
         *joy_a = NetplayRemoteJoy;
+
+#ifdef ZSNES_DEBUG_HOOKS
+    {
+        char const* const at = getenv("ZSNES_NETPLAY_DUMP");
+
+        if (at && NetplayFrame == (u4)atoi(at) && wramdata) {
+            extern uint64_t zst_state_hash(void);
+            unsigned i;
+
+            fprintf(stderr, "GUESTHASH %016llx\n",
+                (unsigned long long)zst_state_hash());
+            fprintf(stderr, "WRAM");
+            for (i = 0; i < 256; i++) {
+                fprintf(stderr, "%02x", wramdata[i]);
+            }
+            fprintf(stderr, "\n");
+        }
+    }
+    if (getenv("ZSNES_NETPLAY_TRACE")) {
+        extern unsigned zsnes_emulated_frame;
+
+        fprintf(stderr, "F %u emu=%u in_a=%08x in_b=%08x raw=%08x del=%08x "
+                        "out_a=%08x out_b=%08x lcrc=%08x rcrc=%08x\n",
+            (unsigned)NetplayFrame, zsnes_emulated_frame, in_a, in_b, raw,
+            delayed, (unsigned)*joy_a, (unsigned)*joy_b, local_crc, remote_crc);
+    }
+#endif
 
     NetplayFrame++;
 #else
