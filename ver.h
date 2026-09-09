@@ -1,7 +1,7 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#define ZVER "2.3.0"
+#define ZVER "2.3.1"
 
 extern char const VERSION_ARCH[];
 extern char const* const VERSION_LIBRARIES[];
