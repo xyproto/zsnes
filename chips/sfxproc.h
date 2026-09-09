@@ -1,4 +1,3 @@
-// Looks good
 #ifndef SFXPROC_H
 #define SFXPROC_H
 

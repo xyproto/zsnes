@@ -1,4 +1,3 @@
-// Looks good
 /*
  * DSP2 coprocessor unit tests
  *

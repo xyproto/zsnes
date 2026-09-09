@@ -1,4 +1,3 @@
-// Looks good
 /* Differential test: draw16x1616bt / draw16x1616btwinon in video/makev16t.asm
  * against the C port in video/c_mv16t16bt.c.
  *

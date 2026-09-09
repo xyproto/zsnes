@@ -1,4 +1,3 @@
-// Looks good
 #ifndef GUIMOUSE_H
 #define GUIMOUSE_H
 

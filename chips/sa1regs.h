@@ -1,4 +1,3 @@
-// Looks good
 #ifndef SA1REGS_H
 #define SA1REGS_H
 

@@ -1,4 +1,3 @@
-// Looks good
 /* snes_ntsc 0.2.2. http://www.slack.net/~ant/ */
 
 #include "snes_ntsc.h"

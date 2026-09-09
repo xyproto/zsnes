@@ -1,4 +1,3 @@
-// Looks good
 /* Differential test: the mosaic pass of video/newgfx16.asm against the C port
  * in video/c_ngmosaic.c.
  *

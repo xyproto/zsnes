@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * The mosaic dispatchers and their leaves, from video/mv16tms.asm.
  *

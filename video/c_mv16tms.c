@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * The shared prologue of video/mv16tms.asm, run by all eleven draw*ms entries:
  * stash the caller's registers, bias the video and window pointers by the

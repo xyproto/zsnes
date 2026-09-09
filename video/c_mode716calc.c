@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * CalculateNewValues, from video/mode716.asm. Once per scanline from
  * processmode7hires16b, which reaches it with ebx = the scanline, eax = the Y

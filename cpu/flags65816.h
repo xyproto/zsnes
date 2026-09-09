@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * Conversion between the 65816 P register and the split flag globals, from the
  * makedl / restoredl macros in cpu/65816d.inc.

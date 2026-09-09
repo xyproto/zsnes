@@ -1,4 +1,3 @@
-// Looks good
 #ifndef C_VCACHE_H
 #define C_VCACHE_H
 

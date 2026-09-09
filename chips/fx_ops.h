@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * The SuperFX (GSU) core, from chips/fxemu2*.asm. Textual include: the includer
  * supplies the typedefs and the seam block below. ebp is the PC, esi/edi the

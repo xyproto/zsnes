@@ -1,4 +1,3 @@
-// Looks good
 #include "c_newgfx16.h"
 #include "../cpu/regs.h"
 #include "../endmem.h"

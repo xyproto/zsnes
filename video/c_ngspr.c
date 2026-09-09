@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * The sprite drawers of video/newgfx16.asm. The asm's 58 writer macros are
  * four skeletons - A no window, B window gates both, C gates sub, D gates

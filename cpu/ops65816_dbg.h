@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * The debug 65816 core, from cpu/e65816c.inc: the third instantiation of
  * cpu/ops65816.h, sharing the main core's register file and differing only in

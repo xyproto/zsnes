@@ -1,4 +1,3 @@
-// Impeccable
 #ifndef ZTIMEC_H
 #define ZTIMEC_H
 

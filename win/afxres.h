@@ -1,4 +1,3 @@
-// Looks good
 #ifndef __AFXRES_H__
 #define __AFXRES_H__
 

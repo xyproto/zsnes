@@ -1,4 +1,3 @@
-// Looks good
 #ifndef ZPNG_H
 #define ZPNG_H
 

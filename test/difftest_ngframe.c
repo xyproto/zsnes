@@ -1,4 +1,3 @@
-// Looks good
 /* StartDrawNewGfx16b and its screen clip (video/newgfx16.asm) against
  * video/c_ngframe.c. The routine is a running order over three workers, all C
  * already, so what must match is the *sequence* of calls and their arguments,

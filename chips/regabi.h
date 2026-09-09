@@ -1,4 +1,3 @@
-// Impeccable
 #ifndef REGABI_H
 #define REGABI_H
 

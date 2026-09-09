@@ -1,4 +1,3 @@
-// Impeccable
 /* ProcessIRQStuff from cpu/execute.asm: does this scanline raise a V/H IRQ?
    Four dispatch sites each end by jumping to their own `.virq`, so this returns
    the decision instead of acting on it - non-zero means take .virq. Two dead

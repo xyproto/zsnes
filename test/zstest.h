@@ -1,4 +1,3 @@
-// Looks good
 /* Minimal test framework for ZSNES2 headless tests */
 #pragma once
 

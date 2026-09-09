@@ -1,4 +1,3 @@
-// Impeccable
 /* The Mode 7 renderer's scratch block from video/mode716.asm. The layout is
    load-bearing: the renderer reads the current position, the relative position
    and the per-pixel adders 8 bytes at a time, so each is followed by an unnamed

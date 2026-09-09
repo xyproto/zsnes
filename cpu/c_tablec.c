@@ -1,4 +1,3 @@
-// Looks good
 #include "c_tablec.h"
 #include "../endmem.h"
 #ifndef lengthof

@@ -1,4 +1,3 @@
-// Looks good
 /* drawmode7win16b and drawmode7ngextbg16b as video/mode716.asm had them,
  * against video/c_mode716draw.c and the seam in video/c_mode716gate.c: the
  * transparency test, the writer-selection tree over the main/sub window

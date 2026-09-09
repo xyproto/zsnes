@@ -1,4 +1,3 @@
-// Looks good
 #include <string.h>
 
 #include "c_dsp2proc.h"

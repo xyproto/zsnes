@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * DSP register ($00-$FF) write handlers, from the WDSPReg00..FF routines in
  * cpu/dsp.asm and the ProcessGain, SwitchSustain, VoiceAdsr, VoiceGain and

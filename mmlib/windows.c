@@ -1,4 +1,3 @@
-// Looks good
 /*
 Copyright (c) 2003-2007 Ryan C. Gordon and others.
 

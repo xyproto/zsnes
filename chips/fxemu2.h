@@ -1,4 +1,3 @@
-// Looks good
 #ifndef FXEMU2_H
 #define FXEMU2_H
 

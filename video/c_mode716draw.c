@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * The top of the Mode 7 renderer: drawmode7win16b, drawmode7ngextbg16b and the
  * four Mode7*Sub wrappers. Picks the pixel writer from the layer's main/sub

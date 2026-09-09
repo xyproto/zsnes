@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * The drawsprites16bt family: the 4-bit sprite writer that produces the
  * transparency buffer, writing each pixel twice - video line and transpbuf.

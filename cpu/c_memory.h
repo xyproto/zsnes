@@ -1,4 +1,3 @@
-// Looks good
 #ifndef C_MEMORY_H
 #define C_MEMORY_H
 

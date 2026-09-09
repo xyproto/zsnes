@@ -1,4 +1,3 @@
-// Looks good
 /*
  * ST011 coprocessor unit tests
  *

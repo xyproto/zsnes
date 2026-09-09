@@ -1,4 +1,3 @@
-// Looks good
 #ifndef GUIFUNCS_H
 #define GUIFUNCS_H
 

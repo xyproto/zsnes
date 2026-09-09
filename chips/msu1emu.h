@@ -1,4 +1,3 @@
-// Looks good
 #ifndef MSU1REGS_H
 #define MSU1REGS_H
 

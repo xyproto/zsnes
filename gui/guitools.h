@@ -1,4 +1,3 @@
-// Looks good
 #ifndef GUITOOLS_H
 #define GUITOOLS_H
 

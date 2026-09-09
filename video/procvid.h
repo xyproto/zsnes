@@ -1,4 +1,3 @@
-// Looks good
 #ifndef PROCVID_H
 #define PROCVID_H
 

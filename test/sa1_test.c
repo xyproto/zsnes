@@ -1,4 +1,3 @@
-// Looks good
 /*
  * SA-1 register interface unit tests (chips/sa1regs.c).
  *

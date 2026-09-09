@@ -1,4 +1,3 @@
-// Impeccable
 #include "../gui/menu.h"
 #include "../ui.h" /* MusicVol, VolumeConvTable */
 #include "c_dsp.h"

@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * cpu/firtable.c - FIR interpolation coefficient table, ported verbatim from
  * cpu/firtable.inc. Two consecutive tables of 8 signed coefficients per entry;

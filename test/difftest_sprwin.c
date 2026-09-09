@@ -1,4 +1,3 @@
-// Looks good
 /* Differential test: the sprite-window builder of newengine16b in
  * video/newgfx16.asm against the C port in video/c_ngline.c.
  *

@@ -1,4 +1,3 @@
-// Looks good
 #ifndef C_GUIWINDP_H
 #define C_GUIWINDP_H
 

@@ -1,4 +1,3 @@
-// Looks good
 /*
  * MSU-1 register stub unit tests
  *

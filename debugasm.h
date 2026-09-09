@@ -1,4 +1,3 @@
-// Impeccable
 #ifndef DEBUGASM_H
 #define DEBUGASM_H
 

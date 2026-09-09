@@ -1,4 +1,3 @@
-// Looks good
 #ifndef NEWGFX16_H
 #define NEWGFX16_H
 

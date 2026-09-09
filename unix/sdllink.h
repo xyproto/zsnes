@@ -1,4 +1,3 @@
-// Looks good
 #ifndef SDLLINK_H
 #define SDLLINK_H
 

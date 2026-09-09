@@ -1,4 +1,3 @@
-// Looks good
 #ifndef MAKEVID_H
 #define MAKEVID_H
 

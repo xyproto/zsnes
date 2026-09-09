@@ -1,4 +1,3 @@
-// Looks good
 #ifndef FIRTABLE_H
 #define FIRTABLE_H
 

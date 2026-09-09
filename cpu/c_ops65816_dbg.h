@@ -1,4 +1,3 @@
-// Looks good
 /* Entry points of the main 65816 core (cpu/c_ops65816_dbg.c, which is
    cpu/ops65816.h instantiated with tableadc). cpu/c_tablec.c builds the
    dispatch tables out of these. */

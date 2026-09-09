@@ -1,4 +1,3 @@
-// Looks good
 /* unzip.h -- IO for uncompress .zip files using zlib
    Version 0.15 beta, Mar 19th, 1998,
 

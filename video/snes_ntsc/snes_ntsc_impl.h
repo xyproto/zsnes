@@ -1,4 +1,3 @@
-// Looks good
 /* Common implementation of NTSC filters */
 
 #include <assert.h>

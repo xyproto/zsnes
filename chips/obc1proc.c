@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * OBC1 coprocessor bank access, from chips/obc1proc.asm. All four functions
  * route the same three ways:

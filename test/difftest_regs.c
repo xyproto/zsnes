@@ -1,4 +1,3 @@
-// Looks good
 /* Differential test: the PPU read handlers in cpu/regs.inc against the C port
  * in cpu/c_regs.c.
  *

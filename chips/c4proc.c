@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * Capcom C4 coprocessor interface, from chips/c4proc.asm. The C4 maps into
  * $6000-$7FFF and routes addresses the three ways the OBC1/DSP4 ports do: bit

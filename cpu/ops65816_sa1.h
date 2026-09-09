@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * The SA-1's instantiation of the 65816 core. Include this instead of
  * ops65816.h: it sets the override guards, pulls the shared handlers in and

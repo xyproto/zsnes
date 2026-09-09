@@ -1,4 +1,3 @@
-// Looks good
 /* Differential test: clearback16t and clearback16ts in video/makev16t.asm
  * against the C port in video/c_mv16tclr.c.
  *

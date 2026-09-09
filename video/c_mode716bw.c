@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * ProcessBuildWindow, from video/mode716.mac: builds the per-scanline window
  * run list the ProcessMode7ngwin*16b walk consumes. All four call sites pass a

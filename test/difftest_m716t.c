@@ -1,4 +1,3 @@
-// Looks good
 /* The eight procmode716t* entry points of video/makev16t.asm against
  * video/c_mv16tm7.c. They gate a Mode 7 layer per scanline and pick one of six
  * renderers, so what is compared is which renderer each side selects and the

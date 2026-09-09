@@ -1,4 +1,3 @@
-// Looks good
 #ifndef GUIMISC_H
 #define GUIMISC_H
 

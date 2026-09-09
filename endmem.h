@@ -1,4 +1,3 @@
-// Looks good
 #ifndef ENDMEM_H
 #define ENDMEM_H
 

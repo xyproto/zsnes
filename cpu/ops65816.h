@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * 65816 opcode handlers, from cpu/e65816.inc. Textual include (cpu/c_65816.c);
  * the includer supplies the typedefs and the register file, laid out as pushad

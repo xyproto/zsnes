@@ -1,4 +1,3 @@
-// Looks good
 /* Storage for the two emulator-wide tables video/c_ngtransp.c and
  * video/c_ng2gate.c reference. ui.c owns them in the real build, and no
  * newgfx16 difftest drives the paths that read them - both sides of the

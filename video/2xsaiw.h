@@ -1,4 +1,3 @@
-// Looks good
 #ifndef H2XSAIW_H
 #define H2XSAIW_H
 

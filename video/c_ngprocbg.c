@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * The background, sprite and Mode 7 passes of StartDrawNewGfx16b
  * (video/newgfx16.asm): five macros instantiated once per layer per screen.

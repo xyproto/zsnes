@@ -1,4 +1,3 @@
-// Impeccable
 /* Wide reads and writes at an arbitrary byte offset. The assembly did these
    with a plain mov, so the ported C inherited casts that are undefined when
    the address is not aligned and fault outright on a strict-alignment target.

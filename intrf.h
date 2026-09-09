@@ -1,4 +1,3 @@
-// Looks good
 #ifndef INTRF_H
 #define INTRF_H
 

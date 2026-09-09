@@ -1,4 +1,3 @@
-// Looks good
 #ifndef C_GUI_H
 #define C_GUI_H
 

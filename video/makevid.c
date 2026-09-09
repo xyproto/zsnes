@@ -1,4 +1,3 @@
-// Impeccable
 /* C port of video/makevid.asm: renderer scratch state.
 
    Everything left in makevid.asm was pure data; drawline, the window builders

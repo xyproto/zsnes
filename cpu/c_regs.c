@@ -1,4 +1,3 @@
-// Looks good
 #include "c_regs.h"
 #include "../chips/7110proc.h"
 #include "../chips/c_sa1regs.h"

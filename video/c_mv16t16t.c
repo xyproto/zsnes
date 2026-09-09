@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * The six 16x16 colour-maths tile drawers: the column walk of
  * video/c_mv16t16bt.c with the writers of video/c_mv16tt.h. Entered with

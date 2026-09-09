@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * The ProcessMode7ngwin*16b cluster: five subroutines that walk the Mode 7
  * position over the pixels a window masks out - no drawing, just advancing the

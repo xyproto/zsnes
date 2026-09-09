@@ -1,4 +1,3 @@
-// Some work to be done here, please look at TODO.md
 /*
  * video/newg162.asm's tile and line drawers. Nineteen of the twenty are
  * unreachable by any ROM here, so this is the only thing that verifies them;

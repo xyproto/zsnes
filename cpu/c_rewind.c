@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * Rewind bookkeeping, from cpu/execute.asm. Both routines run inside the 65816
  * execute loop with the core's register ABI live - esi the PC pointer, edi the

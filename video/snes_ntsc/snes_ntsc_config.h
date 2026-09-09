@@ -1,4 +1,3 @@
-// Looks good
 /* Configure library by modifying this file */
 
 #ifndef SNES_NTSC_CONFIG_H

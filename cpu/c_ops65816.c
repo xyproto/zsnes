@@ -1,4 +1,3 @@
-// Impeccable
 /* 65816 opcode handlers ported from cpu/e65816.inc.
  *
  * The handlers are in cpu/ops65816.h so the difftest can include them next to

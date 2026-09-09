@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * The background dispatchers from video/newgfx16.asm, one per background per
  * pass: find the layer's map and palette for the scanline, build the window,

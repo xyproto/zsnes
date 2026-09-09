@@ -1,4 +1,3 @@
-// Looks good
 #ifndef C_M716GATE_H
 #define C_M716GATE_H
 

@@ -1,4 +1,3 @@
-// Looks good
 /* The seam block the memtable handlers pass their arguments through; the
    emulator defines it in cpu/c_memops.c. Each test is a single translation
    unit, so defining it in a header is safe here. */

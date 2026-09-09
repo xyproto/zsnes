@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * Memory access handlers, from cpu/memory.asm. Textual include
  * (cpu/c_memops.c). Everything goes through the seam: MemSeamB the direct-page

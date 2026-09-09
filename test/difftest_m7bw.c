@@ -1,4 +1,3 @@
-// Looks good
 /* ProcessBuildWindow (video/mode716.mac) against video/c_mode716bw.c - the one
  * port here that is deliberately *not* bit-identical. The assembly reached
  * BuildWindow by the register ABI that routine had before it became C, so its

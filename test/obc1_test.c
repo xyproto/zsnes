@@ -1,4 +1,3 @@
-// Looks good
 /*
  * OBC1 coprocessor unit tests
  *

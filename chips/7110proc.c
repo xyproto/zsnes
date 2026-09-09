@@ -1,4 +1,3 @@
-// Impeccable
 /* C port of 7110proc.asm (SPC7110 register interface). STAGE 1: data block.
    SPCMultA..SPCCompressionRegs must stay contiguous and in this exact order:
    zstate.c saves the run &SPCMultA .. PHnum2writespc7110reg bytes. The

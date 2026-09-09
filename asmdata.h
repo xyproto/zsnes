@@ -1,4 +1,3 @@
-// Impeccable
 #ifndef ASMDATA_H
 #define ASMDATA_H
 

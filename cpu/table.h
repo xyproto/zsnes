@@ -1,4 +1,3 @@
-// Looks good
 #ifndef TABLE_H
 #define TABLE_H
 

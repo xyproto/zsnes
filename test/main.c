@@ -1,4 +1,3 @@
-// Looks good
 /*
  * ZSNES2 headless test suite
  *

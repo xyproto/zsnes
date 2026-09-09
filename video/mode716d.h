@@ -1,4 +1,3 @@
-// Looks good
 #ifndef MODE716D_H
 #define MODE716D_H
 

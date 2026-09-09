@@ -1,4 +1,3 @@
-// Looks good
 /* State setup for the newg162 drawers. See ng2_harness.h. */
 #include "ng2_harness.h"
 

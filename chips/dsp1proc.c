@@ -1,4 +1,3 @@
-// Impeccable
 /* C port of dsp1proc.asm: the DSP1 register/command interface.
    The math lives in dsp1emu.c; this marshals parameters/results. */
 #include <stdint.h>

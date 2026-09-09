@@ -1,4 +1,3 @@
-// Impeccable
 /* The CPU/PPU register file, from cpu/regs.inc. zstate.c saves
    PHnum2writeppureg bytes from sndrot and that length comes from this block's
    own layout, so every distance here *is* the save-state format: inserting,

@@ -1,4 +1,3 @@
-// Impeccable
 /* C port of sfxproc.asm: the SuperFX (GSU) memory-mapped register handlers.
    The GSU core is in chips/fx_ops.h; these just read/write Sfx* state.
    Installed via REGPTR in c_sfxproc.c. */

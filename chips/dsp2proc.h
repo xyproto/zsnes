@@ -1,4 +1,3 @@
-// Looks good
 #ifndef DSP2PROC_H
 #define DSP2PROC_H
 

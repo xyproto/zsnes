@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * The six 8x8 colour-maths tile drawers of video/makev16t.asm: draw8x816t,
  * draw8x8fulladd, draw8x816ts and their winon twins. One entry point; the rest

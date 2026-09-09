@@ -1,4 +1,3 @@
-// Looks good
 #include "../chips/fxemu2.h"
 #include "../endmem.h"
 #include "../init.h"

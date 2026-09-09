@@ -1,4 +1,3 @@
-// Looks good
 #ifndef C_HQX_H
 #define C_HQX_H
 

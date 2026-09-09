@@ -1,4 +1,3 @@
-// Looks good
 /* PPU read handlers ported from cpu/regs.inc.
  *
  * Kept apart from cpu/c_regs.c, which is the table setup and pulls in the

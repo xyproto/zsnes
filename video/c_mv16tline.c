@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * The scanline drivers of video/makev16t.asm. One scanline: set the palette,
  * work out the colour window, clear the back area into the transparency

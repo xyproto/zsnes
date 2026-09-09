@@ -1,4 +1,3 @@
-// Impeccable
 /* The .bss blocks spread through video/makev16t.asm, kept as one pinned block
    at the assembly's offsets: the transparency buffer is indexed with signed
    displacements off its middle, so what follows it is part of the shape, and

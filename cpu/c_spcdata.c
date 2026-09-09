@@ -1,4 +1,3 @@
-// Impeccable
 /* The SPC700 state block from cpu/spc700.asm. PHspcsave is the byte distance
    from SPCRAM to the end of FutureExpandS, which zstate.c uses as a save-state
    block length, so everything between is load-bearing - including the 64-byte

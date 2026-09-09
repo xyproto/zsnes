@@ -1,4 +1,3 @@
-// Looks good
 /* Mode7Process and its big-step sibling Mode7ProcessB (video/mode716.mac)
  * against video/c_mode716proc.c, over all ten pixel writers and all three
  * shapes mode7set selects. Real games only reach the first shape, which is why

@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * DSP2 coprocessor register stubs, from chips/dsp2proc.asm.
  *

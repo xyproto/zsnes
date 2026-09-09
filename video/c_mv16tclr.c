@@ -1,4 +1,3 @@
-// Impeccable
 /* Transparent scanline backdrop fill. */
 #include <stdint.h>
 #include <string.h>

@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * The eight mode 7 scanline gates, from video/makev16t.asm. Each spilled eax,
  * ebx, edx and ebp into the M7T seam, picked a renderer, reloaded them and

@@ -1,4 +1,3 @@
-// Looks good
 #include <string.h>
 
 #include "../types.h"

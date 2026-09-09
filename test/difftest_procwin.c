@@ -1,4 +1,3 @@
-// Looks good
 /* procwindowback16t (video/makev16t.asm) against video/c_procwin.c. It takes
  * no arguments and writes winon, numwin and the windowdata run list, so the
  * comparison covers those plus the whole of windowdata - a port that writes one

@@ -1,4 +1,3 @@
-// Looks good
 /*
  * test/ng2_harness.h - driving video/newg162.asm's tile and line drawers.
  *

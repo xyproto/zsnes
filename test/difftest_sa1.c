@@ -1,4 +1,3 @@
-// Looks good
 /*
  * test/difftest_sa1.c - the SA-1's 65816 core (cpu/c_ops65816_sa1.c) vs
  * cpu/se65816.inc.

@@ -1,4 +1,3 @@
-// Looks good
 #include "c_mode716.h"
 #ifndef lengthof
 #define lengthof(x) (sizeof(x) / sizeof *(x))

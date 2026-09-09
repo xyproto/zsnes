@@ -1,4 +1,3 @@
-// Some work to be done here, please look at TODO.md
 #include <stdio.h>
 #ifdef __UNIXSDL__
 #include "../unix/audio.h"

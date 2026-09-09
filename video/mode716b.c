@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * Mode 7 16-bit background renderers, from mode716b.asm and friends. The
  * drawmode7 entry points keep the legacy register ABI (y scroll in ax, x in

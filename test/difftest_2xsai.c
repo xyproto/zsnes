@@ -1,4 +1,3 @@
-// Looks good
 #include <stdint.h>
 #include <string.h>
 

@@ -1,4 +1,3 @@
-// Some work to be done here, please look at TODO.md
 #include <stdint.h>
 #include <stdio.h>
 

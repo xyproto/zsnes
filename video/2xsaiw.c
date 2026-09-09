@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * Kreed's 2xSaI, Super2xSaI and SuperEagle, ported from video/2xsaiw.asm
  * (the MMX version, replaced by a scale2x stub in 5ff6d63d). One source line

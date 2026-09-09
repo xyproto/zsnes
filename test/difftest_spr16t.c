@@ -1,4 +1,3 @@
-// Looks good
 /* Differential test: the drawsprites16t family in video/makev16t.asm against
  * the C port in video/c_mv16tspr.c.
  *

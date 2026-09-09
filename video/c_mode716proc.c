@@ -1,4 +1,3 @@
-// Impeccable
 /*
  * The four Mode7Process* macros from video/mode716.mac: the Mode 7 scanline
  * walk, in three shapes picked by mode7set.

@@ -1,4 +1,3 @@
-// Looks good
 #ifndef C_WININTRF_H
 #define C_WININTRF_H
 

@@ -1,4 +1,3 @@
-// Looks good
 #ifndef WATER_H
 #define WATER_H
 

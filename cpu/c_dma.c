@@ -1,4 +1,3 @@
-// Looks good
 #ifndef lengthof
 #define lengthof(x) (sizeof(x) / sizeof *(x))
 #endif

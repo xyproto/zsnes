@@ -1,4 +1,3 @@
-// Looks good
 /*
  * SPC7110 register interface unit tests (chips/7110proc.c).
  *
