@@ -465,6 +465,18 @@ nonewgfx:
     if (NoInputRead != 1)
         ReadInputDevice();
 
+#ifdef ZSNES_DEBUG_HOOKS
+    /* The vblank NMI is the one frame boundary emulation itself drives, so a
+       count here advances with the guest and not with the host's draw loop -
+       UpdateVFrame, where the other debug hooks live, has a second caller and
+       cannot index a deterministic vector. */
+    {
+        extern void zst_state_hash_tick(void);
+
+        zst_state_hash_tick();
+    }
+#endif
+
     if (PauseFrameMode == 3) {
         RestorePauseFrame();
         r[R_ESI] = tempesi;
