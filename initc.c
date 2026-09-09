@@ -859,12 +859,12 @@ void loadZipFile(char* filename)
     bool multifile = false, NSS = false;
     char* incrementer = 0;
 
-    unzFile zipfile = unzopen_dir(ZRomPath, filename); // Open zip file
+    ZipFile* zipfile = zipopen_dir(ZRomPath, filename); // Open zip file
     if (!zipfile) {
         return;
     }
-    int cFile = unzGoToFirstFile(zipfile); // Set cFile to first compressed file
-    unz_file_info cFileInfo; // Create variable to hold info for a compressed file
+    int cFile = zip_first(zipfile); // Set cFile to first compressed file
+    uint32_t cFileSize = 0;
 
     int LargestGoodFile = 0; // To keep track of largest file
 
@@ -872,16 +872,16 @@ void loadZipFile(char* filename)
     char ourFile[256];
     ourFile[0] = '\n';
 
-    while (cFile == UNZ_OK) // While not at end of compressed file list
+    while (cFile == ZIP_OK) // While not at end of compressed file list
     {
         // Temporary char array for file name
         char cFileName[256];
 
-        // Gets info on current file, and places it in cFileInfo
-        unzGetCurrentFileInfo(zipfile, &cFileInfo, cFileName, 256, NULL, 0, NULL, 0);
+        // Name and size of the member the cursor is on
+        zip_entry(zipfile, cFileName, 256, &cFileSize);
 
         // Get the file's size
-        fileSize = cFileInfo.uncompressed_size;
+        fileSize = cFileSize;
 
         // Find split files
         if (strlen(cFileName) >= 3) // Char + ".1"
@@ -915,50 +915,50 @@ void loadZipFile(char* filename)
         }
 
         // Go to next file in zip file
-        cFile = unzGoToNextFile(zipfile);
+        cFile = zip_next(zipfile);
     }
 
     // No files found
     if (ourFile[0] == '\n') {
-        unzClose(zipfile);
+        zip_close(zipfile);
         return;
     }
 
     for (;;) {
         // Sets current file to the file we liked before
-        if (unzLocateFile(zipfile, ourFile, 1) != UNZ_OK) {
+        if (zip_locate(zipfile, ourFile, 1) != ZIP_OK) {
             if (NSS) {
                 (*incrementer)--;
                 continue;
             }
-            unzClose(zipfile);
+            zip_close(zipfile);
             return;
         }
 
-        // Gets info on current file, and places it in cFileInfo
-        unzGetCurrentFileInfo(zipfile, &cFileInfo, ourFile, 256, NULL, 0, NULL, 0);
+        // Name and size of the member the cursor is on
+        zip_entry(zipfile, ourFile, 256, &cFileSize);
 
         // Get the file's size
-        fileSize = cFileInfo.uncompressed_size;
+        fileSize = cFileSize;
 
         // Too big?
         if (curromspace + fileSize > maxromspace + 512) {
-            unzClose(zipfile);
+            zip_close(zipfile);
             return;
         }
 
         // Open file
-        unzOpenCurrentFile(zipfile);
+        zip_open_entry(zipfile);
 
         // Read file into memory
-        err = unzReadCurrentFile(zipfile, ROM + curromspace, fileSize);
+        err = zip_read(zipfile, ROM + curromspace, fileSize);
 
         // Close file
-        unzCloseCurrentFile(zipfile);
+        zip_close_entry(zipfile);
 
         // Encountered error?
         if (err != fileSize) {
-            unzClose(zipfile);
+            zip_close(zipfile);
             return;
         }
 
@@ -978,7 +978,7 @@ void loadZipFile(char* filename)
         }
 
         if (!multifile) {
-            unzClose(zipfile);
+            zip_close(zipfile);
             return;
         }
         (*incrementer)++;

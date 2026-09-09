@@ -6,7 +6,7 @@
 #include <sys/stat.h>
 #include <zlib.h>
 
-#include "zip/zunzip.h"
+#include "zip/zipread.h"
 
 #ifdef _MSC_VER
 #define F_OK 0
@@ -61,7 +61,7 @@ int access_dir(const char* path, const char* file, int mode);
 int stat_dir(const char* path, const char* file, struct stat* buf);
 FILE* fopen_dir(const char* path, const char* file, const char* mode);
 gzFile gzopen_dir(const char* path, const char* file, const char* mode);
-unzFile unzopen_dir(const char* path, const char* file);
+ZipFile* zipopen_dir(const char* path, const char* file);
 int remove_dir(const char* path, const char* file);
 int mkdir_dir(const char* path, const char* dir);
 char* realpath_dir(const char* path, const char* file, char* buf);

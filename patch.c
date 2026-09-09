@@ -33,7 +33,7 @@ struct
     unsigned int buffer_total;
     unsigned int proccessed;
 
-    unzFile zipfile;
+    ZipFile* zipfile;
     FILE* fp;
 } IPSPatch;
 
@@ -46,7 +46,7 @@ bool reloadBuffer(void)
     IPSPatch.buffer_total = IPSPatch.fp ?
                                         /* Regular Files */ fread(IPSPatch.data, 1, BUFFER_SIZE, IPSPatch.fp)
                                         :
-                                        /* Zip Files     */ (unsigned int)unzReadCurrentFile(IPSPatch.zipfile, IPSPatch.data, BUFFER_SIZE);
+                                        /* Zip Files     */ (unsigned int)zip_read(IPSPatch.zipfile, IPSPatch.data, BUFFER_SIZE);
 
     IPSPatch.current = IPSPatch.data;
     if (IPSPatch.buffer_total && (IPSPatch.buffer_total <= BUFFER_SIZE)) {
@@ -107,8 +107,8 @@ void deinitPatch(void)
     }
 
     if (IPSPatch.zipfile) {
-        unzCloseCurrentFile(IPSPatch.zipfile);
-        unzClose(IPSPatch.zipfile);
+        zip_close_entry(IPSPatch.zipfile);
+        zip_close(IPSPatch.zipfile);
         IPSPatch.zipfile = 0;
     }
 }
@@ -223,21 +223,21 @@ IPSDone:
 bool findZipIPS(char* compressedfile, const char* ext)
 {
     bool FoundIPS = false;
-    unz_file_info cFileInfo; // Create variable to hold info for a compressed file
+    uint32_t cFileSize = 0;
     int cFile;
 
     memset(&IPSPatch, 0, sizeof(IPSPatch));
 
-    IPSPatch.zipfile = unzopen_dir(ZRomPath, compressedfile); // Open zip file
-    cFile = unzGoToFirstFile(IPSPatch.zipfile); // Set cFile to first compressed file
+    IPSPatch.zipfile = zipopen_dir(ZRomPath, compressedfile); // Open zip file
+    cFile = zip_first(IPSPatch.zipfile); // Set cFile to first compressed file
 
-    while (cFile == UNZ_OK) // While not at end of compressed file list
+    while (cFile == ZIP_OK) // While not at end of compressed file list
     {
         // Temporary char array for file name
         char cFileName[256];
 
-        // Gets info on current file, and places it in cFileInfo
-        unzGetCurrentFileInfo(IPSPatch.zipfile, &cFileInfo, cFileName, 256, NULL, 0, NULL, 0);
+        // Name and size of the member the cursor is on
+        zip_entry(IPSPatch.zipfile, cFileName, 256, &cFileSize);
 
         // Find IPS file
         if (isextension(cFileName, ext)) {
@@ -246,14 +246,14 @@ bool findZipIPS(char* compressedfile, const char* ext)
         }
 
         // Go to next file in zip file
-        cFile = unzGoToNextFile(IPSPatch.zipfile);
+        cFile = zip_next(IPSPatch.zipfile);
     }
 
     if (FoundIPS) {
         // Open file
-        unzOpenCurrentFile(IPSPatch.zipfile);
+        zip_open_entry(IPSPatch.zipfile);
 
-        IPSPatch.file_size = (unsigned int)cFileInfo.uncompressed_size;
+        IPSPatch.file_size = (unsigned int)cFileSize;
         if ((IPSPatch.data = (unsigned char*)malloc(BUFFER_SIZE))) {
             reloadBuffer();
             return (PatchUsingIPS(0));
@@ -261,7 +261,7 @@ bool findZipIPS(char* compressedfile, const char* ext)
             deinitPatch();
         }
     } else {
-        unzClose(IPSPatch.zipfile);
+        zip_close(IPSPatch.zipfile);
         IPSPatch.zipfile = 0;
     }
     return false;

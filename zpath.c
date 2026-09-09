@@ -480,9 +480,9 @@ gzFile gzopen_dir(const char* path, const char* file, const char* mode)
     return (gzopen(strdupcat_internal(path, file), mode));
 }
 
-unzFile unzopen_dir(const char* path, const char* file)
+ZipFile* zipopen_dir(const char* path, const char* file)
 {
-    return (unzOpen(strdupcat_internal(path, file)));
+    return (zip_open(strdupcat_internal(path, file)));
 }
 
 int remove_dir(const char* path, const char* file)
