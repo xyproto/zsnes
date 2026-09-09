@@ -1212,17 +1212,38 @@ void SoundWrite_sdl(void)
         SDLAudioDriftControl(backlog);
     }
 
-    for (;;) {
-        int queued = SDL_GetAudioStreamQueued(sdl_audio_stream);
-        int16_t chunk[256];
+    if (!sample_control.lo) {
+        return;
+    }
 
-        if (queued < 0 || queued >= sdl_audio_buffer_len) {
-            break;
-        }
+    /* Exactly one emulated frame's worth of samples, the way the libao and
+       PipeWire backends already do it. Rendering to the sink's demand instead
+       let host audio timing decide how much of the DSP ran each frame - and
+       the DSP writes ENVX and OUTX back into registers the guest can read, so
+       host jitter became part of emulated state and no two runs matched. */
+    {
+        unsigned samples
+            = (unsigned)((sample_control.balance / sample_control.lo) << StereoSound);
 
-        MixSoundBlock(chunk, 256);
-        if (!SDL_PutAudioStreamData(sdl_audio_stream, chunk, sizeof(chunk))) {
-            break;
+        sample_control.balance %= sample_control.lo;
+        sample_control.balance += sample_control.hi;
+
+        while (samples != 0) {
+            unsigned const n = samples > 1280u ? 1280u : samples;
+            int16_t chunk[1280];
+            int const queued = SDL_GetAudioStreamQueued(sdl_audio_stream);
+
+            /* Always render: that is what advances the chip. Whether the
+               result reaches the sink is the queue's business, and must not
+               feed back into how much was emulated. */
+            MixSoundBlock(chunk, n);
+            if (queued >= 0 && queued < sdl_audio_buffer_len) {
+                if (!SDL_PutAudioStreamData(sdl_audio_stream, chunk,
+                        (int)(n * sizeof(int16_t)))) {
+                    break;
+                }
+            }
+            samples -= n;
         }
     }
 }

@@ -2,6 +2,8 @@
 #ifndef C_GUIWINDP_H
 #define C_GUIWINDP_H
 
+#include "../net/netplay.h" /* netplay owns its own session API now */
+
 void DisplayGUIAbout(void); // Displays the About Box
 void DisplayGUIAddOns(void); // Select Special Controllers
 void DisplayGUICheat(void); // Add/Browse Cheats menu
@@ -23,15 +25,10 @@ void DisplayGUIStates(void); // Save/Load State Confirmation
 void DisplayGUIVideo(void);
 void DisplayGameOptns(void); // Misc Key Window
 void DisplayNetOptns(void);
-void NetplayHostSession(void);
-void NetplayJoinSession(void);
-void NetplayDisconnectSession(void);
-void NetplaySyncInputs(unsigned int* joy_a, unsigned int* joy_b);
 
 extern char CMovieExt;
 extern char GUICheatTextZ1[];
 extern char GUICheatTextZ2[];
-extern char NetplayHostName[32];
 extern char* GUINetplayTextPtr[1];
 extern char GUIChoseSaveText2[2];
 extern char GUIChoseSlotTextX[2];

@@ -39,6 +39,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../ui.h"
 #include "../video/procvidc.h"
 #include "../zip/zpng.h"
+#include "../zstate.h"
 #include "audio.h"
 #include "cfg.h"
 #include "input.h"

@@ -578,6 +578,8 @@ SRCS += gui/guikeys.c
 SRCS += gui/guimisc.c
 SRCS += gui/guimouse.c
 SRCS += gui/guitools.c
+SRCS += net/packet.c
+SRCS += net/netplay.c
 SRCS += gui/menu.c
 SRCS += initdata.c
 SRCS += initc.c
@@ -688,6 +690,7 @@ SRCS += unix/safelib.c
 
 SRCS += unix/sdl_render.c
 SRCS += unix/sdllink.c
+SRCS += unix/net_transport.c
 SRCS += unix/sw_draw.c
 
 ifdef WITH_OPENGL
