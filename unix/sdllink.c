@@ -2181,8 +2181,8 @@ void LaunchURL(char const* url)
     // We are now the child proccess
 
     // If any of these LaunchBrowser() calls return that means it failed and we should try the next one
-    LaunchBrowser("mozilla", url);
-    LaunchBrowser("mozilla-firefox", url);
+    LaunchBrowser("xdg-open", url);
+    LaunchBrowser("firefox-developer-edition", url);
     LaunchBrowser("firefox", url);
     LaunchBrowser("konqueror", url);
     LaunchBrowser("opera", url);
