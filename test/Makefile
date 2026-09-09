@@ -57,7 +57,7 @@ VCACHE    := zsnes_vcache_test
 SPRITES   := zsnes_sprites_test
 HQX       := zsnes_hqx_test
 SRC       := main.c
-NETPLAY_SRC := netplay_test.c
+NETPLAY_SRC := netplay_test.c ../net/packet.c
 ST10_SRC  := st10_test.c
 ST11_SRC  := st11_test.c
 OBC1_SRC  := obc1_test.c
@@ -101,7 +101,7 @@ all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(S
 $(BIN): $(SRC) zstest.h $(OBJS)
 	$(CC) $(CFLAGS) $(SRC) $(OBJS) $(NOPIE) $(GCSECT) -o $(BIN)
 
-$(NETPLAY): $(NETPLAY_SRC) zstest.h
+$(NETPLAY): $(NETPLAY_SRC) zstest.h ../net/packet.h
 	$(CC) $(CFLAGS) $(NETPLAY_SRC) $(NOPIE) -lpthread -o $(NETPLAY)
 
 $(ST10): $(ST10_SRC) zstest.h ../chips/st10proc.c

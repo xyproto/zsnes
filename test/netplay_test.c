@@ -5,7 +5,9 @@
  * Covers: packet byte-swap roundtrip, magic constant, FNV1a hash,
  * UDP loopback send/recv, TCP loopback send/recv, desync detection logic.
  *
- * All logic is self-contained — no ZSNES object files needed.
+ * The packet codec is the emulator's own (net/packet.c), which is why that
+ * file exists: this test used to carry its own copy of the struct and the
+ * byte-swapping, and had drifted a field behind the real one.
  */
 
 #include <arpa/inet.h>
@@ -33,43 +35,29 @@ static void zsleep_us(unsigned int const usec)
     }
 }
 
-/* Types mirroring c_guiwindp.c */
+#include "../net/packet.h"
 
-typedef struct {
-    uint32_t magic;
-    uint32_t seq;
-    uint32_t joy;
-    uint32_t crc;
-} Packet;
+typedef NetplayPacket Packet;
 
-static const uint32_t NETP_MAGIC = 0x4E455450u; /* "NETP" */
+static const uint32_t NETP_MAGIC = NETPLAY_MAGIC;
 static const uint16_t TEST_PORT_UDP = 17845;
 static const uint16_t TEST_PORT_TCP = 17846;
 
-static void pkt_hton(Packet* p)
+/* The tests below send a decoded packet and read one back; on the wire it is
+   always NETPLAY_PACKET_BYTES big-endian bytes. */
+static void pkt_encode(uint8_t out[NETPLAY_PACKET_BYTES], Packet const* p)
 {
-    p->magic = htonl(p->magic);
-    p->seq = htonl(p->seq);
-    p->joy = htonl(p->joy);
-    p->crc = htonl(p->crc);
+    netplay_packet_encode(out, p);
 }
 
-static void pkt_ntoh(Packet* p)
+static int pkt_decode(Packet* out, uint8_t const in[NETPLAY_PACKET_BYTES])
 {
-    p->magic = ntohl(p->magic);
-    p->seq = ntohl(p->seq);
-    p->joy = ntohl(p->joy);
-    p->crc = ntohl(p->crc);
+    return netplay_packet_decode(out, in);
 }
 
 static uint32_t fnv1a(uint8_t const* data, int len)
 {
-    uint32_t h = 2166136261u;
-    for (int i = 0; i < len; i++) {
-        h ^= (uint32_t)data[i];
-        h *= 16777619u;
-    }
-    return h;
+    return netplay_fnv1a(data, (size_t)len);
 }
 
 /* Helpers */
@@ -144,20 +132,81 @@ static int recv_exact(int fd, void* buf, size_t n)
 
 /* Tests */
 
-static void test_packet_byteswap(void)
+static void test_packet_roundtrip(void)
 {
-    ZT_SECTION("packet byte-swap roundtrip");
+    ZT_SECTION("packet survives a trip through the wire format");
 
-    Packet p = { NETP_MAGIC, 42, 0xDEADBEEFu, 0xCAFEBABEu };
-    Packet orig = p;
+    Packet const orig = { NETP_MAGIC, 0x11223344u, 42, 0xDEADBEEFu, 0xCAFEBABEu };
+    uint8_t wire[NETPLAY_PACKET_BYTES];
+    Packet back;
 
-    pkt_hton(&p);
-    pkt_ntoh(&p);
+    pkt_encode(wire, &orig);
+    ZT_CHECK(pkt_decode(&back, wire));
+    ZT_CHECK(back.magic == orig.magic);
+    ZT_CHECK(back.session == orig.session);
+    ZT_CHECK(back.seq == orig.seq);
+    ZT_CHECK(back.joy == orig.joy);
+    ZT_CHECK(back.crc == orig.crc);
+}
 
-    ZT_CHECK(p.magic == orig.magic);
-    ZT_CHECK(p.seq == orig.seq);
-    ZT_CHECK(p.joy == orig.joy);
-    ZT_CHECK(p.crc == orig.crc);
+static void test_packet_wire_layout(void)
+{
+    ZT_SECTION("wire layout is five big-endian words");
+
+    Packet const p = { NETP_MAGIC, 0x01020304u, 0x05060708u, 0x090A0B0Cu,
+        0x0D0E0F10u };
+    uint8_t wire[NETPLAY_PACKET_BYTES];
+    uint8_t const expect[NETPLAY_PACKET_BYTES] = { 'N', 'E', 'T', 'P',
+        0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
+        0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10 };
+
+    pkt_encode(wire, &p);
+    ZT_CHECK(memcmp(wire, expect, sizeof(expect)) == 0);
+}
+
+static void test_packet_rejects_rubbish(void)
+{
+    ZT_SECTION("a packet that is not ours is refused");
+
+    uint8_t wire[NETPLAY_PACKET_BYTES];
+    Packet out;
+    unsigned i;
+
+    /* Anything at all on the port: the decoder has to say no rather than hand
+       back a packet built from someone else's datagram. */
+    memset(wire, 0, sizeof(wire));
+    ZT_CHECK(!pkt_decode(&out, wire));
+
+    for (i = 0; i < sizeof(wire); i++) {
+        wire[i] = (uint8_t)(i * 37u + 11u);
+    }
+    ZT_CHECK(!pkt_decode(&out, wire));
+
+    /* One bit off in the magic is still not ours. */
+    {
+        Packet const good = { NETP_MAGIC, 1, 2, 3, 4 };
+
+        pkt_encode(wire, &good);
+        ZT_CHECK(pkt_decode(&out, wire));
+        wire[3] ^= 0x01u;
+        ZT_CHECK(!pkt_decode(&out, wire));
+    }
+}
+
+static void test_handshake_recognised(void)
+{
+    ZT_SECTION("handshake is magic, session, neutral pad on frame zero");
+
+    Packet p = { NETP_MAGIC, 0xABCDu, 0, NETPLAY_JOY_NEUTRAL, 0 };
+
+    ZT_CHECK(netplay_packet_is_handshake(&p, 0xABCDu));
+    ZT_CHECK(!netplay_packet_is_handshake(&p, 0xABCEu));
+
+    p.seq = 1;
+    ZT_CHECK(!netplay_packet_is_handshake(&p, 0xABCDu));
+    p.seq = 0;
+    p.joy = 0;
+    ZT_CHECK(!netplay_packet_is_handshake(&p, 0xABCDu));
 }
 
 static void test_magic_bytes(void)
@@ -252,16 +301,14 @@ static void* udp_server_thread(void* arg)
     struct timeval tv = { .tv_sec = 2, .tv_usec = 0 };
     setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
 
-    Packet wire;
-    ssize_t n = recv(fd, &wire, sizeof(wire), 0);
+    uint8_t wire[NETPLAY_PACKET_BYTES];
+    ssize_t n = recv(fd, wire, sizeof(wire), 0);
     close(fd);
-    if (n != (ssize_t)sizeof(wire)) {
+    if (n != (ssize_t)sizeof(wire) || !pkt_decode(&r->received, wire)) {
         r->ok = 0;
         return NULL;
     }
 
-    pkt_ntoh(&wire);
-    r->received = wire;
     r->ok = 1;
     return NULL;
 }
@@ -292,10 +339,11 @@ static void test_udp_loopback(void)
     dst.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
     dst.sin_port = htons(TEST_PORT_UDP);
 
-    Packet pkt = { NETP_MAGIC, 7, 0x00008000u, 0xDEADu };
-    Packet wire = pkt;
-    pkt_hton(&wire);
-    sendto(fd, &wire, sizeof(wire), 0, (struct sockaddr*)&dst, sizeof(dst));
+    Packet pkt = { NETP_MAGIC, 3, 7, NETPLAY_JOY_NEUTRAL, 0xDEADu };
+    uint8_t wire[NETPLAY_PACKET_BYTES];
+
+    pkt_encode(wire, &pkt);
+    sendto(fd, wire, sizeof(wire), 0, (struct sockaddr*)&dst, sizeof(dst));
     close(fd);
 
     pthread_join(srv, NULL);
@@ -333,15 +381,17 @@ static void* tcp_server_thread(void* arg)
 
     setsockopt(cfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
 
-    Packet wire;
-    if (!recv_exact(cfd, &wire, sizeof(wire))) {
+    uint8_t wire[NETPLAY_PACKET_BYTES];
+    if (!recv_exact(cfd, wire, sizeof(wire))) {
         close(cfd);
         r->ok = 0;
         return NULL;
     }
     close(cfd);
-    pkt_ntoh(&wire);
-    r->received = wire;
+    if (!pkt_decode(&r->received, wire)) {
+        r->ok = 0;
+        return NULL;
+    }
     r->ok = 1;
     return NULL;
 }
@@ -379,10 +429,11 @@ static void test_tcp_loopback(void)
         return;
     }
 
-    Packet pkt = { NETP_MAGIC, 99, 0xFFFF0000u, 0xBEEFu };
-    Packet wire = pkt;
-    pkt_hton(&wire);
-    send_exact(fd, &wire, sizeof(wire));
+    Packet pkt = { NETP_MAGIC, 5, 99, 0xFFFF0000u, 0xBEEFu };
+    uint8_t wire[NETPLAY_PACKET_BYTES];
+
+    pkt_encode(wire, &pkt);
+    send_exact(fd, wire, sizeof(wire));
     close(fd);
 
     pthread_join(srv, NULL);
@@ -394,30 +445,17 @@ static void test_tcp_loopback(void)
     ZT_CHECK(result.received.crc == 0xBEEFu);
 }
 
-static void test_packet_layout(void)
-{
-    ZT_SECTION("packet struct layout");
-
-    /* 4 x uint32_t, no padding */
-    ZT_CHECK_INT((int)sizeof(Packet), 16);
-
-    /* each field is 4 bytes at the expected offset */
-    Packet p;
-    ZT_CHECK_INT((int)((char*)&p.magic - (char*)&p), 0);
-    ZT_CHECK_INT((int)((char*)&p.seq - (char*)&p), 4);
-    ZT_CHECK_INT((int)((char*)&p.joy - (char*)&p), 8);
-    ZT_CHECK_INT((int)((char*)&p.crc - (char*)&p), 12);
-}
-
 /* Entry point */
 
 int main(void)
 {
     printf("ZSNES2 netplay tests\n");
 
-    test_packet_layout();
+    test_packet_wire_layout();
     test_magic_bytes();
-    test_packet_byteswap();
+    test_packet_roundtrip();
+    test_packet_rejects_rubbish();
+    test_handshake_recognised();
     test_fnv1a();
     test_desync_detection();
     test_udp_loopback();
