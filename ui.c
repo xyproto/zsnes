@@ -209,9 +209,12 @@ u1 mode7tab[65536];
 u2 fulladdtab[65537];
 u2 VolumeConvTable[32768];
 
+/* Cleared as well as freed: ZCleanup is the only caller today, and a second
+   call would otherwise hand the allocator the same pointer twice. */
 #define deallocmemhelp(p) \
     if (p) {              \
         free(p);          \
+        (p) = NULL;       \
     }
 
 void deallocmem(void)
@@ -234,6 +237,7 @@ void deallocmem(void)
     deallocmemhelp(vcache4b);
     deallocmemhelp(vcache8b);
     deallocmemhelp(sram);
+    deallocmemhelp(SA1RAMArea);
 }
 
 /* The ROM buffer used to run to 16MB because the SuperFX and Seta work RAM

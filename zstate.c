@@ -131,6 +131,7 @@ static void copy_snes_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*,
     }
 }
 
+extern uint8_t oamram[1024], pcgram[512]; /* inside the PPU register file */
 extern uint8_t spcram_run[0x10140]; /* SPCRAM and the blocks saved with it */
 extern uint8_t sa1dmaptr_run[8]; /* sa1dmaptr + sa1dmaptrs */
 static void copy_spc_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, size_t))
@@ -639,6 +640,33 @@ uint64_t zst_state_hash(void)
     state_hash_tally(&dummy, &xpc, 2);
     state_hash_tally(&dummy, &xp, 1);
     state_hash_tally(&dummy, &xe, 1);
+
+    /* Appended, so the block numbers above keep the meaning older runs
+       recorded. The PPU register file is also where OAM and CGRAM live, and it
+       is taken through a volatile pointer for the reason copy_snes_data does:
+       &sndrot is one byte to __builtin_object_size. OAM and CGRAM then get a
+       block each, so a block-by-block comparison says which it was. */
+    {
+        void* volatile ppu = &sndrot;
+
+        state_hash_tally(&dummy, ppu, PHnum2writeppureg); /* 14 ppu regs */
+    }
+    state_hash_tally(&dummy, oamram, 1024); /* 15 oam */
+    state_hash_tally(&dummy, cgram, sizeof(cgram)); /* 16 cgram */
+    state_hash_tally(&dummy, pcgram, 512); /* 17 pcgram */
+    state_hash_tally(&dummy, oamaddr_run, 14 * 4); /* 18 oam pointers */
+    state_hash_tally(&dummy, spc700read_run, 10 * 4); /* 19 spc700 regs */
+    state_hash_tally(&dummy, opcd_run, 6 * 4); /* 20 opcode state */
+
+    /* Where in the frame the two machines think they are. */
+    state_hash_tally(&dummy, &curcyc, 1);
+    state_hash_tally(&dummy, &curypos, 2);
+    state_hash_tally(&dummy, &cycpl, 1);
+    state_hash_tally(&dummy, &cycphb, 1);
+    state_hash_tally(&dummy, &intrset, 1);
+    state_hash_tally(&dummy, &curnmi, 1);
+    state_hash_tally(&dummy, &nmistatus, 4);
+    state_hash_tally(&dummy, &joycontren, 4);
 
     return state_hash_acc;
 }

@@ -39,6 +39,7 @@
 #include "c_gui.h"
 #include "c_guiwindp.h"
 #include "gui.h"
+#include "guiarena.h"
 #include "guicheat.h"
 #include "guifuncs.h"
 #include "guiwindp.h"
@@ -905,46 +906,47 @@ static void sort(intptr_t* array, int begin, int end, void (*swapfunc)(size_t, s
     }
 }
 
-void free_list(char*** list)
+/* The lists come out of the GUI arena, so a list is dropped by forgetting it:
+   free_all_file_lists resets the arena and every string in every list goes at
+   once. Element 0 is the count and element 1 the number of slots, both kept in
+   the pointer slots the original did, with the names from element 2 on and a
+   NULL after the last one - so a list of n names needs n + 3 slots. */
+enum { LIST_HEAD = 2,
+    LIST_GROW = 1000 };
+
+static char** grow_list(char** const list, size_t const count, size_t const slots)
 {
-    char** p = *list;
-    if (p) {
-        p += 2;
-        while (*p) {
-            free(*p++);
-        }
-        free(*list);
-        *list = 0;
+    char** const grown = (char**)GUIAlloc((slots + LIST_GROW) * sizeof(void*));
+
+    if (!grown) {
+        return NULL;
     }
+    if (list) {
+        memcpy(grown, list, (count + 1) * sizeof(void*));
+    } else {
+        grown[0] = (char*)LIST_HEAD;
+    }
+    grown[1] = (char*)(slots + LIST_GROW);
+    return grown;
 }
 
-// A possible problem here would be if one of the list arrays got enlarged but a corosponding one ran out of memory
 static void add_list(char*** reallist, const char* p)
 {
     char** list = *reallist;
-    if (!list) {
-        if (!(list = malloc(1003 * sizeof(void*)))) {
-            return;
-        }
-        list[0] = (char*)2;
-        list[1] = (char*)1002;
-        list[2] = 0;
-    }
+    size_t count = list ? (size_t)list[0] : (size_t)LIST_HEAD;
+    size_t const slots = list ? (size_t)list[1] : (size_t)LIST_HEAD + 1;
 
-    if (list[0] == list[1] - 1) {
-        char** p = realloc(list, ((size_t)list[1] + 1000) * sizeof(void*));
-        if (p) {
-            list = p;
-            list[1] += 1000;
-        } else {
+    /* Room for the name and for the NULL after it. */
+    if (count + 1 >= slots) {
+        list = grow_list(list, count, slots);
+        if (!list) {
             return;
         }
     }
 
-    if ((list[(size_t)*list] = malloc(strlen(p) + 1))) {
-        strcpy(list[(size_t)*list], p);
-        list[0]++;
-        list[(size_t)*list] = 0;
+    if ((list[count] = GUIStrdup(p))) {
+        list[0] = (char*)(count + 1);
+        list[count + 1] = 0;
     }
     *reallist = list;
 }
@@ -987,8 +989,8 @@ void populate_lists(unsigned int lists, bool snes_ext_match)
         unsigned int drives = GetLogicalDrives(), i = 0;
 #endif
 
-        if (d_names) {
-            unsigned int offset = (d_names[2][0] == '.') ? 3 : 2;
+        if (d_names && d_names[LIST_HEAD]) {
+            unsigned int offset = (d_names[LIST_HEAD][0] == '.') ? 3 : 2;
             sort((intptr_t*)d_names, offset, (size_t)(*d_names), swapdirs);
         }
 
@@ -1101,10 +1103,8 @@ s4 GUIfileentries;
 
 void free_all_file_lists(void)
 {
-    free_list(&d_names);
-    free_list(&i_names);
-    free_list(&lf_names);
-    free_list(&et_names);
+    d_names = i_names = lf_names = et_names = selected_names = 0;
+    GUIArenaReset();
 }
 
 void GetLoadData(void)
@@ -1127,9 +1127,12 @@ void GetLoadData(void)
         selected_names = main_names;
         break;
     }
-    selected_names += 2;
-    GUIfileentries = main_names ? ((unsigned int)(uintptr_t)(*main_names)) - 2 : 0;
-    GUIdirentries = d_names ? ((unsigned int)(uintptr_t)(*d_names)) - 2 : 0;
+    /* An empty listing leaves the pointer NULL; do not walk two past it. */
+    if (selected_names) {
+        selected_names += LIST_HEAD;
+    }
+    GUIfileentries = main_names ? (s4)((uintptr_t)(*main_names)) - LIST_HEAD : 0;
+    GUIdirentries = d_names ? (s4)((uintptr_t)(*d_names)) - LIST_HEAD : 0;
 }
 
 u4 GUIcurrentfilewin;

@@ -1,12 +1,10 @@
 #include "../gblhdr.h"
 #include "../link.h"
 #include "../video/copyvwin.h"
+#include "../video/filter.h"
 #include "cfg.h"
 #include "sdllink.h"
 #include <stdint.h>
-
-// FUNCTIONS
-void hq2x_16b(void);
 
 // VIDEO VARIABLES
 extern SDL_Window* sdl_window;
@@ -92,7 +90,9 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
     }
 
     if (!glvidbuffer) {
-        glvidbuffer = (unsigned short*)malloc(512 * 512 * sizeof(short));
+        /* Zeroed: the upload below hands the whole 512x512 texture over, and
+           a filtered picture only fills the rows the frame has. */
+        glvidbuffer = (unsigned short*)calloc(512 * 512, sizeof(short));
         if (!glvidbuffer) {
             fprintf(stderr, "Could not allocate the GL video buffer\n");
             return false;
@@ -288,17 +288,10 @@ void gl_drawwin(void)
         return;
     }
 
-    if (SurfaceX >= 512 && (hqFilter || En2xSaI)) {
-        AddEndBytes = 0;
-        NumBytesPerLine = 1024;
-        WinVidMemStart = (void*)glvidbuffer;
-
-        if (hqFilter) {
-            hq2x_16b();
-        } else {
-            copy640x480x16bwin();
-        }
-
+    /* The buffer and the quad below are fixed at 512x512, so only the filters
+       that make a 512 wide picture fit; VideoFilterDraw refuses the rest and
+       they fall through to the unfiltered path. */
+    if (VideoFilterDraw(VideoFilterGet(), glvidbuffer, 1024, 512u * 512u * 2u)) {
         /* Display 1 512x448 quad for the 512x448 buffer */
         glBindTexture(GL_TEXTURE_2D, gltextures[1]);
         glTexEnvi(GL_TEXTURE_2D, GL_TEXTURE_ENV_MODE, GL_DECAL);

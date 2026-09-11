@@ -4,6 +4,11 @@
  * only in the four tables and two masks the `depth` descriptor carries. The
  * writers are one family flagged t/ms/s/w, plus a partial-tile form. Entered
  * by jmp with one word pushed, so the asm seam ends `pop ebx / ret`.
+ *
+ * A tilemap entry is one word, and only its flip bits are read here. The
+ * assembly loaded a dword because that is what `mov eax,[vram+eax]` does; a
+ * literal port of that reads two bytes past the end of VRAM for an entry in
+ * the last word of it, which Chrono Trigger's attract demo does.
  */
 #include <stdint.h>
 #include <string.h>
@@ -172,7 +177,7 @@ static void draw_half(depth const* const d, u4 const idx, u4 const edx,
 {
     u1 const dl = (u1)edx;
     u1 const* src;
-    u4 const tile = ld32u(vrama + eax);
+    u4 const tile = ld16u(vrama + eax);
     int const flipx = (tile & 0x4000u) != 0;
     int const flipy = (tile & 0x8000u) != 0;
     u4 k;
@@ -293,7 +298,7 @@ static void l_pix(u1* const edi, u1 const* const src, u4 const i, u4 const ofs,
 static void line_half(depth const* const d, u4 const idx, u1 const dl,
     u1* const edi, u4 const eax, int const f)
 {
-    u4 const tile = ld32u(vrama + eax);
+    u4 const tile = ld16u(vrama + eax);
     u2 const* const pal = (u2 const*)(uintptr_t)CPalPtrng;
     u1 const* src;
     u4 i;
@@ -364,7 +369,7 @@ static u4 drawline_line(zreg* const r, int const f, depth const* const d)
 static void tile_body_16x16(zreg* const r, int const f, depth const* const d)
 {
     u4 const eax = r[R_EAX];
-    u4 const tile = ld32u(vrama + eax);
+    u4 const tile = ld16u(vrama + eax);
     int const flipx = (tile & 0x4000u) != 0;
     u2 const* const pal = (u2 const*)(uintptr_t)r[R_EBP];
     u1* edi = (u1*)(uintptr_t)r[R_EDI];
@@ -586,7 +591,7 @@ static void draw_half_win(depth const* const d, u4 const idx, u4 const edx,
 {
     u1 const dl = (u1)edx;
     u1 const* src;
-    u4 const tile = ld32u(vrama + eax);
+    u4 const tile = ld16u(vrama + eax);
     int part, col;
 
     if (needs_cache(d, idx)) {
@@ -647,7 +652,7 @@ static void tile_body_win(zreg* const r, int const f, depth const* const d)
 static void tile_body_win_16x16(zreg* const r, int const f, depth const* const d)
 {
     u4 const eax = r[R_EAX];
-    u4 const tile = ld32u(vrama + eax);
+    u4 const tile = ld16u(vrama + eax);
     int const flipx = (tile & 0x4000u) != 0;
     u2 const* const pal = (u2 const*)(uintptr_t)r[R_EBP];
     u1* edi = (u1*)(uintptr_t)r[R_EDI];
@@ -1009,7 +1014,7 @@ static void l_pair(u1* const edi, u1 const* const src, u4 const lo,
 static void line_half_full(depth const* const d, u4 const idx, u1 const dl,
     u1* const edi, u4 const eax, int const f)
 {
-    u4 const tile = ld32u(vrama + eax);
+    u4 const tile = ld16u(vrama + eax);
     u2 const* const pal = (u2 const*)(uintptr_t)CPalPtrng;
     int const flipx = (tile & 0x4000u) != 0;
     u1 const* src;
@@ -1034,7 +1039,7 @@ static void line_half_full(depth const* const d, u4 const idx, u1 const dl,
 static void line_body_16x16(zreg* const r, int const f, depth const* const d)
 {
     u4 const eax = r[R_EAX];
-    u4 const tile = ld32u(vrama + eax);
+    u4 const tile = ld16u(vrama + eax);
     int const flipx = (tile & 0x4000u) != 0;
     u1* edi = (u1*)(uintptr_t)r[R_EDI];
     u4 ecx = r[R_ECX], edx;
@@ -1111,7 +1116,7 @@ static void l_write(u1* const edi, u1 const* const src, u4 const i,
 static void line_half_16x8(depth const* const d, u4 const idx, u1 const dl,
     u1* const edi, u4 const eax, int const f, int const hires)
 {
-    u4 const tile = ld32u(vrama + eax);
+    u4 const tile = ld16u(vrama + eax);
     u2 const* const pal = (u2 const*)(uintptr_t)CPalPtrng;
     int const flipx = (tile & 0x4000u) != 0;
     u1 const* src;
@@ -1146,7 +1151,7 @@ static void line_body_16x8(zreg* const r, int const f, depth const* const d,
     int const hires)
 {
     u4 const eax = r[R_EAX];
-    u4 const tile = ld32u(vrama + eax);
+    u4 const tile = ld16u(vrama + eax);
     int const flipx = (tile & 0x4000u) != 0;
     u1* edi = (u1*)(uintptr_t)r[R_EDI];
     u4 ecx = r[R_ECX], edx;
@@ -1442,7 +1447,7 @@ static void line_body_om_16x16(zreg* const r, int const f, depth const* const d,
     int const win)
 {
     u4 const eax = r[R_EAX];
-    u4 const tile = ld32u(vrama + eax);
+    u4 const tile = ld16u(vrama + eax);
     int const flipx = (tile & 0x4000u) != 0;
     u4 ecx = r[R_ECX], edx;
 
@@ -1551,7 +1556,7 @@ static void l_pix_win(u1* const edi, u1 const* const src, u4 const i,
 static void line_half_win(depth const* const d, u4 const idx, u1 const dl,
     u1* const edi, u4 const eax, int const f)
 {
-    u4 const tile = ld32u(vrama + eax);
+    u4 const tile = ld16u(vrama + eax);
     u2 const* const pal = (u2 const*)(uintptr_t)CPalPtrng;
     u1 const* src;
     u4 i;
@@ -1591,7 +1596,7 @@ static void line_body_win(zreg* const r, int const f, depth const* const d)
 static void line_body_win_16x16(zreg* const r, int const f, depth const* const d)
 {
     u4 const eax = r[R_EAX];
-    u4 const tile = ld32u(vrama + eax);
+    u4 const tile = ld16u(vrama + eax);
     int const flipx = (tile & 0x4000u) != 0;
     u1* edi = (u1*)(uintptr_t)r[R_EDI];
     u4 ecx = r[R_ECX], edx;

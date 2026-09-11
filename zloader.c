@@ -888,6 +888,7 @@ static void ZCleanup(void)
     void DeallocPauseFrame(void);
     void DeallocSystemVars(void);
     void free_all_file_lists(void);
+    void GUIArenaFree(void);
 #ifdef __UNIXSDL__
     void UnloadSDL(void);
 #endif
@@ -899,6 +900,7 @@ static void ZCleanup(void)
     DeallocPauseFrame();
     DeallocSystemVars();
     free_all_file_lists();
+    GUIArenaFree();
 #ifdef __UNIXSDL__
     UnloadSDL();
 #endif

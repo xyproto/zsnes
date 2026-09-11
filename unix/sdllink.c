@@ -10,11 +10,13 @@
 #include "../cpu/execute.h"
 #include "../gui/c_gui.h"
 #include "../gui/gui.h"
+#include "../gui/guifuncs.h"
 #include "../gui/guimouse.h"
 #include "../initc.h"
 #include "../intrf.h"
 #include "../link.h"
 #include "../ui.h"
+#include "../video/filter.h"
 #include "../video/procvidc.h"
 #include "../zip/zpng.h"
 #include "../zstate.h"
@@ -1992,6 +1994,43 @@ void clearwin(void)
 #ifdef ZSNES_DEBUG_HOOKS
 unsigned zsnes_frame_dump_no = 0;
 
+/* ZSNES_FILTER_SOAK=N walks every filter, every CRT setting and every video
+   mode, one step each N frames, the way somebody clicking around the video
+   panel would. It exists to be run under a sanitizer: a display path that only
+   writes inside its buffer for the size it was built for fails here and
+   nowhere else. */
+void ZSnesFilterSoak(void)
+{
+    /* Software and accelerated, windowed and fullscreen, small and large. */
+    static u1 const modes[] = { 0, 2, 3, 4, 6, 9, 10, 14 };
+    extern u2 resolutn;
+    static int every = -1;
+    static unsigned step = 0;
+
+    if (every < 0) {
+        char const* const e = getenv("ZSNES_FILTER_SOAK");
+
+        every = e ? atoi(e) : 0;
+    }
+    if (every <= 0 || (zsnes_frame_dump_no % (unsigned)every) != 0) {
+        return;
+    }
+    VideoFilterSet((VideoFilter)(step % VFILTER_COUNT));
+    sl_intensity = (u1)(step * 7 % 101);
+    sl_vibrancy = (u1)(step * 13 % 101);
+    BloomLevel = (u1)(step * 17 % 101);
+    GetLoadData(); /* rebuild the browser lists, so the arena turns over too */
+    if (step % VFILTER_COUNT == 0) {
+        cvidmode = modes[step / VFILTER_COUNT % (sizeof modes / sizeof *modes)];
+        changeRes = 1;
+        initwinvideo();
+    }
+    fprintf(stderr, "SOAK %u %s mode=%u res=%u scan=%u bloom=%u\n", step,
+        VideoFilterName(VideoFilterGet()), (unsigned)cvidmode,
+        (unsigned)resolutn, (unsigned)sl_intensity, (unsigned)BloomLevel);
+    step++;
+}
+
 int ZSnesFrameDumpWanted(void)
 {
     static int checked = 0;
@@ -2047,6 +2086,7 @@ void drawscreenwin(void)
 
 #ifdef ZSNES_DEBUG_HOOKS
     zsnes_frame_dump_no++;
+    ZSnesFilterSoak();
 #endif
 
 #ifdef __OPENGL__

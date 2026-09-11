@@ -24,6 +24,9 @@ struct SDL_Surface;
 extern unsigned zsnes_frame_dump_no;
 int ZSnesFrameDumpWanted(void);
 void ZSnesFrameDumpSurface(struct SDL_Surface* s, char const* tag);
+/* ZSNES_FILTER_SOAK=N steps through every filter, CRT setting and video mode,
+   N frames apart, for running under a sanitizer. */
+void ZSnesFilterSoak(void);
 #endif
 
 void SetMouseMinX(int MinX);

@@ -13,16 +13,13 @@
 
 #include "../gblhdr.h"
 #include "../link.h"
-#include "../video/2xsaiw.h"
 #include "../video/copyvwin.h"
+#include "../video/filter.h"
 #include "cfg.h"
 #include "sdllink.h"
 #include <math.h>
 #include <stdint.h>
 
-void hq2x_16b(void);
-void hq3x_16b(void);
-void hq4x_16b(void);
 #include "../video/ntsc.h"
 
 extern SDL_Window* sdl_window;
@@ -33,7 +30,6 @@ extern uint8_t GUIRESIZE[];
 extern Uint8 GUIOn2;
 extern uint32_t NGNoTransp; /* a dword where it is defined (video/c_newgfx16data.c) */
 extern uint8_t SpecialLine[256], hirestiledat[256], GUIOn, newengen, cfield;
-extern uint8_t hqFilterlevel; /* 2, 3 or 4 (cfg.psr) */
 
 char CheckOGLMode(void);
 
@@ -68,8 +64,6 @@ static int sr_hdr_active = 0;
 static int sr_fullscreen = -1;
 
 /* The second field sits 75036 pixels on; the line geometry is in copyvwin.h. */
-#define SR_SRC_STRIDE VID_STRIDE
-#define SR_SRC_SKIP VID_SKIP
 #define SR_FIELD2 (75036 * 2)
 
 static void sr_release(void);
@@ -192,6 +186,7 @@ int sr_start(int width, int height, int req_depth, int FullScreen)
         fprintf(stderr, "Could not create renderer: %s\n", SDL_GetError());
         SDL_DestroyWindow(sdl_window);
         sdl_window = NULL;
+        sr_fullscreen = -1;
         return false;
     }
     SDL_SetRenderVSync(sr_renderer, vsyncon ? 1 : SDL_RENDERER_VSYNC_DISABLED);
@@ -204,6 +199,7 @@ int sr_start(int width, int height, int req_depth, int FullScreen)
         sr_renderer = NULL;
         SDL_DestroyWindow(sdl_window);
         sdl_window = NULL;
+        sr_fullscreen = -1;
         return false;
     }
     if (VideoMonitorHDR()) {
@@ -761,57 +757,24 @@ void sr_drawwin(void)
         return;
     }
 
-    if (NTSCFilter) {
-        ntsc_drawn = 1;
-        /* Always at the filter's own size, whatever the window is: a narrower
-           request crops the picture and a wider one reads past the end of the
-           source line. The renderer scales it out, so this no longer needs a
-           602-wide video mode to be selected first. */
-        w = NTSC_OUT_WIDTH;
-        h = (int)resolutn * 2;
-        dst_pitch = w * 2;
-        NTSCFilterDraw(w, h, dst_pitch, (unsigned char*)sr_pixels);
-    } else if (SurfaceX >= 512 && (hqFilter || En2xSaI)) {
-        /* The filters write a finished picture themselves, at their own scale:
-           hq2x 512 wide, hq3x 768, hq4x 1024. The renderer scales it to the
-           window, so the filter picked is the filter drawn. */
-        int const scale = hqFilter ? (hqFilterlevel < 2          ? 2
-                                             : hqFilterlevel > 4 ? 4
-                                                                 : hqFilterlevel)
-                                   : 2;
+    /* Whichever filter is on draws at its own size, whatever the window is:
+       the renderer scales the result out, so the filter picked is the filter
+       drawn and the window size no longer decides which ones are reachable. */
+    {
+        VideoFilter const filter = VideoFilterGet();
+        VideoFilterPicture const pic = VideoFilterOutput(filter);
 
-        w = 256 * scale;
-        h = (int)resolutn * scale;
-        dst_pitch = w * 2;
-        vscale = scale;
-        AddEndBytes = 0;
-        NumBytesPerLine = dst_pitch;
-        WinVidMemStart = (void*)sr_pixels;
-        if (hqFilter) {
-            if (scale == 4) {
-                hq4x_16b();
-            } else if (scale == 3) {
-                hq3x_16b();
-            } else {
-                hq2x_16b();
-            }
+        if (VideoFilterDraw(filter, sr_pixels, pic.w * 2,
+                (size_t)SR_MAXW * SR_MAXH * sizeof(*sr_pixels))) {
+            w = pic.w;
+            h = pic.h;
+            dst_pitch = pic.w * 2;
+            vscale = pic.scale;
+            ntsc_drawn = filter == VFILTER_NTSC;
         } else {
-            /* En2xSaI: 1 = 2xSaI, 2 = Super Eagle, 3 = Super 2xSaI (cfg.psr).
-               The filters take one line at a time and read a row above and two
-               below, which the vidbuffer border already provides. */
-            LineFilter* const f = En2xSaI == 2 ? _2xSaISuperEagleLine
-                : En2xSaI == 3                 ? _2xSaISuper2xSaILine
-                                               : _2xSaILine;
-            unsigned short* const base = (unsigned short*)vidbuffer + VID_FIRST;
-
-            for (unsigned y = 0; y < resolutn; y++) {
-                f(base + (size_t)y * SR_SRC_STRIDE, NULL, SR_SRC_STRIDE * 2, 256,
-                    (unsigned char*)sr_pixels + (size_t)y * 2 * dst_pitch, dst_pitch);
+            for (line = 0; line < 224; line++) {
+                sr_line(sr_pixels + line * 2 * SR_W, line);
             }
-        }
-    } else {
-        for (line = 0; line < 224; line++) {
-            sr_line(sr_pixels + line * 2 * SR_W, line);
         }
     }
 

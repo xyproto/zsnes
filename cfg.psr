@@ -185,12 +185,15 @@ PrevFSMode db 6
 @ You need to select the custom video mode and modify CustomResX/Y to properly
 @ use custom res support.
 %endif
-@ Default is 10: 768x672 OpenGL windowed, which is hq3x's output pixel for
-@ pixel, so the filtered picture is not scaled again on its way to the window.
+@ Default is 10: 768x672 OpenGL windowed, a 3x window that leaves room for the
+@ filters to be turned on without the picture being scaled twice.
 cvidmode db 10
-@ Last windowed & fullscreen modes (used when alt-tabbing)
+@ Last windowed & fullscreen modes (used when alt-tabbing). Both accelerated:
+@ the fullscreen one used to be a software mode, so alt-enter swapped the
+@ renderer under the picture and the filters behaved differently either side
+@ of it.
 PrevWinMode db 10
-PrevFSMode db 3
+PrevFSMode db 14
 
 %endif
 
@@ -206,8 +209,7 @@ CustomResY dd 480
 @ Video Interpolation is compatible with scanlines.
 @ Blends the neighboring pixels on the screen to eliminate pixelation.
 antienab db 0
-@ On by default: it softens the step between the filtered pixels.
-BilinearFilter db 1
+BilinearFilter db 0
 
 @
 @ Enable NTSC Filter (0 = NO, 1 = Yes)
@@ -245,8 +247,7 @@ En2xSaI db 0
 @ This is a filter MaxSt has created. These are very CPU intensive filters that
 @ do very awesome blending to remove the pixelation.
 @ This is disabled when other filters are used. enhanced filter support is required.
-@ On by default at 3x, see hqFilterlevel below.
-hqFilter db 1
+hqFilter db 0
 @ Set HQ*x level [2..4]
 @ Recommended min resolutions
 @ HQ2x = 512x448
@@ -255,9 +256,7 @@ hqFilter db 1
 %ifdef __OPENGL__
 @ HQ2x is only available for OpenGL.
 %endif
-@ 3 by default: hq3x costs about a sixth of a 60Hz frame and is the sharpest
-@ of the smoothing filters on pixel art.
-hqFilterlevel db 3
+hqFilterlevel db 2
 
 @
 @ Enable Scanlines (0 = NONE, 1 = Full, 2 = 25%, 3 = 50%) - simulate TV scanlines
@@ -266,15 +265,14 @@ hqFilterlevel db 3
 @ blitter actually draws its scanlines from.
 scanlines db 0
 @ OpenGL scanlines intensity [0..100]
-sl_intensity db 50
+sl_intensity db 0
 @ Bloom [0..100]. Bright areas spill light into what surrounds them, the way a
 @ phosphor does. On an ordinary display the spill has to be clipped at white;
 @ with HDROutput on it is allowed past it, which is the point of turning HDR on
 @ at all - the source is 15-bit, so HDR buys headroom above white, not colours.
-@ On by default because it is also what stops the scanlines reading as a fixed
-@ pattern: a tube's bright areas bleed across the gaps, and bloom is what does
-@ that bleeding.
-BloomLevel db 25
+@ Off by default, with the rest of the picture effects; it is worth turning on
+@ together with the scanlines, whose gaps it bleeds across.
+BloomLevel db 0
 
 @ Which monitor to open on, as the short ID shown in the Monitors tab. SDL
 @ renumbers displays every run and the ids it hands out do not survive a
@@ -289,7 +287,8 @@ MonitorID times 16 db ""
 @ colour out of it. Measured over a frame, 50% scanlines at 3x cost about 12%
 @ of the brightness and 45 returns it, while a bright colour keeps essentially
 @ all of its saturation where a multiply of the same strength loses a tenth.
-sl_vibrancy db 45
+@ Off by default; turn it up with the scanlines.
+sl_vibrancy db 0
 
 @
 @ Enable Grayscale Mode (0 = NO, 1 = Yes) - don't enable this for other than nostalgia

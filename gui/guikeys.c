@@ -14,6 +14,7 @@
 #include "../cpu/regs.h"
 #include "../link.h"
 #include "../types.h"
+#include "../video/filter.h"
 #include "../video/procvid.h"
 #include "../video/procvidc.h"
 #include "../zmovie.h"
@@ -524,7 +525,9 @@ static void GUIVideoKeys(char dh, char const dl)
                     u4 const ebx = cvidmode;
                     if (GUIBIFIL[ebx] != 0) {
                         BilinearFilter ^= 1;
-                        NTSCFilter = 0;
+                        if (VideoFilterGet() == VFILTER_NTSC) {
+                            VideoFilterSet(VFILTER_NONE);
+                        }
 #ifdef __WIN32__
                         initDirectDraw();
 #elif defined __OPENGL__
@@ -540,116 +543,77 @@ static void GUIVideoKeys(char dh, char const dl)
                         {
                             antienab ^= 1;
                             if (antienab != 0) {
-                                En2xSaI = 0;
-                                hqFilter = 0;
-                                NTSCFilter = 0;
+                                VideoFilterSet(VFILTER_NONE);
+                                antienab = 1; // VideoFilterSet clears it
                             }
                         }
                     }
                 }
 
-                if (dh == 'N') {
-                    if (GUINTVID[cvidmode] != 0) {
-                        NTSCFilter ^= 1;
-                        if (NTSCFilter != 0) {
-                            En2xSaI = 0;
-                            hqFilter = 0;
-                            scanlines = 0;
-                            antienab = 0;
+                if (dh == 'N' && GUINTVID[cvidmode] != 0) {
+                    if (VideoFilterGet() != VFILTER_NTSC) {
 #ifdef __OPENGL__
-                            BilinearFilter = 0;
+                        BilinearFilter = 0;
 #endif
 #ifdef __WIN32__
-                            if (NTSCFilter != 0)
-                                Keep4_3Ratio = 1;
+                        Keep4_3Ratio = 1;
 #endif
-                            NTSCFilterInit();
-                        }
                     }
+                    VideoFilterToggle(VFILTER_NTSC);
                 }
 
                 if (GUIDSIZE[cvidmode] != 0) {
                     switch (dh) {
-                        u1 al;
                     case 'S':
-                        al = 1;
-                        goto yesfilter;
-                    case 'E':
-                        al = 2;
-                        goto yesfilter;
-                    case 'P':
-                        al = 3;
-                        goto yesfilter;
-                    yesfilter:
-                        Clear2xSaIBuffer();
-                        hqFilter = 0;
-                        scanlines = 0;
-                        antienab = 0;
-                        NTSCFilter = 0;
-                        En2xSaI = En2xSaI != al ? al : 0;
+                        VideoFilterToggle(VFILTER_2XSAI);
                         return;
+                    case 'E':
+                        VideoFilterToggle(VFILTER_SUPEREAGLE);
+                        return;
+                    case 'P':
+                        VideoFilterToggle(VFILTER_SUPER2XSAI);
+                        return;
+                    default:
+                        break;
                     }
                 }
 
-                if (dh == 'Q') {
-                    if (GUIHQ2X[cvidmode] != 0 || GUIHQ3X[cvidmode] != 0 || GUIHQ4X[cvidmode] != 0) {
-                        Clear2xSaIBuffer();
-                        hqFilter ^= 1;
-                        if (hqFilter != 0) {
-                            scanlines = 0;
-                            En2xSaI = 0;
-                            antienab = 0;
-                            NTSCFilter = 0;
-                        }
-                    }
+                if (dh == 'Q'
+                    && (GUIHQ2X[cvidmode] != 0 || GUIHQ3X[cvidmode] != 0
+                        || GUIHQ4X[cvidmode] != 0)) {
+                    VideoFilterToggle(hqFilterlevel >= 4 ? VFILTER_HQ4X
+                            : hqFilterlevel == 3         ? VFILTER_HQ3X
+                                                         : VFILTER_HQ2X);
                 }
 
-                if (dh == 'X') {
-                    if (hqFilter != 0 && GUIHQ2X[cvidmode] != 0) {
-                        Clear2xSaIBuffer();
-                        GUIKeyButtonHole(&hqFilterlevel, 2, 'X', dh);
-                    }
+                if (dh == 'X' && hqFilter != 0 && GUIHQ2X[cvidmode] != 0) {
+                    VideoFilterSet(VFILTER_HQ2X);
                 }
 
-                if (dh == '3') {
-                    if (hqFilter != 0 && GUIHQ3X[cvidmode] != 0) {
-                        Clear2xSaIBuffer();
-                        GUIKeyButtonHole(&hqFilterlevel, 3, '3', dh);
-                    }
+                if (dh == '3' && hqFilter != 0 && GUIHQ3X[cvidmode] != 0) {
+                    VideoFilterSet(VFILTER_HQ3X);
                 }
 
-                if (dh == '4') {
-                    if (hqFilter != 0 && GUIHQ4X[cvidmode] != 0) {
-                        Clear2xSaIBuffer();
-                        GUIKeyButtonHole(&hqFilterlevel, 4, '4', dh);
-                    }
+                if (dh == '4' && hqFilter != 0 && GUIHQ4X[cvidmode] != 0) {
+                    VideoFilterSet(VFILTER_HQ4X);
                 }
             }
 
             if (GUIDSIZE[cvidmode] != 0) {
                 GUIKeyButtonHole(&scanlines, 0, 'O', dh);
                 if (dh == 'F') {
-                    En2xSaI = 0;
-                    hqFilter = 0;
-                    NTSCFilter = 0;
-                    GUIKeyButtonHole(&scanlines, 1, 'F', dh);
+                    VideoFilterSet(VFILTER_NONE);
+                    scanlines = 1;
                 }
             }
 
             {
                 if (GUIDSIZE[cvidmode] != 0) {
-                    if (dh == '5') {
-                        En2xSaI = 0;
-                        hqFilter = 0;
-                        NTSCFilter = 0;
-                        GUIKeyButtonHole(&scanlines, 3, '5', dh);
-                    }
-
-                    if (dh == '5') {
-                        En2xSaI = 0;
-                        hqFilter = 0;
-                        NTSCFilter = 0;
-                        GUIKeyButtonHole(&scanlines, 2, '2', dh);
+                    /* 50% and 25%; '2' used to be tested as '5' as well, so
+                       the 25% step could not be reached from the keyboard. */
+                    if (dh == '5' || dh == '2') {
+                        VideoFilterSet(VFILTER_NONE);
+                        scanlines = dh == '5' ? 3 : 2;
                     }
                 }
             }

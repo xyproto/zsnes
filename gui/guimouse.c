@@ -36,6 +36,7 @@
 #include "guimouse.h"
 #include "guiwindp.h"
 
+#include "../video/filter.h"
 #include "../video/ntsc.h"
 #include "../video/procvidc.h"
 
@@ -203,20 +204,6 @@ static void GUIClickCButtonK(s4 const eax, s4 const edx, s4 const p1, s4 const p
     }
 }
 
-static void GUIClickCButtonN(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3, void (*const p4)(void))
-{
-    if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8)) {
-#ifdef __WIN32__
-        if (*p3 != 1)
-            Keep4_3Ratio = 1;
-#endif
-        *p3 ^= 1;
-#ifdef __WIN32__
-        p4();
-#endif
-    }
-}
-
 static void GUIClickCButtonM(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3)
 {
     if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8)) {
@@ -231,21 +218,6 @@ static bool GUIClickCButton5(s4 const eax, s4 const edx, s4 const p1, s4 const p
         *p3 = *p3 == p4 ? *p3 ^ p4 : p4;
         return true;
     }
-    return false;
-}
-
-static bool GUIClickCButton6(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3, u1 const p4)
-{
-    if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8)) {
-        if (*p3 == p4) {
-            *p3 = 0;
-        } else {
-            *p3 = p4;
-            memset(vidbufferofsb, 0, 288 * 128 * 4);
-        }
-        return true;
-    }
-
     return false;
 }
 
@@ -925,6 +897,25 @@ static void DisplayGUIOptionClick(s4 const eax, s4 const edx)
     }
 }
 
+/* One of the mutually exclusive filter boxes: clicking the one that is on
+   turns it off, and everything the filters cannot be combined with is put
+   straight by VideoFilterToggle rather than by each box for itself. */
+static void GUIClickFilter(s4 const eax, s4 const edx, s4 const p1, s4 const p2,
+    VideoFilter const f)
+{
+    if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8)) {
+        VideoFilterToggle(f);
+    }
+}
+
+/* The hq box picks whichever level the radio buttons are set to. */
+static VideoFilter GUIHqFilter(void)
+{
+    return hqFilterlevel >= 4 ? VFILTER_HQ4X
+        : hqFilterlevel == 3  ? VFILTER_HQ3X
+                              : VFILTER_HQ2X;
+}
+
 static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
 {
     if (GUIVideoTabs[0] == 2) // Filters tab
@@ -938,8 +929,10 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
             {
                 // Bilinear
                 if (GUIBIFIL[cvidmode] != 0) {
-                    if (GUIClickArea(eax, edx, 18 + 1, row[FILT_ROW_TOP] + 3, 18 + 6, row[FILT_ROW_TOP] + 8))
-                        NTSCFilter = 0;
+                    if (GUIClickArea(eax, edx, 18 + 1, row[FILT_ROW_TOP] + 3, 18 + 6, row[FILT_ROW_TOP] + 8)
+                        && VideoFilterGet() == VFILTER_NTSC) {
+                        VideoFilterSet(VFILTER_NONE);
+                    }
                     GUIClickCButtonI(eax, edx, 18, row[FILT_ROW_TOP], &BilinearFilter);
                 } else {
                     // Interpolations
@@ -950,52 +943,34 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
 #endif
                     {
                         if (GUIClickArea(eax, edx, 18 + 1, row[FILT_ROW_TOP] + 3, 18 + 6, row[FILT_ROW_TOP] + 8)) {
-                            hqFilter = 0;
-                            NTSCFilter = 0;
-                            En2xSaI = 0;
+                            antienab ^= 1;
+                            if (antienab) {
+                                VideoFilterSet(VFILTER_NONE);
+                                antienab = 1; // VideoFilterSet clears it
+                            }
                         }
-                        GUIClickCButton(eax, edx, 18, row[FILT_ROW_TOP], &antienab);
                     }
                 }
 
                 // NTSC filter
                 if (GUINTVID[cvidmode] != 0) {
-                    if (GUIClickArea(eax, edx, 128 + 1, row[FILT_ROW_TOP] + 3, 128 + 6, row[FILT_ROW_TOP] + 8)) {
-                        En2xSaI = 0;
-                        hqFilter = 0;
-                        scanlines = 0;
-                        antienab = 0;
-                    }
+                    if (GUIClickArea(eax, edx, 128 + 1, row[FILT_ROW_TOP] + 3, 128 + 6, row[FILT_ROW_TOP] + 8)
+                        && VideoFilterGet() != VFILTER_NTSC) {
 #ifdef __OPENGL__
-                    if (GUIClickArea(eax, edx, 128 + 1, row[FILT_ROW_TOP] + 3, 128 + 6, row[FILT_ROW_TOP] + 8))
                         BilinearFilter = 0;
 #endif
-                    GUIClickCButtonN(eax, edx, 128, row[FILT_ROW_TOP], &NTSCFilter, NTSCFilterInit);
+#ifdef __WIN32__
+                        Keep4_3Ratio = 1;
+#endif
+                    }
+                    GUIClickFilter(eax, edx, 128, row[FILT_ROW_TOP], VFILTER_NTSC);
                 }
 
                 // Kreed 2x filters
                 if (GUIDSIZE[cvidmode] != 0) {
-                    if (GUIClickArea(eax, edx, 18 + 1, row[FILT_ROW_SAI1] + 3, 18 + 6, row[FILT_ROW_SAI1] + 8)) {
-                        hqFilter = 0;
-                        scanlines = 0;
-                        antienab = 0;
-                        NTSCFilter = 0;
-                    }
-                    if (GUIClickArea(eax, edx, 128 + 1, row[FILT_ROW_SAI1] + 3, 128 + 6, row[FILT_ROW_SAI1] + 8)) {
-                        hqFilter = 0;
-                        scanlines = 0;
-                        antienab = 0;
-                        NTSCFilter = 0;
-                    }
-                    if (GUIClickArea(eax, edx, 18 + 1, row[FILT_ROW_SAI2] + 3, 18 + 6, row[FILT_ROW_SAI2] + 8)) {
-                        hqFilter = 0;
-                        scanlines = 0;
-                        antienab = 0;
-                        NTSCFilter = 0;
-                    }
-                    GUIClickCButton6(eax, edx, 18, row[FILT_ROW_SAI1], &En2xSaI, 1);
-                    GUIClickCButton6(eax, edx, 128, row[FILT_ROW_SAI1], &En2xSaI, 2);
-                    GUIClickCButton6(eax, edx, 18, row[FILT_ROW_SAI2], &En2xSaI, 3);
+                    GUIClickFilter(eax, edx, 18, row[FILT_ROW_SAI1], VFILTER_2XSAI);
+                    GUIClickFilter(eax, edx, 128, row[FILT_ROW_SAI1], VFILTER_SUPEREAGLE);
+                    GUIClickFilter(eax, edx, 18, row[FILT_ROW_SAI2], VFILTER_SUPER2XSAI);
                 }
 
                 u1 const bl = cvidmode; // Hq*x filters
@@ -1011,13 +986,7 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
                 if (GUIHQ2X[bl] != 0) {
                 radiobuttonhq2x:
                     GUIPButtonHole(eax, edx, 128, row[FILT_ROW_HQLEVEL], &hqFilterlevel, 2);
-                    if (GUIClickArea(eax, edx, 128 + 1, row[FILT_ROW_SAI2] + 3, 128 + 6, row[FILT_ROW_SAI2] + 8)) {
-                        En2xSaI = 0;
-                        scanlines = 0;
-                        antienab = 0;
-                        NTSCFilter = 0;
-                    }
-                    GUIClickCButton(eax, edx, 128, row[FILT_ROW_SAI2], &hqFilter);
+                    GUIClickFilter(eax, edx, 128, row[FILT_ROW_SAI2], GUIHqFilter());
                 }
             }
 
@@ -1255,9 +1224,7 @@ static void DisplayGUIVideoClick(s4 const eax, s4 const edx)
             for (i = 0; i < 4; i++) {
                 /* A scanline step turns off what it cannot combine with. */
                 if (GUIClickArea(eax, edx, stepX[i] + 1, y + 3, stepX[i] + 38, y + 8)) {
-                    En2xSaI = 0;
-                    hqFilter = 0;
-                    NTSCFilter = 0;
+                    VideoFilterSet(VFILTER_NONE);
                 }
                 GUIPButtonHoleS(eax, edx, stepX[i], y, &scanlines, stepV[i]);
             }

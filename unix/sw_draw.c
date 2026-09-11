@@ -4,6 +4,7 @@
 #include "../link.h"
 #include "../ui.h"
 #include "../video/copyvwin.h"
+#include "../video/filter.h"
 #include "cfg.h"
 #include "sdllink.h"
 #include <stdint.h>
@@ -14,6 +15,11 @@ extern SDL_Window* sdl_window;
 extern SDL_Surface* surface;
 extern int SurfaceLocking;
 static SDL_Surface* render_surface = NULL; // 16-bit RGB565 surface for emulator output
+/* Where a filter draws, at its own size rather than the window's. The window
+   surface is whatever size the user picked, and a filter that had to match it
+   was either unreachable or wrote past the end of it; scaling on the way out
+   is what the accelerated path already does. */
+static SDL_Surface* filter_surface = NULL;
 
 extern uint8_t curblank;
 extern int frametot;
@@ -36,6 +42,10 @@ int sw_start(int width, int height, int req_depth, int FullScreen)
     SurfaceX = width;
     SurfaceY = height;
 
+    if (filter_surface) {
+        SDL_DestroySurface(filter_surface);
+        filter_surface = NULL;
+    }
     if (render_surface) {
         SDL_DestroySurface(render_surface);
         render_surface = NULL;
@@ -77,6 +87,10 @@ int sw_start(int width, int height, int req_depth, int FullScreen)
 
 void sw_end(void)
 {
+    if (filter_surface) {
+        SDL_DestroySurface(filter_surface);
+        filter_surface = NULL;
+    }
     if (render_surface) {
         SDL_DestroySurface(render_surface);
         render_surface = NULL;
@@ -96,42 +110,89 @@ static void LockSurface(void)
     }
 }
 
+/* Put a finished picture on the screen, scaled to the window if it is not
+   already the same size. That is the ordinary case once a filter is on, and
+   fullscreen, where the picture rarely divides into the panel a whole number
+   of times: at 448 rows into 1200 some source rows land on two and some on
+   three, and nearest neighbour shows that as a coarse line pattern that crawls
+   over anything moving. Honour the bilinear setting here as the other paths
+   do. */
+static void sw_present(SDL_Surface* const src)
+{
+    SDL_Surface* const win_surface = SDL_GetWindowSurface(sdl_window);
+
+    if (!win_surface) {
+        return;
+    }
+    if (win_surface->w != src->w || win_surface->h != src->h) {
+        extern u1 BilinearFilter;
+
+        SDL_BlitSurfaceScaled(src, NULL, win_surface, NULL,
+            BilinearFilter ? SDL_SCALEMODE_LINEAR : SDL_SCALEMODE_NEAREST);
+    } else {
+        SDL_BlitSurface(src, NULL, win_surface, NULL);
+    }
+#ifdef ZSNES_DEBUG_HOOKS
+    if (ZSnesFrameDumpWanted()) {
+        ZSnesFrameDumpSurface(win_surface, "sw");
+    }
+#endif
+    SDL_UpdateWindowSurface(sdl_window);
+}
+
 static void UnlockSurface(void)
 {
     if (SurfaceLocking) {
         SDL_UnlockSurface(surface);
     }
-    // Blit the 16-bit render surface to the window surface (with format conversion)
-    SDL_Surface* win_surface = SDL_GetWindowSurface(sdl_window);
-    if (win_surface) {
-        if (win_surface->w != render_surface->w || win_surface->h != render_surface->h) {
-            /* Fullscreen, where the picture rarely divides into the panel a
-               whole number of times: at 448 rows into 1200 some source rows
-               land on two and some on three, and nearest neighbour shows that
-               as a coarse line pattern that crawls over anything moving. Honour
-               the bilinear setting here as the other paths do. */
-            extern u1 BilinearFilter;
-
-            SDL_BlitSurfaceScaled(render_surface, NULL, win_surface, NULL,
-                BilinearFilter ? SDL_SCALEMODE_LINEAR : SDL_SCALEMODE_NEAREST);
-        } else {
-            SDL_BlitSurface(render_surface, NULL, win_surface, NULL);
-        }
-#ifdef ZSNES_DEBUG_HOOKS
-        if (ZSnesFrameDumpWanted()) {
-            ZSnesFrameDumpSurface(win_surface, "sw");
-        }
-#endif
-        SDL_UpdateWindowSurface(sdl_window);
-    }
+    sw_present(render_surface);
 }
 
 extern uint32_t NGNoTransp; /* a dword where it is defined (video/c_newgfx16data.c) */
 extern uint16_t resolutn;
-void hq2x_16b(void);
-void hq3x_16b(void);
-void hq4x_16b(void);
 uint32_t pitch;
+
+/* Somewhere the size of the filter's own picture, remade when that changes. */
+static SDL_Surface* sw_filter_surface(int const w, int const h)
+{
+    if (filter_surface && (filter_surface->w != w || filter_surface->h != h)) {
+        SDL_DestroySurface(filter_surface);
+        filter_surface = NULL;
+    }
+    if (!filter_surface) {
+        filter_surface = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_RGB565);
+    }
+    return filter_surface;
+}
+
+/* Non-zero once the filtered frame is on the screen. */
+static int sw_draw_filtered(void)
+{
+    VideoFilter const filter = VideoFilterGet();
+    VideoFilterPicture const pic = VideoFilterOutput(filter);
+    SDL_Surface* fs;
+    int drawn;
+
+    if (filter == VFILTER_NONE) {
+        return 0;
+    }
+    fs = sw_filter_surface(pic.w, pic.h);
+    if (!fs) {
+        return 0;
+    }
+    if (SDL_MUSTLOCK(fs)) {
+        SDL_LockSurface(fs);
+    }
+    drawn = VideoFilterDraw(filter, fs->pixels, fs->pitch,
+        (size_t)fs->pitch * (size_t)fs->h);
+    if (SDL_MUSTLOCK(fs)) {
+        SDL_UnlockSurface(fs);
+    }
+    if (drawn) {
+        sw_present(fs);
+    }
+    return drawn;
+}
 
 void sw_clearwin(void)
 {
@@ -167,6 +228,13 @@ void sw_drawwin(void)
         }
     }
 
+    /* A filter draws at its own size and is scaled to the window, so every
+       filter is available in every video mode rather than only in the one
+       whose surface happened to match. */
+    if (sw_draw_filtered()) {
+        return;
+    }
+
     LockSurface();
 
     ScreenPtr = vidbuffer;
@@ -188,42 +256,16 @@ void sw_drawwin(void)
         DrawWin256x224x16();
     } else if (SurfaceX == 320 && SurfaceY == 240) {
         DrawWin320x240x16();
-    } else if ((SurfaceX == 512 && SurfaceY == 448)) {
+    } else if (SurfaceX == 512 && SurfaceY == 448) {
         AddEndBytes = pitch - 1024;
         NumBytesPerLine = pitch;
         WinVidMemStart = SurfBufD;
-
-        if (hqFilter) {
-            /* A 2x surface, so 2x is the only level that fits here; 3x has a
-               block of its own below and 4x is still a doubler. */
-            hq2x_16b();
-        } else {
-            copy640x480x16bwin();
-        }
-    } else if ((SurfaceX == 602) && NTSCFilter) {
-        AddEndBytes = pitch - 1024;
-        NumBytesPerLine = pitch;
-        WinVidMemStart = SurfBufD;
-
-        NTSCFilterDraw(SurfaceX, SurfaceY, pitch, WinVidMemStart);
-    } else if (SurfaceX == 768 && SurfaceY == 672 && hqFilter
-        && hqFilterlevel >= 3) {
-        AddEndBytes = pitch - 1536;
-        NumBytesPerLine = pitch;
-        WinVidMemStart = SurfBufD;
-
-        hq3x_16b();
+        copy640x480x16bwin();
     } else if (SurfaceX == 640 && SurfaceY == 480) {
         AddEndBytes = pitch - 1024;
         NumBytesPerLine = pitch;
         WinVidMemStart = SurfBufD + 16 * 640 * 2 + 64 * 2;
-        if (hqFilter) {
-            hq2x_16b();
-        } else if (NTSCFilter) {
-            NTSCFilterDraw(SurfaceX, SurfaceY, pitch, WinVidMemStart - 16 * 640 * 2 - 64 * 2);
-        } else {
-            copy640x480x16bwin();
-        }
+        copy640x480x16bwin();
     }
 
     UnlockSurface();

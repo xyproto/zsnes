@@ -22,6 +22,7 @@
 #include "../ui.h"
 #include "../vcache.h"
 #include "../video/c_mode716.h"
+#include "../video/filter.h"
 #include "../video/makevid.h"
 #include "../video/procvid.h"
 #include "../video/procvidc.h"
@@ -1118,16 +1119,7 @@ void StartGUI(void)
         En2xSaI = 0;
         hqFilter = 0;
     }
-    if (En2xSaI != 0) {
-        hqFilter = 0;
-        scanlines = 0;
-        antienab = 0;
-    }
-    if (hqFilter != 0) {
-        En2xSaI = 0;
-        scanlines = 0;
-        antienab = 0;
-    }
+    VideoFilterNormalise();
 
     memset(SpecialLine, 0, sizeof(SpecialLine));
 

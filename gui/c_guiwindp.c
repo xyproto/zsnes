@@ -27,6 +27,7 @@
 #include "../net/netplay.h"
 #include "../ui.h"
 #include "../ver.h"
+#include "../video/filter.h"
 #include "../zmovie.h"
 #include "../zpath.h"
 #include "../zstate.h"
@@ -1023,18 +1024,7 @@ void DisplayGUIVideo(void)
         En2xSaI = 0;
         hqFilter = 0;
     }
-
-    if (En2xSaI != 0) {
-        hqFilter = 0;
-        scanlines = 0;
-        antienab = 0;
-    }
-
-    if (hqFilter != 0) {
-        En2xSaI = 0;
-        scanlines = 0;
-        antienab = 0;
-    }
+    VideoFilterNormalise();
 
     GUIDrawWindowBox(5, "VIDEO CONFIG");
 

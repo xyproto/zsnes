@@ -435,7 +435,8 @@ u1 GUIHQ4X[] = { _, _, X, X, X, _, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, 
 u1 GUII2VID[] = { _, _, X, X, X, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ };
 u1 GUIKEEP43[] = { _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, X, _, _, X, X };
 u1 GUIM7VID[] = { _, _, X, X, X, _, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X };
-u1 GUINTVID[] = { _, _, X, X, X, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ };
+/* NTSC was software-only for the same reason, and follows the others now. */
+u1 GUINTVID[] = { _, _, X, X, X, _, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X, X };
 u1 GUIRESIZE[] = { _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, X, X, _ };
 u1 GUIWFVID[] = { _, X, _, X, X, _, _, X, _, _, _, X, _, _, X, _, _, X, X, X, _, _, X };
 #undef X
