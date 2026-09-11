@@ -284,7 +284,7 @@ void GUIFilterForMode(void)
     VideoFilterNormalise();
 }
 
-/* Whether the CRT panel offers the 0..100 slider rather than the four fixed
+/* Whether the Retro panel offers the 0..100 slider rather than the four fixed
    steps the old setting names. Everything the SDL ports draw runs the shared
    tube pass (video/crt.c) and so takes the slider; the DirectDraw blitter
    dims alternate rows itself and only understands the steps. */

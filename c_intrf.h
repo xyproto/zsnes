@@ -130,6 +130,9 @@ char const* VideoMonitorName(u4 i);
 void VideoMonitorID(u4 i, char* out, u4 len);
 u4 VideoMonitorSelected(void);
 void VideoMonitorSelect(u4 i);
+/* Whether monitor `i` is in HDR mode; VideoMonitorHDR asks it of the chosen
+   one, which is the only monitor the picture can be on. */
+int VideoMonitorIsHDR(u4 i);
 int VideoMonitorHDR(void);
 
 // Input Device Names

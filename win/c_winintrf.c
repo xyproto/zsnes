@@ -219,6 +219,12 @@ void VideoMonitorSelect(u4 const i)
     (void)i;
 }
 
+int VideoMonitorIsHDR(u4 const i)
+{
+    (void)i;
+    return 0;
+}
+
 int VideoMonitorHDR(void)
 {
     return 0;

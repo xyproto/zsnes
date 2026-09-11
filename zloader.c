@@ -392,19 +392,27 @@ struct backup_cmdline_vars saved_cmdline_vars;
 
 /* Every saved setting the command line can override belongs here, or a one-off
    flag becomes permanent - the config is rewritten on exit from the running
-   values. */
-#define BACKUP_HELP(func)                                     \
-    func(guioff)                                              \
-        func(per2exec)                                        \
-            func(HacksDisable)                                \
-                func(soundon)                                 \
-                    func(antienab)                            \
-                        func(StereoSound)                     \
-                            func(cvidmode)                    \
-                                func(SoundQuality)            \
-                                    BACKUP_HELP_VSYNC(func)   \
-                                        BACKUP_HELP_WIN(func) \
-                                            BACKUP_HELP_SDL(func)
+   values. -n, -g, -k, -1 and -2 were missing, so each of them rewrote the
+   setting it was meant to override only for that run. The nesting is what the
+   formatter makes of a macro this long; the order does not matter. */
+#define BACKUP_HELP(func)                                                     \
+    func(guioff)                                                              \
+        func(per2exec)                                                        \
+            func(HacksDisable)                                                \
+                func(soundon)                                                 \
+                    func(antienab)                                            \
+                        func(StereoSound)                                     \
+                            func(cvidmode)                                    \
+                                func(SoundQuality)                            \
+                                    func(scanlines)                           \
+                                        func(sl_intensity)                    \
+                                            func(gammalevel)                  \
+                                                func(MusicRelVol)             \
+                                                    func(pl1contrl)           \
+                                                        func(pl2contrl)       \
+                                                            BACKUP_HELP_VSYNC(func) \
+                                                                BACKUP_HELP_WIN(func) \
+                                                                    BACKUP_HELP_SDL(func)
 
 #define BACKUP_VAR(var) saved_cmdline_vars._##var = var;
 static void backup_all_vars(void) {

@@ -373,7 +373,7 @@ void GUIStackLayout(GUIRow const* const rows, u4 const n, s4 const top,
     }
 }
 
-/* One description of where the CRT panel's rows sit. Each label sits directly
+/* One description of where the Retro panel's rows sit. Each label sits directly
    above the control it names, and the four groups are parted by gaps that take
    up whatever is left, so the panel stays balanced. */
 void GUICrtRows(s4 out[CRT_ROW_COUNT])
@@ -387,11 +387,7 @@ void GUICrtRows(s4 out[CRT_ROW_COUNT])
         { 0, GUI_EXPAND },
         { 10, GUI_ITEM }, /* BLOOM: */
         { 10, GUI_ITEM },
-        { 0, GUI_EXPAND },
-        { 8, GUI_ITEM }, /* OUTPUT: */
-        { 10, GUI_ITEM }, /* the HDR checkbox */
-        { 0, GUI_EXPAND },
-        { 30, GUI_ITEM } /* three lines of note */
+        { 0, GUI_EXPAND }
     };
 
     GUIStackLayout(rows, CRT_ROW_COUNT, 30, 178, out);
@@ -407,8 +403,11 @@ void GUIFilterRows(s4 out[FILT_ROW_COUNT])
         { 17, GUI_ITEM }, /* 2X / 3X / 4X */
         { 5, GUI_ITEM }, /* MISC FILTERS: */
         { 15, GUI_ITEM }, /* grayscale, hi-res mode 7 */
-        { 5, GUI_ITEM }, /* MONITOR SYNC: */
-        { 25, GUI_ITEM }, /* vsync, triple buffering */
+#ifdef __WIN32__
+        { 20, GUI_ITEM }, /* triple buffering */
+#else
+        { 0, GUI_ITEM }, /* nothing here where there is no triple buffering */
+#endif
         { 5, GUI_ITEM }, /* DISPLAY OPTIONS: */
         { 10, GUI_ITEM } /* keep 4:3 */
     };
@@ -421,8 +420,11 @@ void GUIMonitorRows(s4 out[MON_ROW_COUNT])
     static GUIRow const rows[MON_ROW_COUNT] = {
         { 12, GUI_ITEM }, /* OPEN ON MONITOR: */
         { MON_MAX * MON_PITCH, GUI_ITEM }, /* the list */
+        { 22, GUI_ITEM }, /* two lines of note about the list */
         { 0, GUI_EXPAND },
-        { 20, GUI_ITEM } /* two lines of note */
+        { 12, GUI_ITEM }, /* MONITOR SYNC: */
+        { 10, GUI_ITEM }, /* vsync */
+        { 0, GUI_EXPAND }
     };
 
     GUIStackLayout(rows, MON_ROW_COUNT, 30, 178, out);

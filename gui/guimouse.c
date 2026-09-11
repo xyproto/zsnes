@@ -40,6 +40,10 @@
 #include "../video/ntsc.h"
 #include "../video/procvidc.h"
 
+#if defined __UNIXSDL__ && defined __OPENGL__
+#include "../unix/gl_draw.h"
+#endif
+
 #ifdef __WIN32__
 #include "../win/winlink.h"
 #endif
@@ -998,16 +1002,10 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
                 GUIClickCButton5(eax, edx, 128, row[FILT_ROW_MISC], &Mode7HiRes16b, 1);
 
 #ifdef __WIN32__
-            // Triple buffs/vsyncs
+            // Triple buffering. VSync is on the Monitors panel.
             if (GUIWFVID[cvidmode] != 0) {
-                GUIClickCButtonf(eax, edx, 128, row[FILT_ROW_SYNC], &TripleBufferWin, initDirectDraw);
+                GUIClickCButtonf(eax, edx, 18, row[FILT_ROW_SYNC], &TripleBufferWin, initDirectDraw);
             }
-            GUIClickCButtonf(eax, edx, 18, row[FILT_ROW_SYNC], &vsyncon, initDirectDraw);
-#endif
-
-#ifdef __OPENGL__
-            if (GUIBIFIL[cvidmode] != 0)
-                GUIClickCButtonI(eax, edx, 18, row[FILT_ROW_SYNC], &vsyncon);
 #endif
 
             // Keep 4:3 Ratio
@@ -1198,7 +1196,7 @@ static void DisplayGUIVideoClick(s4 const eax, s4 const edx)
         GUITabRowClick(eax, edx, GUIVntscTab, next, GUIVideoTabs);
     }
 
-    if (GUIVideoTabs[0] == 3) { // CRT tab
+    if (GUIVideoTabs[0] == 3) { // Retro tab
         /* Read the pointer afresh rather than trusting the arguments: while a
            bar is held, ProcessMouse re-enters here as DisplayGUIVideoClick(0,
            0) and moves the pointer itself, so the passed-in position is not the
@@ -1264,6 +1262,14 @@ static void DisplayGUIVideoClick(s4 const eax, s4 const edx)
                 VideoMonitorSelect(i); /* stores the ID, not the position */
             }
         }
+
+#ifdef __WIN32__
+        GUIClickCButtonf(eax, edx, 18, row[MON_ROW_SYNC], &vsyncon, initDirectDraw);
+#elif defined __OPENGL__
+        if (allow_glvsync == 1 && GUIBIFIL[cvidmode] != 0) {
+            GUIClickCButtonI(eax, edx, 18, row[MON_ROW_SYNC], &vsyncon);
+        }
+#endif
     }
 
     if (GUIVideoTabs[0] == 1) { // SlideBar Implementation

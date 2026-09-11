@@ -3,7 +3,7 @@
  * Scanlines, the vibrancy that puts back the light they take out, and the
  * bloom bright areas spill - three passes over a 565 image and nothing else,
  * so every display path can run them over whatever it has just composed
- * instead of each backend growing its own. The settings are the CRT tab's
+ * instead of each backend growing its own. The settings are the Retro tab's
  * (sl_intensity, sl_vibrancy, BloomLevel, in cfg.psr).
  *
  * `pitch` is in pixels, not bytes, because a surface's rows are not always

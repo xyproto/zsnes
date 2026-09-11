@@ -1087,11 +1087,11 @@ void DisplayGUIVideo(void)
     }
 
     // Filters tab
-    if (GUIVideoTabs[0] == 3) { // CRT tab
+    if (GUIVideoTabs[0] == 3) { // Retro tab
         /* Everything that makes the picture look like a tube rather than a
-           panel, in the order it is applied: the beam, the light it costs, the
-           light bright areas spill, and where that spill is allowed to go.
-           Positions come from GUICrtRows, which the click handling reads too. */
+           panel, in the order it is applied: the beam, the light it costs, and
+           the light bright areas spill. Positions come from GUICrtRows, which
+           the click handling reads too. */
         s4 row[CRT_ROW_COUNT];
 
         GUICrtRows(row);
@@ -1119,15 +1119,6 @@ void DisplayGUIVideo(void)
         GUICrtFocusMark(row, CRT_FOCUS_BLOOM, CRT_ROW_BLOOM);
         GUIDrawSlider(5, 23, 100, (u4)row[CRT_ROW_BLOOM], &BloomLevel, glscslidSet,
             glscslidText);
-
-        /* HDR is not offered as a choice: it is used when the monitor is in
-           HDR mode and not otherwise, so all there is to say is which. */
-        GUIDisplayTextY(5, 13, (u4)row[CRT_ROW_OUTLABEL], "OUTPUT:");
-        GUIDisplayText(5, 18, (u4)row[CRT_ROW_HDR],
-            VideoMonitorHDR() ? "HDR: THIS MONITOR" : "HDR: MONITOR IS SDR");
-        GUIDisplayText(5, 13, (u4)row[CRT_ROW_NOTE], "BLOOM GOES ABOVE WHITE");
-        GUIDisplayText(5, 13, (u4)row[CRT_ROW_NOTE] + 10, "ON AN HDR MONITOR, AND");
-        GUIDisplayText(5, 13, (u4)row[CRT_ROW_NOTE] + 20, "IS CLIPPED ON AN SDR ONE.");
     }
 
     if (GUIVideoTabs[0] == 4) { // Monitors tab
@@ -1150,13 +1141,26 @@ void DisplayGUIVideo(void)
             char id[16], line[34];
 
             VideoMonitorID(i, id, (u4)sizeof(id));
-            snprintf(line, sizeof(line), "%-10.10s %.20s", id, VideoMonitorName(i));
+            /* HDR is not a choice, so the list only says which monitors have
+               it; nothing is said about the ones that do not. */
+            snprintf(line, sizeof(line), "%-10.10s %.14s%s", id,
+                VideoMonitorName(i), VideoMonitorIsHDR(i) ? " (HDR)" : "");
             GUIDisplayButtonHoleTu(5, 18, (u4)(row[MON_ROW_LIST] + (s4)i * MON_PITCH), &monitorrow, (u4)i,
                 line, 0);
         }
 
         GUIDisplayText(5, 13, (u4)row[MON_ROW_NOTE], "APPLIES ON SET,");
         GUIDisplayText(5, 13, (u4)row[MON_ROW_NOTE] + 10, "IN THE MODES TAB.");
+
+#if !defined __UNIXSDL__ || defined __OPENGL__
+#ifdef __UNIXSDL__
+        if (allow_glvsync == 1 && GUIBIFIL[cvidmode] != 0)
+#endif
+        {
+            GUIDisplayTextY(5, 13, (u4)row[MON_ROW_SYNCLABEL], "MONITOR SYNC:");
+            GUIDisplayCheckboxu(5, 18, (u4)row[MON_ROW_SYNC], &vsyncon, "VSYNC", 0); // -w
+        }
+#endif
     }
 
     if (GUIVideoTabs[0] == 2) {
@@ -1219,25 +1223,11 @@ void DisplayGUIVideo(void)
             GUIDisplayCheckboxu(5, 128, (u4)row[FILT_ROW_MISC], &Mode7HiRes16b, "HI-RES MODE 7", 0);
         }
 
-        // Monitor Refresh
-        // VSync
-#if !defined __UNIXSDL__ || defined __OPENGL__
-#ifdef __UNIXSDL__
-        if (allow_glvsync == 1 && GUIBIFIL[cvidmode] != 0)
-#endif
-        {
-            GUIDisplayTextY(5, 13, (u4)row[FILT_ROW_SYNCLABEL], "MONITOR SYNC:"); // Video.Sync
-            GUIDisplayCheckboxu(5, 18, (u4)row[FILT_ROW_SYNC], &vsyncon, "VSYNC", 0); // -w
-        }
-#endif
-
-        // Triple Buffering
-#ifndef __UNIXSDL__
-        char const* const GUIVideoTextB4b = "TRIPLE BUFFERING"; // -3
-#endif
+        // Triple Buffering. VSync sits with the monitor it syncs to.
 #ifdef __WIN32__
         if (GUIWFVID[cvidmode] != 0) {
-            GUIDisplayCheckboxu(5, 128, (u4)row[FILT_ROW_SYNC], &TripleBufferWin, GUIVideoTextB4b, 0);
+            GUIDisplayCheckboxu(5, 18, (u4)row[FILT_ROW_SYNC], &TripleBufferWin,
+                "TRIPLE BUFFERING", 0); // -3
         }
 #endif
 

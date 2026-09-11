@@ -427,7 +427,7 @@ static void GUIVideoKeys(char dh, char const dl)
 
     dh = ToUpperASM(dh);
 
-    if (GUIVideoTabs[0] == 3) { // CRT tab: up/down pick a slider, left/right work it
+    if (GUIVideoTabs[0] == 3) { // Retro tab: up/down pick a slider, left/right work it
         u1* const bar[CRT_FOCUS_COUNT]
             = { &sl_intensity, &sl_vibrancy, &BloomLevel };
         u1* const cur = bar[GUIFocus < CRT_FOCUS_COUNT ? GUIFocus : 0];
@@ -462,6 +462,16 @@ static void GUIVideoKeys(char dh, char const dl)
             } else {
                 *cur = v;
             }
+        }
+
+        /* The four steps the setting has always named, as shortcuts. They used
+           to answer on the Filters tab, which has no scanline control on it.
+           '2' used to be tested as '5' as well, so it could not be reached. */
+        if (dh == 'O' || dh == 'F' || dh == '5' || dh == '2') {
+            VideoFilterSet(VFILTER_NONE);
+            GUISetScanlineStep(dh == 'F' ? 1 : dh == '2' ? 2
+                    : dh == '5'                          ? 3
+                                                         : 0);
         }
     }
 
@@ -610,25 +620,6 @@ static void GUIVideoKeys(char dh, char const dl)
                     VideoFilterSet(VFILTER_HQ4X);
                 }
             }
-
-            if (GUIDSIZE[cvidmode] != 0) {
-                GUIKeyButtonHole(&scanlines, 0, 'O', dh);
-                if (dh == 'F') {
-                    VideoFilterSet(VFILTER_NONE);
-                    scanlines = 1;
-                }
-            }
-
-            {
-                if (GUIDSIZE[cvidmode] != 0) {
-                    /* 50% and 25%; '2' used to be tested as '5' as well, so
-                       the 25% step could not be reached from the keyboard. */
-                    if (dh == '5' || dh == '2') {
-                        VideoFilterSet(VFILTER_NONE);
-                        scanlines = dh == '5' ? 3 : 2;
-                    }
-                }
-            }
         }
         GUIKeyCheckbox(&GrayscaleMode, 'G', dh);
 
@@ -636,24 +627,6 @@ static void GUIVideoKeys(char dh, char const dl)
             if (GUIM7VID[cvidmode] != 0)
                 Mode7HiRes16b ^= 1;
         }
-
-#if !defined __UNIXSDL__ || defined __OPENGL__
-        if (dh == 'V') {
-#ifdef __UNIXSDL__
-            if (allow_glvsync == 1 && GUIBIFIL[cvidmode] != 0)
-#endif
-            {
-                vsyncon ^= 1;
-#ifdef __WIN32__
-                initDirectDraw();
-                Clear2xSaIBuffer();
-#elif defined __OPENGL__
-                initwinvideo();
-                Clear2xSaIBuffer();
-#endif
-            }
-        }
-#endif
 
 #ifndef __UNIXSDL__
         if (dh == 'T') {
@@ -681,6 +654,23 @@ static void GUIVideoKeys(char dh, char const dl)
             }
         }
     }
+
+#if !defined __UNIXSDL__ || defined __OPENGL__
+    if (GUIVideoTabs[0] == 4 && dh == 'V') { // Monitors tab
+#ifdef __UNIXSDL__
+        if (allow_glvsync == 1 && GUIBIFIL[cvidmode] != 0)
+#endif
+        {
+            vsyncon ^= 1;
+#ifdef __WIN32__
+            initDirectDraw();
+#elif defined __OPENGL__
+            initwinvideo();
+#endif
+            Clear2xSaIBuffer();
+        }
+    }
+#endif
 
     if ((s4)GUIVntscTab[0] >= 1) {
         GUIKeyCheckbox(&NTSCBlend, 'B', dh);

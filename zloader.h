@@ -20,6 +20,12 @@ struct backup_cmdline_vars {
     unsigned char _StereoSound;
     unsigned char _cvidmode;
     unsigned int _SoundQuality;
+    unsigned char _scanlines;
+    unsigned char _sl_intensity;
+    unsigned char _gammalevel;
+    unsigned char _MusicRelVol;
+    unsigned char _pl1contrl;
+    unsigned char _pl2contrl;
 };
 
 extern struct backup_cmdline_vars saved_cmdline_vars;

@@ -103,11 +103,14 @@ u1 GUIQuit;
 u1 GUIReset;
 u4 GUIScrolTim1;
 u4 GUIScrolTim2;
-/* Active tab, tab count, then the labels packed one after another: "MODES",
-   "FILTERS", "CRT", "MONITORS". GUIDrawTabs reads the first two as dwords. */
-char GUIVideoTabs[40] = { 1, 0, 0, 0, 4, 0, 0, 0, 77, 79, 68, 69, 83, 0, 70, 73,
-    76, 84, 69, 82, 83, 0, 67, 82, 84, 0, 77, 79, 78, 73, 84, 79, 82, 83, 0, 0,
-    0, 0, 0, 0 };
+/* Active tab, tab count, then the labels packed one after another.
+   GUIDrawTabs reads the first two as dwords. */
+char GUIVideoTabs[40] = { 1, 0, 0, 0, 4, 0, 0, 0,
+    'M', 'O', 'D', 'E', 'S', 0,
+    'F', 'I', 'L', 'T', 'E', 'R', 'S', 0,
+    'R', 'E', 'T', 'R', 'O', 0,
+    'M', 'O', 'N', 'I', 'T', 'O', 'R', 'S', 0,
+    0, 0, 0 };
 char GUIVntscTab[22] = { 0, 0, 0, 0, 2, 0, 0, 0, 78, 84, 83, 67, 0, 65, 68, 86, 0, 0, 0, 0, 0, 0 };
 u4 GUIccombcursloc;
 u4 GUIccomblcursloc;

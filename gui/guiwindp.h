@@ -79,7 +79,7 @@ typedef struct {
 /* Place `n` rows between `top` and `bottom`, writing every row's y into out. */
 void GUIStackLayout(GUIRow const* rows, u4 n, s4 top, s4 bottom, s4* out);
 
-/* The CRT panel's rows, in the order they are stacked. Both DisplayGUIVideo
+/* The Retro panel's rows, in the order they are stacked. Both DisplayGUIVideo
    and DisplayGUIVideoClick lay this out and read the same answers. */
 enum {
     CRT_ROW_SCANLABEL,
@@ -91,10 +91,6 @@ enum {
     CRT_ROW_BLOOMLABEL,
     CRT_ROW_BLOOM,
     CRT_GAP3,
-    CRT_ROW_OUTLABEL,
-    CRT_ROW_HDR,
-    CRT_GAP4,
-    CRT_ROW_NOTE,
     CRT_ROW_COUNT
 };
 
@@ -111,8 +107,7 @@ enum {
     FILT_ROW_HQLEVEL,
     FILT_ROW_MISCLABEL,
     FILT_ROW_MISC,
-    FILT_ROW_SYNCLABEL,
-    FILT_ROW_SYNC,
+    FILT_ROW_SYNC, /* triple buffering; vsync lives on the Monitors panel */
     FILT_ROW_DISPLABEL,
     FILT_ROW_DISP,
     FILT_ROW_COUNT
@@ -125,8 +120,11 @@ enum { MON_PITCH = 12,
     MON_MAX = 6 };
 enum { MON_ROW_LABEL,
     MON_ROW_LIST,
-    MON_GAP,
     MON_ROW_NOTE,
+    MON_GAP,
+    MON_ROW_SYNCLABEL,
+    MON_ROW_SYNC,
+    MON_GAP2,
     MON_ROW_COUNT };
 
 void GUIMonitorRows(s4 out[MON_ROW_COUNT]);
@@ -240,7 +238,7 @@ s4 GUISaveSlotX(u4 col);
    panels that have no focusable rows simply ignore it. */
 extern u1 GUIFocus;
 
-/* The CRT panel's focusable rows, in the order up and down walk them. */
+/* The Retro panel's focusable rows, in the order up and down walk them. */
 enum { CRT_FOCUS_SCANLINES,
     CRT_FOCUS_VIBRANCY,
     CRT_FOCUS_BLOOM,
