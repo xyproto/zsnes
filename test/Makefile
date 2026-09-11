@@ -56,6 +56,7 @@ SPC7110   := zsnes_7110_test
 VCACHE    := zsnes_vcache_test
 SPRITES   := zsnes_sprites_test
 HQX       := zsnes_hqx_test
+FILTER    := zsnes_filter_test
 SRC       := main.c
 NETPLAY_SRC := netplay_test.c ../net/packet.c
 ST10_SRC  := st10_test.c
@@ -69,6 +70,7 @@ SPC7110_SRC := 7110_test.c
 VCACHE_SRC := vcache_test.c
 SPRITES_SRC := sprites_test.c
 HQX_SRC   := hqx_test.c
+FILTER_SRC := filter_test.c ../video/filter.c ../video/c_hqx.c ../video/2xsaiw.c ../video/ntsc.c
 C4        := zsnes_c4_test
 C4_SRC    := c4proc_test.c
 MODE7     := zsnes_mode716b_test
@@ -96,7 +98,7 @@ OBJS      := $(PBUILD)/zpath.o
 
 .PHONY: all run clean spc64 2xsai bgt procwin spcdec fxtable fxops memops m7calc m7ext2 m7start m7win m7bw m7proc m7draw mv16 mvs mvall m716t cb16t cb16b spr16bt spr16t spr16p t8bt t16bt t8t t16t t8to thi mos sprwin ngspr regs sa1regs ngeng ngframe op sa1op dbgop transp ng2
 
-all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(HQX) $(C4) $(MODE7) $(ASMDATA)
+all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(HQX) $(FILTER) $(C4) $(MODE7) $(ASMDATA)
 
 $(BIN): $(SRC) zstest.h $(OBJS)
 	$(CC) $(CFLAGS) $(SRC) $(OBJS) $(NOPIE) $(GCSECT) -o $(BIN)
@@ -146,6 +148,11 @@ $(VCACHE): $(VCACHE_SRC) zstest.h ../video/tilecache.c
 # reach the interpolation helpers, which are static and carry the filter maths.
 $(HQX): $(HQX_SRC) zstest.h ../video/c_hqx.c $(PBUILD)/zpath.o
 	$(CC) $(CFLAGS) -I$(PBUILD) $(HQX_SRC) $(NOPIE) -o $(HQX)
+
+# The filter front end, linked against the filters it dispatches to. Its own
+# copies of the cfg variables stand in for the generated cfg.o.
+$(FILTER): $(FILTER_SRC) zstest.h ../video/filter.h $(PBUILD)/zpath.o
+	$(CC) $(CFLAGS) -I$(PBUILD) $(FILTER_SRC) $(NOPIE) -lm -o $(FILTER)
 
 $(SPRITES): $(SPRITES_SRC) zstest.h ../video/sprites.c
 	$(CC) $(CFLAGS) -ffunction-sections -fdata-sections $(SPRITES_SRC) ../video/sprites.c $(NOPIE) $(GCSECT) -o $(SPRITES)
@@ -516,6 +523,7 @@ run: all
 	@./$(VCACHE)
 	@./$(SPRITES)
 	@./$(HQX)
+	@./$(FILTER)
 	@./$(C4)
 	@./$(MODE7)
 	@./$(ASMDATA)
@@ -531,7 +539,7 @@ spc64: spc64_test.c ../cpu/spc_ops.h ../cpu/spc_ioregs.h
 	  else echo "spc700 32 vs 64: FAIL"; echo "  m32 $$a"; echo "  m64 $$b"; exit 1; fi
 
 clean:
-	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(HQX) $(C4) $(MODE7) $(ASMDATA)
+	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(HQX) $(FILTER) $(C4) $(MODE7) $(ASMDATA)
 	rm -f zsnes_spc32_test zsnes_spc64_test
 	rm -f difftest_procwin difftest_spcdec difftest_fxtable difftest_fxops difftest_memops difftest_m7calc difftest_m7ext2 difftest_m7start difftest_m7win difftest_m7bw difftest_m7proc difftest_m7draw difftest_mv16 difftest_mvs difftest_regs difftest_2xsai _*.o _*.asm _*.inc _*.raw
 	rm -fr $(PBUILD)
