@@ -4,6 +4,7 @@
 #include "../link.h"
 #include "../ui.h"
 #include "../video/copyvwin.h"
+#include "../video/crt.h"
 #include "../video/filter.h"
 #include "cfg.h"
 #include "sdllink.h"
@@ -185,6 +186,13 @@ static int sw_draw_filtered(void)
     }
     drawn = VideoFilterDraw(filter, fs->pixels, fs->pitch,
         (size_t)fs->pitch * (size_t)fs->h);
+    if (drawn) {
+        /* The same tube pass the accelerated path runs. The NTSC filter dims
+           its own alternate rows, so it gets the brightness and the bloom but
+           not the beam. */
+        CrtPass(fs->pixels, pic.w, pic.h, fs->pitch / 2, pic.scale,
+            sl_intensity != 0 && filter != VFILTER_NTSC);
+    }
     if (SDL_MUSTLOCK(fs)) {
         SDL_UnlockSurface(fs);
     }
@@ -252,21 +260,39 @@ void sw_drawwin(void)
         return;
     }
 
-    if (SurfaceX == 256 && SurfaceY == 224) {
-        DrawWin256x224x16();
-    } else if (SurfaceX == 320 && SurfaceY == 240) {
-        DrawWin320x240x16();
-    } else if (SurfaceX == 512 && SurfaceY == 448) {
-        AddEndBytes = pitch - 1024;
-        NumBytesPerLine = pitch;
-        WinVidMemStart = SurfBufD;
-        copy640x480x16bwin();
-    } else if (SurfaceX == 640 && SurfaceY == 480) {
-        AddEndBytes = pitch - 1024;
-        NumBytesPerLine = pitch;
-        WinVidMemStart = SurfBufD + 16 * 640 * 2 + 64 * 2;
-        copy640x480x16bwin();
+    {
+        /* Scanlines come from the shared tube pass here, as they do on the
+           accelerated path, so the blitter's own stepped dimming stands down
+           for the length of the call. The setting itself is untouched: it is
+           what the configuration file and -n hold, and what the DirectDraw
+           blitter still draws from. */
+        u1 const stepped = scanlines;
+
+        scanlines = 0;
+        if (SurfaceX == 256 && SurfaceY == 224) {
+            DrawWin256x224x16();
+        } else if (SurfaceX == 320 && SurfaceY == 240) {
+            DrawWin320x240x16();
+        } else if (SurfaceX == 512 && SurfaceY == 448) {
+            AddEndBytes = pitch - 1024;
+            NumBytesPerLine = pitch;
+            WinVidMemStart = SurfBufD;
+            copy640x480x16bwin();
+        } else if (SurfaceX == 640 && SurfaceY == 480) {
+            AddEndBytes = pitch - 1024;
+            NumBytesPerLine = pitch;
+            WinVidMemStart = SurfBufD + 16 * 640 * 2 + 64 * 2;
+            copy640x480x16bwin();
+        }
+        scanlines = stepped;
     }
+
+    /* Vibrancy and bloom are not accelerated-only. At 256x224 nothing is
+       doubled, so there is no gap for a beam to sit in and only the brightness
+       applies. */
+    CrtPass((u2*)SurfBufD, (int)SurfaceX, (int)SurfaceY, (int)(pitch / 2),
+        SurfaceY >= 2 * 224 ? 2 : 1,
+        sl_intensity != 0 && SurfaceY >= 2 * 224);
 
     UnlockSurface();
 }

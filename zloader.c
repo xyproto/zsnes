@@ -587,11 +587,11 @@ static void handle_params(int argc, char* argv[])
 
                 case 'n': // Enable scanlines (when available)
                     i++;
-                    if ((scanlines = zatoi(argv[i])) > 3) {
+                    if (zatoi(argv[i]) > 3) {
                         puts("Scanlines must be a value 0 to 3!");
                         zexit_error();
                     }
-                    sl_intensity = GUIScanlineIntensity(scanlines);
+                    GUISetScanlineStep((u1)zatoi(argv[i]));
                     break;
 
                 case 'p': // Percentage of instructions to execute

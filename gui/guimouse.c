@@ -450,13 +450,6 @@ static void GUIPButtonHole(s4 const eax, s4 const edx, s4 const p1, s4 const p2,
         *p3 = p4;
 }
 
-static void GUIPButtonHoleS(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3, u1 const p4)
-{
-    if (GUIClickArea(eax, edx, p1 + 1, p2 + 1, p1 + 7, p2 + 7)) {
-        *p3 = p4;
-    }
-}
-
 static void GUIPButtonHoleLoad(s4 const eax, s4 const edx, s4 const p1, s4 const p2, u1* const p3, u1 const p4)
 {
     if (GUIClickArea(eax, edx, p1 + 1, p2 + 1, p1 + 7, p2 + 7)) {
@@ -973,20 +966,28 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
                     GUIClickFilter(eax, edx, 18, row[FILT_ROW_SAI2], VFILTER_SUPER2XSAI);
                 }
 
-                u1 const bl = cvidmode; // Hq*x filters
-                if (GUIHQ4X[bl] != 0) {
-                    GUIPButtonHole(eax, edx, 188, row[FILT_ROW_HQLEVEL], &hqFilterlevel, 4);
-                    goto radiobuttonhq3x;
-                }
-                if (GUIHQ3X[bl] != 0) {
-                radiobuttonhq3x:
-                    GUIPButtonHole(eax, edx, 158, row[FILT_ROW_HQLEVEL], &hqFilterlevel, 3);
-                    goto radiobuttonhq2x;
-                }
-                if (GUIHQ2X[bl] != 0) {
-                radiobuttonhq2x:
-                    GUIPButtonHole(eax, edx, 128, row[FILT_ROW_HQLEVEL], &hqFilterlevel, 2);
+                // Hq*x filters
+                if (GUIHQ2X[cvidmode] != 0) {
                     GUIClickFilter(eax, edx, 128, row[FILT_ROW_SAI2], GUIHqFilter());
+                    /* The level buttons are drawn only while the filter is on,
+                       so they answer only then. They used to answer wherever
+                       the mode allowed them, which changed the level from a
+                       blank part of the panel. */
+                    if (hqFilter != 0) {
+                        s4 const y = row[FILT_ROW_HQLEVEL];
+
+                        if (GUIHQ4X[cvidmode] != 0
+                            && GUIClickArea(eax, edx, 188 + 1, y + 1, 188 + 7, y + 7)) {
+                            VideoFilterSet(VFILTER_HQ4X);
+                        }
+                        if (GUIHQ3X[cvidmode] != 0
+                            && GUIClickArea(eax, edx, 158 + 1, y + 1, 158 + 7, y + 7)) {
+                            VideoFilterSet(VFILTER_HQ3X);
+                        }
+                        if (GUIClickArea(eax, edx, 128 + 1, y + 1, 128 + 7, y + 7)) {
+                            VideoFilterSet(VFILTER_HQ2X);
+                        }
+                    }
                 }
             }
 
@@ -1216,25 +1217,32 @@ static void DisplayGUIVideoClick(s4 const eax, s4 const edx)
         barY[1] = row[CRT_ROW_VIB];
         barY[2] = row[CRT_ROW_BLOOM];
 
-        if (GUIBIFIL[cvidmode] == 0 && GUIDSIZE[cvidmode] != 0) {
+        if (!GUIScanlineSlider() && GUIDSIZE[cvidmode] != 0) {
             s4 const stepX[4] = { 18, 68, 118, 168 };
             u1 const stepV[4] = { 0, 2, 3, 1 };
             s4 const y = row[CRT_ROW_SCAN] - 2;
 
             for (i = 0; i < 4; i++) {
-                /* A scanline step turns off what it cannot combine with. */
-                if (GUIClickArea(eax, edx, stepX[i] + 1, y + 3, stepX[i] + 38, y + 8)) {
+                /* The hole and its label, which used to answer to two
+                   different rectangles - the label set the step and the hole
+                   only cleared the filter. */
+                if (GUIClickArea(eax, edx, stepX[i] + 1, y + 1, stepX[i] + 38, y + 8)) {
+                    /* A scanline step turns off what it cannot combine with. */
                     VideoFilterSet(VFILTER_NONE);
+                    GUISetScanlineStep(scanlines == stepV[i] ? 0 : stepV[i]);
                 }
-                GUIPButtonHoleS(eax, edx, stepX[i], y, &scanlines, stepV[i]);
             }
         }
         for (i = 0; i < 3; i++) {
-            if (i == 0 && GUIBIFIL[cvidmode] == 0) {
-                continue; /* software modes use the steps above instead */
+            if (i == 0 && !GUIScanlineSlider()) {
+                continue; /* the steps above stand in for the bar */
             }
             if (GUIClickArea(eax, edx, 23, barY[i] - 2, 23 + 100, barY[i] + 2)) {
-                *bar[i] = (u1)(eax - 23);
+                if (i == 0) {
+                    GUISetScanlines((u1)(eax - 23));
+                } else {
+                    *bar[i] = (u1)(eax - 23);
+                }
                 GUIHold = 8; /* lock the pointer to this bar while held */
                 GUIHoldYlim = GUIwinposy[5] + (u4)barY[i];
                 GUIHoldXlimL = wx + 23;

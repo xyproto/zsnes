@@ -22,7 +22,6 @@
 #include "../ui.h"
 #include "../vcache.h"
 #include "../video/c_mode716.h"
-#include "../video/filter.h"
 #include "../video/makevid.h"
 #include "../video/procvid.h"
 #include "../video/procvidc.h"
@@ -1115,11 +1114,7 @@ void StartGUI(void)
         blinit = 1;
 #endif
     GUILoadPos = 0;
-    if (newgfx16b == 0) {
-        En2xSaI = 0;
-        hqFilter = 0;
-    }
-    VideoFilterNormalise();
+    GUIFilterForMode();
 
     memset(SpecialLine, 0, sizeof(SpecialLine));
 

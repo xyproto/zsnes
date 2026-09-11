@@ -639,6 +639,7 @@ SRCS += video/c_newgfx16data.c
 SRCS += video/c_hqx.c
 SRCS += video/c_newgfx16.c
 SRCS += video/copyvwin.c
+SRCS += video/crt.c
 SRCS += video/filter.c
 SRCS += video/makevid.c
 SRCS += video/mode716b.c

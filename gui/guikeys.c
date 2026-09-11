@@ -445,11 +445,23 @@ static void GUIVideoKeys(char dh, char const dl)
         }
         IFKEY(dl, 92, 75) // Left
         {
-            *cur = (u1)(*cur > step ? *cur - step : 0);
+            u1 const v = (u1)(*cur > step ? *cur - step : 0);
+
+            if (GUIFocus == CRT_FOCUS_SCANLINES) {
+                GUISetScanlines(v);
+            } else {
+                *cur = v;
+            }
         }
         IFKEY(dl, 94, 77) // Right
         {
-            *cur = (u1)(*cur + step > 100 ? 100 : *cur + step);
+            u1 const v = (u1)(*cur + step > 100 ? 100 : *cur + step);
+
+            if (GUIFocus == CRT_FOCUS_SCANLINES) {
+                GUISetScanlines(v);
+            } else {
+                *cur = v;
+            }
         }
     }
 

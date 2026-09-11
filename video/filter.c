@@ -1,10 +1,10 @@
 #include "filter.h"
 
 #include "2xsaiw.h"
+#include "cfg.h"
 #include "copyvwin.h"
 #include "ntsc.h"
 #include "procvidc.h"
-#include "cfg.h"
 
 extern u1* vidbuffer;
 extern u2 resolutn;

@@ -27,7 +27,6 @@
 #include "../net/netplay.h"
 #include "../ui.h"
 #include "../ver.h"
-#include "../video/filter.h"
 #include "../zmovie.h"
 #include "../zpath.h"
 #include "../zstate.h"
@@ -1019,17 +1018,11 @@ static u1 monitorrow;
 
 void DisplayGUIVideo(void)
 {
-    // Check features
-    if (newgfx16b == 0) {
-        En2xSaI = 0;
-        hqFilter = 0;
-    }
-    VideoFilterNormalise();
+    GUIFilterForMode(); // a filter with no box in this mode is not left on
 
     GUIDrawWindowBox(5, "VIDEO CONFIG");
 
     if (GUINTVID[cvidmode] == 0) { // not NTSC
-        NTSCFilter = 0;
         GUIVntscTab[0] = 0;
         if ((GUIVideoTabs[0] & 0xFF) == 0)
             GUIVideoTabs[0] = (GUIVideoTabs[0] & 0xFFFFFF00) | 1;
@@ -1104,11 +1097,11 @@ void DisplayGUIVideo(void)
         GUICrtRows(row);
         GUIDisplayTextY(5, 13, (u4)row[CRT_ROW_SCANLABEL], "SCANLINES:");
         GUICrtFocusMark(row, CRT_FOCUS_SCANLINES, CRT_ROW_SCAN);
-        if (GUIBIFIL[cvidmode] != 0) {
+        if (GUIScanlineSlider()) {
             GUIDrawSlider(5, 23, 100, (u4)row[CRT_ROW_SCAN], &sl_intensity,
                 glscslidSet, glscslidText);
         } else if (GUIDSIZE[cvidmode] != 0) {
-            /* The software path dims by a fixed step rather than a slider. */
+            /* Where the blitter dims by a fixed step rather than a slider. */
             u4 const y = (u4)row[CRT_ROW_SCAN] - 2;
 
             GUIDisplayButtonHoleTu(5, 18, y, &scanlines, 0, "NONE", 1);
@@ -1206,15 +1199,14 @@ void DisplayGUIVideo(void)
                 if (GUIHQ2X[cvidmode] != 0) {
                     GUIDisplayCheckboxu(5, 128, (u4)row[FILT_ROW_SAI2], &hqFilter, "HQ FILTER", 1);
                     if (hqFilter != 0) {
-                        GUIDisplayButtonHoleTu(5, 128, (u4)row[FILT_ROW_HQLEVEL], &hqFilterlevel, 2, "2X", 1);
-                        goto hq_x;
+                        u4 const y = (u4)row[FILT_ROW_HQLEVEL];
+
+                        GUIDisplayButtonHoleTu(5, 128, y, &hqFilterlevel, 2, "2X", 1);
+                        if (GUIHQ3X[cvidmode] != 0)
+                            GUIDisplayButtonHoleTu(5, 158, y, &hqFilterlevel, 3, "3X", 0);
+                        if (GUIHQ4X[cvidmode] != 0)
+                            GUIDisplayButtonHoleTu(5, 188, y, &hqFilterlevel, 4, "4X", 0);
                     }
-                } else {
-                hq_x:;
-                    if (GUIHQ3X[cvidmode] != 0)
-                        GUIDisplayButtonHoleTu(5, 158, (u4)row[FILT_ROW_HQLEVEL], &hqFilterlevel, 3, "3X", 0);
-                    if (GUIHQ4X[cvidmode] != 0)
-                        GUIDisplayButtonHoleTu(5, 188, (u4)row[FILT_ROW_HQLEVEL], &hqFilterlevel, 4, "4X", 0);
                 }
             }
         }
