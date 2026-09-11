@@ -20,6 +20,7 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="2.3.2" date="2026-09-11" type="development"/>
     <release version="2.3.1" date="2026-09-09" type="development"/>
     <release version="2.3.0" date="2026-08-29" type="development"/>
     <release version="2.0.10" date="2022-06-13" type="stable"/>
