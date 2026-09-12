@@ -1110,7 +1110,7 @@ void StartGUI(void)
     static u1 MouseInitOkay = 0;
 
 #ifdef __OPENGL__
-    if (FilteredGUI == 0 && BilinearFilter == 1)
+    if (FilteredGUI == 0 && BilinearFilter == 1 && !VideoSettingsLive())
         blinit = 1;
 #endif
     GUILoadPos = 0;

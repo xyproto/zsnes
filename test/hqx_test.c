@@ -578,6 +578,31 @@ static void test_interp_weights(void)
     ZT_CHECK(interp2(0x4A69, 0x4A69, 0x4A69) == 0x4A69);
 }
 
+/* The flat-neighbourhood shortcut in the filters assumes every rule maps
+   nine equal pixels back to that colour. True for all of them, all levels. */
+static void test_flat_shortcut_exact(void)
+{
+    int bad = 0;
+
+    ZT_SECTION("every colour survives a flat 3x3 at every level");
+    for (u4 c = 0; c < 65536u; c++) {
+        u2 w[10], q4[16], q3[9], q2[4];
+
+        for (int i = 1; i < 10; i++)
+            w[i] = (u2)c;
+        hq4x_sixteen(w, q4);
+        hq3x_nine(w, q3);
+        hq2x_quad(w, q2);
+        for (int i = 0; i < 16; i++)
+            bad += q4[i] != c;
+        for (int i = 0; i < 9; i++)
+            bad += q3[i] != c;
+        for (int i = 0; i < 4; i++)
+            bad += q2[i] != c;
+    }
+    ZT_CHECK_INT(bad, 0);
+}
+
 int main(void)
 {
     printf("ZSNES2 hqx filter tests\n");
@@ -585,6 +610,7 @@ int main(void)
 
     test_blank();
     test_flat();
+    test_flat_shortcut_exact();
     test_filter_off_doubles();
     test_hires_line_doubles();
     test_edge_interpolates();

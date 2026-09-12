@@ -32,6 +32,9 @@ void CrtShade(u2* px, int w, int h, int pitch, int vscale, int scanlines);
 /* Add the spill back, clipped into 565. */
 void CrtBloomApply(u2* px, int w, int h, int pitch);
 
+/* CrtShade and CrtBloomApply as one pass over the picture. */
+void CrtShadeBloom(u2* px, int w, int h, int pitch, int vscale, int scanlines);
+
 /* The spill at one pixel, for a caller with somewhere above white to put it. */
 float CrtBloomAt(int x, int y, int w);
 

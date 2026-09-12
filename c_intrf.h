@@ -48,6 +48,8 @@ void initvideo(void);
 // Toggle fullscreen on the existing window without recreating it.
 // Returns 1 on success, 0 if a full reinit via initvideo() is needed.
 int TryToggleFullScreen(void);
+/* Whether bilinear and vsync take effect without rebuilding the window. */
+int VideoSettingsLive(void);
 
 void deinitvideo(void);
 

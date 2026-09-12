@@ -225,6 +225,11 @@ static int UseLegacyGL(void)
     }
     return cached;
 }
+
+int VideoSettingsLive(void)
+{
+    return !UseLegacyGL();
+}
 static const int BitDepth = 16;
 static uint32_t FirstVid = 1;
 #ifdef __OPENGL__
@@ -1382,7 +1387,8 @@ void initwinvideo(void)
 
     init_hqNx();
 
-    if ((CurMode != cvidmode) || (prevNTSCMode != NTSCFilter) || (changeRes) || (prevKeep4_3Ratio != Keep4_3Ratio) || (prevsync != vsyncon)) {
+    if ((CurMode != cvidmode) || (prevNTSCMode != NTSCFilter) || (changeRes) || (prevKeep4_3Ratio != Keep4_3Ratio)
+        || (prevsync != vsyncon && !VideoSettingsLive())) {
         CurMode = cvidmode;
         newmode = 1;
         WindowWidth = 256;

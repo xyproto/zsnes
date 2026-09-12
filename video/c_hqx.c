@@ -26,6 +26,39 @@ extern u1* BitConv32Ptr;
 #define SRC_START ((u2 const*)(vidbuffer) + VID_FIRST)
 #define SRC_LINE_SKIP 32 // u2 units
 
+/* A neighbourhood of one colour comes out as that colour, whatever the
+   filter: every rule interpolates equal pixels back to themselves. Most of a
+   SNES frame is flat, so this is where the time goes. */
+static int flat9(u2 const w[10])
+{
+    u2 const c = w[5];
+
+    return w[1] == c && w[2] == c && w[3] == c && w[4] == c && w[6] == c
+        && w[7] == c && w[8] == c && w[9] == c;
+}
+
+static void fill_flat16(u1* const dst, u4 const pitch, unsigned const n, u2 const c)
+{
+    for (unsigned r = 0; r < n; r++) {
+        u1* const orow = dst + (size_t)pitch * r;
+
+        for (unsigned x = 0; x < n; x++)
+            st16u(orow + x * 2, c);
+    }
+}
+
+static void fill_flat32(u1* const dst, u4 const pitch, unsigned const n, u2 const c)
+{
+    u4 const px = ((u4 const*)BitConv32Ptr)[c];
+
+    for (unsigned r = 0; r < n; r++) {
+        u1* const orow = dst + (size_t)pitch * r;
+
+        for (unsigned x = 0; x < n; x++)
+            st32u(orow + x * 4, px);
+    }
+}
+
 static void hq2x_double_16b(void)
 {
     u2 const* src = SRC_START;
@@ -2042,7 +2075,10 @@ void hq2x_16b(void)
                 w[7] = row[dn + (long)x + l];
                 w[8] = row[dn + (long)x];
                 w[9] = row[dn + (long)x + r];
-                hq2x_pixel(w, dst + x * 4, pitch);
+                if (flat9(w))
+                    fill_flat16(dst + x * 4, pitch, 2, w[5]);
+                else
+                    hq2x_pixel(w, dst + x * 4, pitch);
             }
         }
         /* 256 pixels written as 1024 bytes, then the tail of that row and
@@ -5005,7 +5041,10 @@ void hq3x_16b(void)
                 w[7] = row[dn + (long)x + l];
                 w[8] = row[dn + (long)x];
                 w[9] = row[dn + (long)x + r];
-                hq3x_pixel(w, dst + x * 6, pitch);
+                if (flat9(w))
+                    fill_flat16(dst + x * 6, pitch, 3, w[5]);
+                else
+                    hq3x_pixel(w, dst + x * 6, pitch);
             }
         }
         /* 256 pixels as 1536 bytes, then the two rows below them. */
@@ -5090,7 +5129,10 @@ void hq2x_32b(void)
                 w[7] = row[dn + (long)x + l];
                 w[8] = row[dn + (long)x];
                 w[9] = row[dn + (long)x + r];
-                hq2x_pixel32(w, dst + x * 8, pitch);
+                if (flat9(w))
+                    fill_flat32(dst + x * 8, pitch, 2, w[5]);
+                else
+                    hq2x_pixel32(w, dst + x * 8, pitch);
             }
         }
         dst += 256 * 8 + AddEndBytes + pitch * 1;
@@ -5149,7 +5191,10 @@ void hq3x_32b(void)
                 w[7] = row[dn + (long)x + l];
                 w[8] = row[dn + (long)x];
                 w[9] = row[dn + (long)x + r];
-                hq3x_pixel32(w, dst + x * 12, pitch);
+                if (flat9(w))
+                    fill_flat32(dst + x * 12, pitch, 3, w[5]);
+                else
+                    hq3x_pixel32(w, dst + x * 12, pitch);
             }
         }
         dst += 256 * 12 + AddEndBytes + pitch * 2;
@@ -9381,7 +9426,10 @@ void hq4x_16b(void)
                 w[7] = row[dn + (long)x + l];
                 w[8] = row[dn + (long)x];
                 w[9] = row[dn + (long)x + r];
-                hq4x_pixel(w, dst + x * 8, pitch);
+                if (flat9(w))
+                    fill_flat16(dst + x * 8, pitch, 4, w[5]);
+                else
+                    hq4x_pixel(w, dst + x * 8, pitch);
             }
         }
         dst += 256 * 8 + AddEndBytes + pitch * 3;
@@ -9440,7 +9488,10 @@ void hq4x_32b(void)
                 w[7] = row[dn + (long)x + l];
                 w[8] = row[dn + (long)x];
                 w[9] = row[dn + (long)x + r];
-                hq4x_pixel32(w, dst + x * 16, pitch);
+                if (flat9(w))
+                    fill_flat32(dst + x * 16, pitch, 4, w[5]);
+                else
+                    hq4x_pixel32(w, dst + x * 16, pitch);
             }
         }
         dst += 256 * 16 + AddEndBytes + pitch * 3;

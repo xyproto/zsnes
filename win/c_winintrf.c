@@ -230,6 +230,11 @@ int VideoMonitorHDR(void)
     return 0;
 }
 
+int VideoSettingsLive(void)
+{
+    return 0;
+}
+
 void initvideo(void)
 {
     static u4 firstvideo = 1;

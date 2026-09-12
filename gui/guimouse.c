@@ -256,7 +256,7 @@ static void GUIClickCButtonI(s4 const eax, s4 const edx, s4 const p1, s4 const p
 {
     if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8)) {
         *p3 ^= 1;
-        if (GUIBIFIL[cvidmode] != 0) {
+        if (GUIBIFIL[cvidmode] != 0 && !VideoSettingsLive()) {
 #ifdef __WIN32__
             initDirectDraw();
 #elif defined __OPENGL__

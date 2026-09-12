@@ -550,11 +550,13 @@ static void GUIVideoKeys(char dh, char const dl)
                         if (VideoFilterGet() == VFILTER_NTSC) {
                             VideoFilterSet(VFILTER_NONE);
                         }
+                        if (!VideoSettingsLive()) {
 #ifdef __WIN32__
-                        initDirectDraw();
+                            initDirectDraw();
 #elif defined __OPENGL__
-                        initwinvideo();
+                            initwinvideo();
 #endif
+                        }
                         Clear2xSaIBuffer();
                     } else {
 #ifdef __WIN32__
@@ -662,11 +664,13 @@ static void GUIVideoKeys(char dh, char const dl)
 #endif
         {
             vsyncon ^= 1;
+            if (!VideoSettingsLive()) {
 #ifdef __WIN32__
-            initDirectDraw();
+                initDirectDraw();
 #elif defined __OPENGL__
-            initwinvideo();
+                initwinvideo();
 #endif
+            }
             Clear2xSaIBuffer();
         }
     }

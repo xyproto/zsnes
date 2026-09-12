@@ -244,48 +244,106 @@ static void crt_bloom_map(short* const idx, float* const frac, int const n,
    spill is worked out at quarter resolution, and taking the nearest cell
    paints it as 4x4 blocks, which is what makes bloom look pixelated even
    where the glow underneath is smooth. */
-void CrtBloomApply(u2* const px, int const w, int const h, int const pitch)
+/* One row: the shade table if there is one, then the spill if there is
+   one, in a single read-modify-write of the row. */
+static void crt_row(u2* const row, int const w, u2 const* const lut,
+    int const* const rowspill, u1 const* const add5, u1 const* const add6)
+{
+    int x;
+
+    if (!rowspill) {
+        for (x = 0; x < w; x++) {
+            row[x] = lut[row[x]];
+        }
+        return;
+    }
+    for (x = 0; x < w; x++) {
+        int const x0 = crt_bx0[x];
+        int const q = (rowspill[x0] + (int)((rowspill[x0 + 1] - rowspill[x0]) * crt_btx[x])) >> 8;
+        unsigned p = lut ? lut[row[x]] : row[x];
+        unsigned r, g, bl;
+
+        if (q <= 0) {
+            row[x] = (u2)p;
+            continue;
+        }
+        r = ((p >> 11) & 0x1Fu) + add5[q];
+        g = ((p >> 5) & 0x3Fu) + add6[q];
+        bl = (p & 0x1Fu) + add5[q];
+        r = r > 0x1Fu ? 0x1Fu : r;
+        g = g > 0x3Fu ? 0x3Fu : g;
+        bl = bl > 0x1Fu ? 0x1Fu : bl;
+        row[x] = (u2)((r << 11) | (g << 5) | bl);
+    }
+}
+
+/* Shade and bloom together, one pass over the picture. `groups` is 1 with
+   the beam off; `shade` 0 leaves the brightness alone. */
+static void crt_shade_bloom(u2* const px, int const w, int const h, int const pitch,
+    int const groups, int const shade, int const bloom)
 {
     float const scale = (float)BloomLevel / 100.0f * CRT_BLOOM_GAIN;
     int const bw = crt_bloom_w;
     int const bh = crt_bloom_h;
+    /* Spill is a smooth low-frequency field, so it is walked in 8.8 fixed
+       point along the row and quantised to 8 bits, and the per-channel adds
+       come from a table rather than from float maths on every pixel. */
+    static int rowspill[CRT_BLOOM_W + 1];
+    static u1 add5[256], add6[256];
+    static int tables;
+    int const spill = bloom && bw > 0 && bh > 0;
     int x, y;
 
-    if (bw <= 0 || bh <= 0 || w > CRT_MAX_W || h > CRT_MAX_H) {
+    if (w > CRT_MAX_W || h > CRT_MAX_H || (!shade && !spill)) {
         return;
     }
-    if (crt_bmap_w != w || crt_bmap_h != h) {
+    if (!tables) {
+        for (x = 0; x < 256; x++) {
+            add5[x] = (u1)(x * 31 / 255);
+            add6[x] = (u1)(x * 63 / 255);
+        }
+        tables = 1;
+    }
+    if (spill && (crt_bmap_w != w || crt_bmap_h != h)) {
         crt_bloom_map(crt_bx0, crt_btx, w, bw);
         crt_bloom_map(crt_by0, crt_bty, h, bh);
         crt_bmap_w = w;
         crt_bmap_h = h;
     }
     for (y = 0; y < h; y++) {
-        int const y0 = crt_by0[y];
-        int const y1 = y0 + 1 > bh - 1 ? bh - 1 : y0 + 1;
-        float const ty = crt_bty[y];
-        float const* const r0 = crt_bloom_row + (size_t)y0 * bw;
-        float const* const r1 = crt_bloom_row + (size_t)y1 * bw;
         u2* const row = px + (size_t)y * (size_t)pitch;
+        u2 const* const lut = shade ? crt_lut[y % groups] : NULL;
+        int peak = 0;
 
-        for (x = 0; x < w; x++) {
-            int const x0 = crt_bx0[x];
-            int const x1 = x0 + 1 > bw - 1 ? bw - 1 : x0 + 1;
-            float const tx = crt_btx[x];
-            float const a = r0[x0] + (r0[x1] - r0[x0]) * tx;
-            float const b = r1[x0] + (r1[x1] - r1[x0]) * tx;
-            float const spill = (a + (b - a) * ty) * scale;
-            unsigned const p = row[x];
-            unsigned r = (unsigned)(((p >> 11) & 0x1Fu) + spill * 31.0f);
-            unsigned g = (unsigned)(((p >> 5) & 0x3Fu) + spill * 63.0f);
-            unsigned bl = (unsigned)((p & 0x1Fu) + spill * 31.0f);
+        if (spill) {
+            int const y0 = crt_by0[y];
+            int const y1 = y0 + 1 > bh - 1 ? bh - 1 : y0 + 1;
+            float const ty = crt_bty[y];
+            float const* const r0 = crt_bloom_row + (size_t)y0 * bw;
+            float const* const r1 = crt_bloom_row + (size_t)y1 * bw;
 
-            r = r > 0x1Fu ? 0x1Fu : r;
-            g = g > 0x3Fu ? 0x3Fu : g;
-            bl = bl > 0x1Fu ? 0x1Fu : bl;
-            row[x] = (unsigned short)((r << 11) | (g << 5) | bl);
+            for (x = 0; x < bw; x++) {
+                float v = (r0[x] + (r1[x] - r0[x]) * ty) * scale;
+
+                v = v > 1.0f ? 1.0f : v;
+                rowspill[x] = (int)(v * 65280.0f); /* 255 << 8 */
+                peak = rowspill[x] > peak ? rowspill[x] : peak;
+            }
+            rowspill[bw] = rowspill[bw - 1];
         }
+        if (peak < 256) { /* nothing on this row spills a visible amount */
+            if (lut) {
+                crt_row(row, w, lut, NULL, add5, add6);
+            }
+            continue;
+        }
+        crt_row(row, w, lut, rowspill, add5, add6);
     }
+}
+
+void CrtBloomApply(u2* const px, int const w, int const h, int const pitch)
+{
+    crt_shade_bloom(px, w, h, pitch, 1, 0, 1);
 }
 
 /* The spill at one pixel, for the HDR path, which adds it in linear light. */
@@ -314,25 +372,31 @@ float CrtBloomAt(int const x, int const y, int const w)
 /* The beam sits on the first row of each group, so the rows after it fall away
    and pick up again at the next line's beam. With scanlines off every row uses
    the beam row's table, which is brightness alone. */
-void CrtShade(u2* const px, int const w, int const h, int const pitch,
-    int const vscale, int const scanlines)
+static int crt_groups(int const vscale, int const scanlines)
 {
     int const groups
         = (scanlines && vscale >= 1 && vscale <= CRT_MAX_VSCALE) ? vscale : 1;
-    int y, x;
 
     if (crt_lut_bright != (int)sl_vibrancy || crt_lut_dark != (int)sl_intensity
         || crt_lut_vscale != groups) {
         crt_build_luts(groups);
     }
-    for (y = 0; y < h; y++) {
-        u2* const row = px + (size_t)y * (size_t)pitch;
-        u2 const* const lut = crt_lut[y % groups];
+    return groups;
+}
 
-        for (x = 0; x < w; x++) {
-            row[x] = lut[row[x]];
-        }
-    }
+void CrtShade(u2* const px, int const w, int const h, int const pitch,
+    int const vscale, int const scanlines)
+{
+    crt_shade_bloom(px, w, h, pitch, crt_groups(vscale, scanlines), 1, 0);
+}
+
+void CrtShadeBloom(u2* const px, int const w, int const h, int const pitch,
+    int const vscale, int const scanlines)
+{
+    int const shade = scanlines || sl_vibrancy;
+
+    crt_shade_bloom(px, w, h, pitch, shade ? crt_groups(vscale, scanlines) : 1,
+        shade, BloomLevel != 0);
 }
 
 void CrtPass(u2* const px, int const w, int const h, int const pitch,
@@ -341,10 +405,5 @@ void CrtPass(u2* const px, int const w, int const h, int const pitch,
     if (BloomLevel) {
         CrtBloomBuild(px, w, h, pitch);
     }
-    if (scanlines || sl_vibrancy) {
-        CrtShade(px, w, h, pitch, vscale, scanlines);
-    }
-    if (BloomLevel) {
-        CrtBloomApply(px, w, h, pitch);
-    }
+    CrtShadeBloom(px, w, h, pitch, vscale, scanlines);
 }

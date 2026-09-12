@@ -64,6 +64,42 @@ static int sr_hdr_active = 0;
 /* Whether the window we are holding is a fullscreen one. */
 static int sr_fullscreen = -1;
 
+/* Bilinear and vsync are renderer state, set on the way into a frame rather
+   than by rebuilding the window, which is what made toggling them flicker. */
+static int sr_settings_applied = 0;
+static int sr_linear = -1;
+static int sr_vsync = -1;
+
+static void sr_apply_settings(void)
+{
+    /* The GUI is drawn from the same buffer, and reads better unfiltered. */
+    int const linear = BilinearFilter && !(GUIOn2 && !FilteredGUI);
+    int const vsync = vsyncon != 0;
+
+    if (!sr_settings_applied || linear != sr_linear) {
+        SDL_SetTextureScaleMode(sr_texture,
+            linear ? SDL_SCALEMODE_LINEAR : SDL_SCALEMODE_NEAREST);
+        if (sr_hdr_texture) {
+            SDL_SetTextureScaleMode(sr_hdr_texture,
+                linear ? SDL_SCALEMODE_LINEAR : SDL_SCALEMODE_NEAREST);
+        }
+        sr_linear = linear;
+    }
+    if (!sr_settings_applied || vsync != sr_vsync) {
+        /* Adaptive where the driver has it: the emulator keeps its own 60Hz
+           clock, so a present that waits for the next vblank on a late frame
+           costs a whole frame and shows as stutter. Tearing on a late frame
+           is the lesser evil. */
+        if (!vsync) {
+            SDL_SetRenderVSync(sr_renderer, SDL_RENDERER_VSYNC_DISABLED);
+        } else if (!SDL_SetRenderVSync(sr_renderer, SDL_RENDERER_VSYNC_ADAPTIVE)) {
+            SDL_SetRenderVSync(sr_renderer, 1);
+        }
+        sr_vsync = vsync;
+    }
+    sr_settings_applied = 1;
+}
+
 /* The second field sits 75036 pixels on; the line geometry is in copyvwin.h. */
 #define SR_FIELD2 (75036 * 2)
 
@@ -189,7 +225,6 @@ int sr_start(int width, int height, int req_depth, int FullScreen)
         sr_fullscreen = -1;
         return false;
     }
-    SDL_SetRenderVSync(sr_renderer, vsyncon ? 1 : SDL_RENDERER_VSYNC_DISABLED);
 
     sr_texture = SDL_CreateTexture(sr_renderer, SDL_PIXELFORMAT_RGB565,
         SDL_TEXTUREACCESS_STREAMING, SR_MAXW, SR_MAXH);
@@ -227,10 +262,7 @@ int sr_start(int width, int height, int req_depth, int FullScreen)
         SDL_SyncWindow(sdl_window);
     }
 
-    /* The GUI is drawn from the same buffer, and reads better unfiltered. */
-    SDL_SetTextureScaleMode(sr_texture,
-        (BilinearFilter && !(GUIOn2 && !FilteredGUI)) ? SDL_SCALEMODE_LINEAR
-                                                      : SDL_SCALEMODE_NEAREST);
+    sr_settings_applied = 0;
 
     if (!sr_pixels) {
         sr_pixels = (unsigned short*)malloc(SR_MAXW * SR_MAXH * sizeof(unsigned short));
@@ -435,6 +467,7 @@ void sr_drawwin(void)
     if (curblank || !CheckOGLMode() || !sr_renderer) {
         return;
     }
+    sr_apply_settings();
 
     /* Whichever filter is on draws at its own size, whatever the window is:
        the renderer scales the result out, so the filter picked is the filter
@@ -467,17 +500,18 @@ void sr_drawwin(void)
         CrtBloomBuild(sr_pixels, w, h, w);
     }
 
+    sr_hdr_refresh();
     {
         int const scanlines = (sl_intensity != 0 && !ntsc_drawn);
 
-        if (scanlines || sl_vibrancy) {
-            CrtShade(sr_pixels, w, h, w, vscale, scanlines);
+        if (sr_hdr_active) {
+            /* The spill goes in above white in sr_to_hdr instead. */
+            if (scanlines || sl_vibrancy) {
+                CrtShade(sr_pixels, w, h, w, vscale, scanlines);
+            }
+        } else {
+            CrtShadeBloom(sr_pixels, w, h, w, vscale, scanlines);
         }
-    }
-
-    sr_hdr_refresh();
-    if (BloomLevel && !sr_hdr_active) {
-        CrtBloomApply(sr_pixels, w, h, w); /* clipped into 565; HDR adds it in sr_to_hdr */
     }
 
     {
