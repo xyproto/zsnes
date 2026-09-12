@@ -1,3 +1,4 @@
+!test/difftest_*.c
 *.[do]
 *.log
 *.raw
@@ -7,11 +8,12 @@ build/
 config.default
 include.txt
 parsegen
+server/server
 test/_*
 test/difftest_*
-!test/difftest_*.c
 test/harness/out/
 test/harness/out64
+test/roms/
 test/zsnes_*test
 tools/__pycache__
 unused-report.txt
@@ -22,4 +24,3 @@ zmovie.cfg
 zsnes
 zsnes.exe
 zsnesl.cfg
-test/roms/
