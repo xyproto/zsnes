@@ -445,7 +445,7 @@ static int accept_device(const RAWINPUTDEVICELIST* dev)
     if (dev->dwType != RIM_TYPEMOUSE)
         return (0); /* keyboard or some other fruity thing. */
 
-    if (pGetRawInputDeviceInfoA(dev->hDevice, RIDI_DEVICENAME, NULL, &ct) < 0)
+    if (pGetRawInputDeviceInfoA(dev->hDevice, RIDI_DEVICENAME, NULL, &ct) == (UINT)-1)
         return (0);
 
     /* ct == is chars, not bytes, but we used the ASCII version. */
@@ -453,7 +453,7 @@ static int accept_device(const RAWINPUTDEVICELIST* dev)
     if (buf == NULL)
         return (0);
 
-    if (pGetRawInputDeviceInfoA(dev->hDevice, RIDI_DEVICENAME, buf, &ct) < 0)
+    if (pGetRawInputDeviceInfoA(dev->hDevice, RIDI_DEVICENAME, buf, &ct) == (UINT)-1)
         return (0);
 
     /*
@@ -504,7 +504,7 @@ static void get_device_product_name(char* name, size_t namesize,
     /* in case we can't stumble upon something better... */
     CopyMemory(name, default_device_name, sizeof(default_device_name));
 
-    if (pGetRawInputDeviceInfoA(dev->hDevice, RIDI_DEVICENAME, NULL, &ct) < 0)
+    if (pGetRawInputDeviceInfoA(dev->hDevice, RIDI_DEVICENAME, NULL, &ct) == (UINT)-1)
         return;
 
     /* ct == is chars, not bytes, but we used the ASCII version. */
@@ -513,7 +513,7 @@ static void get_device_product_name(char* name, size_t namesize,
     if ((buf == NULL) || (keyname == NULL))
         return;
 
-    if (pGetRawInputDeviceInfoA(dev->hDevice, RIDI_DEVICENAME, buf, &ct) < 0)
+    if (pGetRawInputDeviceInfoA(dev->hDevice, RIDI_DEVICENAME, buf, &ct) == (UINT)-1)
         return;
 
     /*

@@ -145,12 +145,13 @@ IS_DEBIAN_BASED := $(if $(wildcard /etc/debian_version),yes)
 
 # Tightened incrementally: each flag here is clean tree-wide, so a new warning
 # means new code, not a backlog. -Wconversion, -Wmissing-prototypes and
-# -Wredundant-decls still have thousands of hits.
-WARN_FLAGS ?= -Wall -Werror=unused-variable -Wno-address-of-packed-member \
+# -Wredundant-decls still have thousands of hits. Unused parameters are
+# callback shapes (signal handlers, thread and copy functions).
+WARN_FLAGS ?= -Wall -Wextra -Wno-unused-parameter -Werror=unused-variable \
+              -Wno-address-of-packed-member \
               -Wcast-qual -Wpointer-arith -Wnull-dereference -Wvla \
               -Wduplicated-cond -Wduplicated-branches -Wlogical-op \
-              -Wshift-overflow=2 -Warray-bounds=2 -Wsign-compare \
-              -Wimplicit-fallthrough=3 -Wundef \
+              -Wshift-overflow=2 -Warray-bounds=2 -Wundef \
               -Wstrict-prototypes -Wold-style-definition -Wwrite-strings \
               -Wjump-misses-init -Wformat=2
 # x86 uses absolute addressing; ARM and Darwin require PIC.

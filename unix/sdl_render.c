@@ -141,7 +141,6 @@ int sr_start(int width, int height, int req_depth, int FullScreen)
 
     (void)req_depth;
     flags |= (GUIRESIZE[cvidmode] ? SDL_WINDOW_RESIZABLE : 0);
-    flags |= (FullScreen ? SDL_WINDOW_FULLSCREEN : 0);
 
     if (NTSCFilter) {
         NTSCFilterInit();
@@ -220,6 +219,14 @@ int sr_start(int width, int height, int req_depth, int FullScreen)
             fprintf(stderr, "HDR surface unavailable; using the ordinary one\n");
         }
     }
+    /* Fullscreen is a state change on a window that already has its renderer,
+       the same sequence as the toggle; a window created fullscreen and then
+       rebuilt for the renderer came up blank on some compositors. */
+    if (FullScreen) {
+        SDL_SetWindowFullscreen(sdl_window, true);
+        SDL_SyncWindow(sdl_window);
+    }
+
     /* The GUI is drawn from the same buffer, and reads better unfiltered. */
     SDL_SetTextureScaleMode(sr_texture,
         (BilinearFilter && !(GUIOn2 && !FilteredGUI)) ? SDL_SCALEMODE_LINEAR
@@ -235,6 +242,8 @@ int sr_start(int width, int height, int req_depth, int FullScreen)
 
     SDL_SetWindowMouseGrab(sdl_window, FullScreen ? true : false);
     SDL_HideCursor(); // the emulator draws its own pointer
+    SDL_SyncWindow(sdl_window);
+    SDL_HideCursor(); // again once the compositor has the final surface
     SDL_SetRenderDrawColor(sr_renderer, 0, 0, 0, 255);
     SDL_RenderClear(sr_renderer);
     SDL_RenderPresent(sr_renderer);

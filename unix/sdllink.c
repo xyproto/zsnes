@@ -401,6 +401,10 @@ int Main_Proc(void)
         switch (event.type) {
         case SDL_EVENT_WINDOW_FOCUS_GAINED:
             IsActivated = 1;
+            SDL_HideCursor(); // some compositors restore it with the focus
+            break;
+        case SDL_EVENT_WINDOW_MOUSE_ENTER:
+            SDL_HideCursor();
             break;
         case SDL_EVENT_WINDOW_FOCUS_LOST:
             IsActivated = 0;
