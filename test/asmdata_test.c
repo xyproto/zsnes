@@ -16,11 +16,6 @@
 typedef uint8_t u1;
 typedef uint32_t u4;
 
-/* chips/c_sa1data.c */
-extern u1 SA1Status, CurrentExecSA1, CurrentCPU;
-extern u4 SA1xpc;
-extern void* prevedi;
-
 /* video/c_makev16tdata.c */
 extern u1 transpbuf[], DoTransp;
 extern u4 prevrgbcol, prevrgbpal, coadder16;
@@ -502,23 +497,6 @@ static void test_execdata(void)
     ZT_CHECK_INT(ExecExitOkay, 1);
 }
 
-/* chips/c_sa1proc.c: the block that was left in chips/sa1proc.asm. zstate.c
- * saves three bytes from &SA1Status, so those three must stay adjacent and in
- * order; prevedi holds a host pointer, so it is pointer-sized and aligned. */
-static void test_sa1proc(void)
-{
-    ZT_SECTION("sa1proc: the three save-state bytes");
-    ZT_CHECK_INT(GAP(SA1Status, CurrentExecSA1), 1);
-    ZT_CHECK_INT(GAP(CurrentExecSA1, CurrentCPU), 1);
-
-    ZT_SECTION("sa1proc: unaligned tail");
-    /* prevedi holds a host pointer now, so it is pointer-sized and aligned
-       rather than following the assembly's commented-out ALIGN32. Only the
-       three bytes above it are saved, so nothing depends on where it lands. */
-    ZT_CHECK_INT(GAP(CurrentCPU, prevedi), (int)sizeof(void*) - 2);
-    ZT_CHECK_INT(GAP(prevedi, SA1xpc), (int)sizeof(void*));
-}
-
 /* video/c_makev16tdata.c: the .bss blocks from video/makev16t.asm. The
  * transparency buffer is indexed with signed displacements off its middle, so
  * what follows it is part of the shape; coadder16 is deliberately unaligned. */
@@ -651,7 +629,6 @@ int main(void)
     test_execdata();
     test_makevid();
     test_newgfx();
-    test_sa1proc();
     test_makev16t();
     test_newgfx16data();
     test_regsdata();

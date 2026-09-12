@@ -179,9 +179,9 @@ int main(void)
     SA1ResetV = 0x8123;
     c_sa12200w(0x00);
     ZT_CHECK_INT(BYTE(SA1Control, 0), 0x00);
-    ZT_CHECK_INT(SA1BankPtr, (uint32_t)(uintptr_t)romdata);
-    ZT_CHECK_INT(SA1Ptr - SA1BankPtr, 0x123); /* ResetV - 0x8000 */
-    ZT_CHECK_INT(SA1BankPtr - SA1RegPCS, 0x8000);
+    ZT_CHECK_INT(SA1BankPtr, 0); /* never read; kept host-free for the save state */
+    ZT_CHECK_INT(SA1Ptr - (uint32_t)(uintptr_t)romdata, 0x123); /* ResetV - 0x8000 */
+    ZT_CHECK_INT((uint32_t)(uintptr_t)romdata - SA1RegPCS, 0x8000);
     ZT_CHECK_INT((uint16_t)SA1xs, 0x1FF);
     /* 2200: IRQ/NMI request bits set SA1DoIRQ */
     SA1DoIRQ = 0;
