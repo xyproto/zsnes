@@ -21,6 +21,13 @@ void NetplaySyncInputs(unsigned int* joy_a, unsigned int* joy_b);
 void NetplayAdvanceState(int timeout_ms);
 void NetplayUpdateStatus(void);
 
+/* Non-zero once a session has connected and the two consoles have not yet
+   been put into the same state. Exchanging input frame by frame only keeps
+   two machines together if they agreed to begin with, so the emulator answers
+   this by power-cycling at a safe point and then calls NetplayStartDone. */
+int NetplayStartPending(void);
+void NetplayStartDone(void);
+
 /* What the panel shows. */
 extern char NetplayStatusLine[64];
 extern u1 NetplayHostRole;

@@ -39,8 +39,11 @@
 #include "memtable.h"
 #include "regs.h"
 #include "regsw.h"
+#include "../net/netplay.h"
 #include "spc700.h"
 #include "table.h"
+
+void powercycle(bool sramload, bool romload); /* initc.c */
 
 void start65816(void)
 {
@@ -157,6 +160,15 @@ static void reexecuteb2(void)
 #endif
     else if (pressed[59] & 1) {
         showmenu();
+    } else if (NetplayStartPending()) {
+        /* Both peers do this as their session comes up, so lockstep starts
+           from one machine state rather than from whatever each was showing.
+           A power cycle rather than a reset because reset keeps WRAM, and
+           SRAM is left out for the same reason a movie's "clear all" start
+           does: either side's save file would put the two out of step. */
+        NetplayStartDone();
+        powercycle(false, false);
+        continueprog();
     } else if (pressed[KeyQuickRst] & 1) {
     activatereset:
         GUIReset = 1;

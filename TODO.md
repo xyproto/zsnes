@@ -2,9 +2,8 @@
 
 - [ ] Confirm the DSP4 division table on a DSP4 cart. `floor(0x8000/n)` verified, but not the chip's rounding.
 - [ ] Fix Super Mario RPG hanging in the attract demo at frame 19956, force-blank never cleared. Needs a reference trace.
-- [ ] Fix the netplay desync at frame 85, not the input path. Maybe the per-frame pad overwrites.
+- [ ] Carry SRAM and the host's state into a netplay session; it power-cycles both sides instead.
 - [ ] Move the Windows blitter (`win/winlink.c`) onto `video/filter.c`; it still size-matches the surface.
-- [ ] Run the ASan build on a ROM in CI (`ZSNES_FILTER_SOAK=5`); the selftest step emulates nothing.
 - [ ] Retire the old graphics engine (`newengen=0` + `bgfixer`).
 - [ ] Use `SDL_Gamepad` for default bindings only. Saved bindings index the flat 256+ space and must not move.
 - [ ] Figure out the ST-011 OPS04/05 outputs and OPS06/07 purposes (`chips/seta11.c`).

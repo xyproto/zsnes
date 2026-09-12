@@ -145,6 +145,19 @@ static u4 NetplayStateHash(void)
 
 #endif
 
+/* Set while a session is starting; see NetplayStartPending in netplay.h. */
+static u1 NetplayStartWanted;
+
+int NetplayStartPending(void)
+{
+    return NetplayStartWanted != 0 && NetplaySessionState == NETPLAY_CONNECTED;
+}
+
+void NetplayStartDone(void)
+{
+    NetplayStartWanted = 0;
+}
+
 #ifdef __UNIXSDL__
 /* Everything that counts frames, cleared together whenever a session starts
    or ends. Missing one of these leaves a new session reading a stale frame's
@@ -155,6 +168,7 @@ static void NetplaySessionResetTiming(void)
     NetplayInputQueueFilled = 0;
     NetplayFrame = 0;
     NetplayLocalSeq = 0;
+    NetplayStartWanted = 1;
     memset(NetplayRemoteRingValid, 0, sizeof(NetplayRemoteRingValid));
 }
 #endif
@@ -214,6 +228,7 @@ void NetplayDisconnectSession(void)
         NetplayServerSocket = -1;
     }
     NetplaySessionResetTiming();
+    NetplayStartWanted = 0;
     NetplayLastEvent[0] = '\0';
     net_connect_cancel();
 #endif
@@ -306,7 +321,13 @@ static int NetplaySessionPending(void)
  *
  * Emulation can be held here because the input path runs before the pause
  * check in c_cpuover, so this function keeps being called and the handshake
- * still makes progress. */
+ * still makes progress. The NMI counter runs on through a hold for the same
+ * reason, so the two peers' emulated-frame numbers stay however far apart the
+ * host waited - a debug counter, not state.
+ *
+ * The hold narrows the gap between the two machines; it cannot close it,
+ * because each side booted its own copy of the game at its own moment. That
+ * is what the power cycle behind NetplayStartPending is for. */
 static u1 NetplayHeldEmulation;
 
 static void NetplayHoldEmulation(int const hold)
@@ -539,6 +560,10 @@ void NetplaySyncInputs(unsigned int* joy_a, unsigned int* joy_b)
 #endif
     NetplayAdvanceState(0);
     if (NetplaySessionState != NETPLAY_CONNECTED || NetplayClientSocket < 0)
+        return;
+    /* Nothing is exchanged until both consoles have been power-cycled; the
+       exec loop does that at a safe point and clears the flag. */
+    if (NetplayStartPending())
         return;
 
 #ifdef ZSNES_DEBUG_HOOKS

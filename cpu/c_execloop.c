@@ -29,6 +29,7 @@
 #include "c_irq.h"
 #include "c_rewind.h"
 #include "execute.h"
+#include "../net/netplay.h"
 #include "memtable.h"
 #include "table.h"
 
@@ -504,6 +505,13 @@ nonewgfx:
         }
         INCRFrame ^= 1;
     }
+
+    /* A session that has just connected needs both consoles put into the
+       same state before any input is exchanged. Leaving the loop here is what
+       makes the power cycle safe: the CPU's registers are live in r[] until
+       the exit path writes them back. */
+    if (NetplayStartPending())
+        return EXEC_EXIT;
 
     /* The rewind update has to happen before this frame of the movie is
        processed, so rewind does not back up already incremented values. */
