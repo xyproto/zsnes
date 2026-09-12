@@ -691,10 +691,10 @@ SRCS += unix/battery.c
 SRCS += unix/c_sdlintrf.c
 SRCS += unix/lib.c
 SRCS += unix/safelib.c
-
 SRCS += unix/sdl_render.c
 SRCS += unix/sdllink.c
 SRCS += unix/net_transport.c
+SRCS += net/znp.c
 SRCS += unix/sw_draw.c
 
 ifdef WITH_OPENGL
@@ -934,6 +934,8 @@ help:
 	@echo '  win_x86_64     64-bit Windows'
 	@echo '  portcheck      compile every source for x86-64 and aarch64'
 	@echo '  test           run the unit tests'
+	@echo '  server         the Go netplay relay in server/'
+	@echo '  server-test    vet and test it'
 	@echo
 	@echo 'DEBUG=1 builds any of them unoptimised and with symbols.'
 	@echo 'The tree is C11 throughout; the cross targets need their'
@@ -1008,6 +1010,19 @@ fmt:
 
 test: $(BINARY)
 	$(MAKE) -C test run
+
+# The netplay relay (server/, Go). Players run their own; it pairs two clients
+# by room code and forwards their input frames. Not part of `all` - the
+# emulator does not need it to build.
+GO ?= go
+.PHONY: server server-test
+server:
+	@command -v $(GO) >/dev/null 2>&1 || { echo 'go is not installed'; exit 1; }
+	cd server && $(GO) build
+
+server-test:
+	@command -v $(GO) >/dev/null 2>&1 || { echo 'go is not installed'; exit 1; }
+	cd server && $(GO) vet ./... && $(GO) test ./...
 
 # BSD install lacks GNU install -D.
 INSTALL_DIRS := bin share/applications share/metainfo share/man/man1 \
