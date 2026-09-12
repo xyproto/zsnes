@@ -44,7 +44,8 @@ jobs:
             libx11-dev:i386 libxcursor-dev:i386 libxi-dev:i386 \
             libxinerama-dev:i386 libxfixes-dev:i386 libxrandr-dev:i386 \
             libgl1-mesa-dev:i386 zlib1g-dev:i386 libpng-dev:i386 \
-            libao-dev:i386 libpipewire-0.3-dev:i386
+            libao-dev:i386 libpipewire-0.3-dev:i386 \
+            xvfb curl
           sudo ln -sf /usr/bin/clang-format-19 /usr/local/bin/clang-format
       - name: Install SDL3 (i386)
         run: |
@@ -137,10 +138,13 @@ jobs:
       - name: AddressSanitizer
         run: |
           make clean
-          make linux_x86_64 \
-            EXTRA_CFLAGS='-fsanitize=address -fno-omit-frame-pointer -g' \
+          make linux_x86_64 WITH_DEBUG_HOOKS=1 \
+            EXTRA_CFLAGS='-fsanitize=address -fno-omit-frame-pointer -g -O1' \
             EXTRA_LDFLAGS='-fsanitize=address'
           ASAN_OPTIONS=detect_leaks=0 ZSNES_SELFTEST=1 ./zsnes -v 0
+          # The selftest emulates nothing. This runs free test ROMs through
+          # every filter and video mode, then fuzzes the file loaders.
+          test/asan_soak.sh ./zsnes 25
           make clean
       - name: Cross-unit type gate
         run: |
