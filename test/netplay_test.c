@@ -35,6 +35,7 @@ static void zsleep_us(unsigned int const usec)
 }
 
 #include "../net/packet.h"
+#include "../net/znp.h"
 
 typedef NetplayPacket Packet;
 
@@ -444,6 +445,175 @@ static void test_tcp_loopback(void)
     ZT_CHECK(result.received.crc == 0xBEEFu);
 }
 
+/* ---- the relay protocol (net/znp.c) ---- */
+
+static void test_znp_target_parsing(void)
+{
+    ZT_SECTION("znp: host, port and room out of one field");
+
+    char host[64], room[ZNP_ROOM_BYTES + 1];
+    uint16_t port = 0;
+
+    znp_parse_target("relay.example.com:9000/mygame", host, sizeof(host), &port,
+        room, sizeof(room));
+    ZT_CHECK(!strcmp(host, "relay.example.com"));
+    ZT_CHECK(port == 9000);
+    ZT_CHECK(!strcmp(room, "mygame"));
+
+    /* Each part has a default. */
+    znp_parse_target("", host, sizeof(host), &port, room, sizeof(room));
+    ZT_CHECK(!strcmp(host, "127.0.0.1"));
+    ZT_CHECK(port == ZNP_DEFAULT_PORT);
+    ZT_CHECK(!strcmp(room, "default"));
+
+    /* A colon inside an address is not a port. */
+    znp_parse_target("::1/r", host, sizeof(host), &port, room, sizeof(room));
+    ZT_CHECK(!strcmp(host, "::1"));
+    ZT_CHECK(port == ZNP_DEFAULT_PORT);
+    ZT_CHECK(!strcmp(room, "r"));
+
+    /* Bracketed, a port can follow an IPv6 literal. */
+    znp_parse_target("[::1]:80/x", host, sizeof(host), &port, room, sizeof(room));
+    ZT_CHECK(!strcmp(host, "::1"));
+    ZT_CHECK(port == 80);
+    ZT_CHECK(!strcmp(room, "x"));
+
+    znp_parse_target("[fe80::2]", host, sizeof(host), &port, room, sizeof(room));
+    ZT_CHECK(!strcmp(host, "fe80::2"));
+    ZT_CHECK(port == ZNP_DEFAULT_PORT);
+
+    /* A room is only what follows the slash. */
+    znp_parse_target("h:1/", host, sizeof(host), &port, room, sizeof(room));
+    ZT_CHECK(!strcmp(host, "h"));
+    ZT_CHECK(port == 1);
+    ZT_CHECK(!strcmp(room, "default"));
+}
+
+static void test_znp_hello_layout(void)
+{
+    ZT_SECTION("znp: client hello is fixed-width and NUL-padded");
+
+    uint8_t hello[ZNP_HELLO_BYTES];
+
+    ZT_CHECK(ZNP_HELLO_BYTES == 69);
+    znp_hello_encode(hello, ZNP_MODE_CREATE, "room1", "pw", "nick");
+    ZT_CHECK(hello[0] == 0 && hello[1] == 0 && hello[2] == 0 && hello[3] == ZNP_VERSION);
+    ZT_CHECK(hello[4] == ZNP_MODE_CREATE);
+    ZT_CHECK(!memcmp(hello + 5, "room1\0\0\0\0\0\0\0\0\0\0\0", ZNP_ROOM_BYTES));
+    ZT_CHECK(hello[5 + ZNP_ROOM_BYTES] == 'p');
+    ZT_CHECK(hello[5 + ZNP_ROOM_BYTES + 2] == 0);
+    ZT_CHECK(!memcmp(hello + 5 + ZNP_ROOM_BYTES + ZNP_PASSWORD_BYTES, "nick", 4));
+
+    /* An over-long field is cut, not written past. */
+    znp_hello_encode(hello, ZNP_MODE_JOIN, "0123456789abcdefTAIL", "", "");
+    ZT_CHECK(!memcmp(hello + 5, "0123456789abcdef", ZNP_ROOM_BYTES));
+    ZT_CHECK(hello[5 + ZNP_ROOM_BYTES] == 0);
+}
+
+static void test_znp_server_hello_decode(void)
+{
+    ZT_SECTION("znp: server hello, and what is not one");
+
+    uint8_t in[ZNP_SERVER_HELLO_BYTES];
+    char room[ZNP_ROOM_BYTES + 1];
+    unsigned role = 0;
+
+    memset(in, 0, sizeof(in));
+    in[3] = ZNP_VERSION;
+    in[4] = ZNP_ROLE_CLIENT;
+    memcpy(in + 5, "abc", 3);
+    ZT_CHECK(znp_server_hello_decode(in, sizeof(in), &role, room, sizeof(room)) == 1);
+    ZT_CHECK(role == ZNP_ROLE_CLIENT);
+    ZT_CHECK(!strcmp(room, "abc"));
+
+    /* Short, wrong version, or a role this client has no pad for. */
+    ZT_CHECK(znp_server_hello_decode(in, sizeof(in) - 1, &role, room, sizeof(room)) == 0);
+    in[3] = ZNP_VERSION + 1;
+    ZT_CHECK(znp_server_hello_decode(in, sizeof(in), &role, room, sizeof(room)) == 0);
+    in[3] = ZNP_VERSION;
+    in[4] = 9;
+    ZT_CHECK(znp_server_hello_decode(in, sizeof(in), &role, room, sizeof(room)) == 0);
+}
+
+static void test_znp_framing_loopback(void)
+{
+    ZT_SECTION("znp: a frame over a socket comes back as it went");
+
+    int sv[2];
+
+    if (socketpair(AF_UNIX, SOCK_STREAM, 0, sv) != 0) {
+        fprintf(stderr, "    SKIP: socketpair failed (errno %d)\n", errno);
+        return;
+    }
+    net_adopt(sv[0], 0);
+    net_adopt(sv[1], 0);
+
+    uint8_t payload[NETPLAY_PACKET_BYTES];
+    NetplayPacket const sent = { NETPLAY_MAGIC, 7, 11, 0x1234u, 0xABCDu };
+
+    netplay_packet_encode(payload, &sent);
+    ZT_CHECK(znp_frame_send(sv[0], ZNP_INPUT, payload, sizeof(payload), 1000) == 1);
+    ZT_CHECK(znp_frame_send(sv[0], ZNP_BYE, NULL, 0, 1000) == 1);
+
+    uint8_t got[ZNP_MAX_PAYLOAD];
+    unsigned type = 0;
+    size_t len = 0;
+
+    ZT_CHECK(znp_frame_recv(sv[1], &type, got, sizeof(got), &len, 1000) == 1);
+    ZT_CHECK(type == ZNP_INPUT);
+    ZT_CHECK(len == NETPLAY_PACKET_BYTES);
+
+    NetplayPacket back;
+    ZT_CHECK(netplay_packet_decode(&back, got) == 1);
+    ZT_CHECK(back.session == 7 && back.seq == 11 && back.joy == 0x1234u);
+
+    /* An empty payload is a frame too. */
+    ZT_CHECK(znp_frame_recv(sv[1], &type, got, sizeof(got), &len, 1000) == 1);
+    ZT_CHECK(type == ZNP_BYE);
+    ZT_CHECK(len == 0);
+
+    /* A payload the reader has no room for fails rather than being cut, since
+       the rest of it would be read as the next header. */
+    ZT_CHECK(znp_frame_send(sv[0], ZNP_INPUT, payload, sizeof(payload), 1000) == 1);
+    ZT_CHECK(znp_frame_recv(sv[1], &type, got, 4, &len, 1000) == 0);
+
+    /* Nothing to read, and it says so rather than blocking. */
+    close(sv[0]);
+    ZT_CHECK(znp_frame_recv(sv[1], &type, got, sizeof(got), &len, 50) == 0);
+    close(sv[1]);
+}
+
+static void test_znp_prefix_exchange(void)
+{
+    ZT_SECTION("znp: the stream prefix, and refusing a stranger");
+
+    int sv[2];
+
+    if (socketpair(AF_UNIX, SOCK_STREAM, 0, sv) != 0) {
+        fprintf(stderr, "    SKIP: socketpair failed (errno %d)\n", errno);
+        return;
+    }
+    net_adopt(sv[0], 0);
+    net_adopt(sv[1], 0);
+
+    /* The other end sends its prefix first; exchanging both at once would
+       have each side waiting for a read before doing its write. */
+    ZT_CHECK(net_send_all(sv[1], znp_prefix, ZNP_PREFIX_BYTES, 1000) == 1);
+    ZT_CHECK(znp_prefix_exchange(sv[0], 1000) == 1);
+    close(sv[0]);
+    close(sv[1]);
+
+    if (socketpair(AF_UNIX, SOCK_STREAM, 0, sv) != 0) {
+        return;
+    }
+    net_adopt(sv[0], 0);
+    net_adopt(sv[1], 0);
+    ZT_CHECK(net_send_all(sv[1], "HTTP", 4, 1000) == 1);
+    ZT_CHECK(znp_prefix_exchange(sv[0], 1000) == 0);
+    close(sv[0]);
+    close(sv[1]);
+}
+
 /* Entry point */
 
 int main(void)
@@ -459,6 +629,11 @@ int main(void)
     test_desync_detection();
     test_udp_loopback();
     test_tcp_loopback();
+    test_znp_target_parsing();
+    test_znp_hello_layout();
+    test_znp_server_hello_decode();
+    test_znp_framing_loopback();
+    test_znp_prefix_exchange();
 
     ZT_RESULTS();
 }
