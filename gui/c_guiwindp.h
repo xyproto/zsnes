@@ -34,6 +34,7 @@ extern char GUIChoseSlotTextX[2];
 extern char GUIComboTextH[21];
 extern char GUILoadTextA[38];
 extern u1 GUIFreshInputSelect;
+extern u1 NetplayRelayConfig;
 extern u1 NetplayUDPConfig;
 extern u1 GUILoadPos;
 extern u1 GUIStatesText5;
