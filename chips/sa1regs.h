@@ -112,6 +112,7 @@ extern u1 SA1_BRF[16];
 extern u1* CurBWPtr;
 extern u1* SA1BWPtr;
 extern u1* SA1RAMArea;
+enum { SA1_BWRAM_BYTES = 131072 }; /* the most an SA-1 cart carries */
 extern u1* SA1Ptr; /* where the SA-1 is executing */
 extern u1* SA1RegPCS;
 extern u1* SNSBWPtr;

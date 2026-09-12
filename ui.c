@@ -12,6 +12,7 @@
 #include "c_init.h"
 #include "c_intrf.h"
 #include "cfg.h"
+#include "chips/sa1regs.h"
 #include "cpu/c_dspproc.h"
 #include "cpu/dspproc.h" /* the DSP block, for the layout check in selftest() */
 #include "input.h"
@@ -364,7 +365,7 @@ static void allocmem(void)
     AllocmemFail(vcache2b, 262144 + 256);
     AllocmemFail(vcache4b, 131072 + 256);
     AllocmemFail(vcache8b, 65536 + 256);
-    AllocmemFail(SA1RAMArea, 131072);
+    AllocmemFail(SA1RAMArea, SA1_BWRAM_BYTES);
     AllocmemFail(romaptr, ROM_BUFFER_BYTES);
 
     /* Zeroed, unlike the ROM buffer: the Seta chip runs a command when byte

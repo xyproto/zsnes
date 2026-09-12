@@ -1051,9 +1051,17 @@ void c_membank0w16ramSA1(void)
 
 /* --- the SA-1's view of its own RAM -------------------------------------- *
  *
- * Banks 40-4F, four 64K slices of SA1RAMArea. During a character-conversion
- * DMA reads come from the converter one byte at a time; writes never do.
+ * Banks 40-4F, four 64K slices of SA1RAMArea. The assembly masked the bank
+ * with 3 and ran into whatever followed the 128K; BW-RAM mirrors at its own
+ * size. During a character-conversion DMA reads come from the converter one
+ * byte at a time; writes never do.
  */
+/* Offset into BW-RAM of bank ebx, offset ecx, plus `k`; a word straddling the
+   end mirrors like everything else. */
+static inline u4 mem_bwram(u4 const k)
+{
+    return (((MemSeamB & 3u) << 16) + MemSeamC + k) & (SA1_BWRAM_BYTES - 1);
+}
 void c_SA1RAMaccessbankr8(void)
 {
     if (SA1_in_cc1_dma != 0) {
@@ -1062,8 +1070,7 @@ void c_SA1RAMaccessbankr8(void)
         mem_set_al(SA1_DMA_VALUE);
         return;
     }
-    MemSeamB = ((MemSeamB & 3u) << 16) + (uintptr_t)SA1RAMArea;
-    mem_set_al(*(u1*)(uintptr_t)(MemSeamB + MemSeamC));
+    mem_set_al(SA1RAMArea[mem_bwram(0)]);
     MemSeamB = 0;
 }
 
@@ -1083,24 +1090,20 @@ void c_SA1RAMaccessbankr16(void)
         mem_set_ax((u2)(lo | (hi << 8)));
         return;
     }
-    MemSeamB = ((MemSeamB & 3u) << 16) + (uintptr_t)SA1RAMArea;
-    mem_set_ax((u2)(*(u1*)(uintptr_t)(MemSeamB + MemSeamC)
-        | (*(u1*)(uintptr_t)(MemSeamB + MemSeamC + 1) << 8)));
+    mem_set_ax((u2)(SA1RAMArea[mem_bwram(0)] | (SA1RAMArea[mem_bwram(1)] << 8)));
     MemSeamB = 0;
 }
 
 void c_SA1RAMaccessbankw8(void)
 {
-    MemSeamB = ((MemSeamB & 3u) << 16) + (uintptr_t)SA1RAMArea;
-    *(u1*)(uintptr_t)(MemSeamB + MemSeamC) = (u1)(MemSeamA & 0xFFu);
+    SA1RAMArea[mem_bwram(0)] = (u1)(MemSeamA & 0xFFu);
     MemSeamB = 0;
 }
 
 void c_SA1RAMaccessbankw16(void)
 {
-    MemSeamB = ((MemSeamB & 3u) << 16) + (uintptr_t)SA1RAMArea;
-    *(u1*)(uintptr_t)(MemSeamB + MemSeamC) = (u1)(MemSeamA & 0xFFu);
-    *(u1*)(uintptr_t)(MemSeamB + MemSeamC + 1) = (u1)((MemSeamA >> 8) & 0xFFu);
+    SA1RAMArea[mem_bwram(0)] = (u1)(MemSeamA & 0xFFu);
+    SA1RAMArea[mem_bwram(1)] = (u1)((MemSeamA >> 8) & 0xFFu);
     MemSeamB = 0;
 }
 

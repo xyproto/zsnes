@@ -160,6 +160,9 @@ extern uint32_t Voice0BufPtrSt[8];
 static void copy_spc_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, size_t))
 {
     size_t const dsp = zst_dspsave_run ? zst_dspsave_run : (size_t)PHdspsave;
+    /* volatile: the run continues past Voice0BufPtr, and _FORTIFY_SOURCE
+       would otherwise bound the copy at that array. */
+    uint8_t* volatile after = (uint8_t*)Voice0BufPtr + sizeof(Voice0BufPtr);
     size_t const upto = (size_t)((uint8_t*)Voice0BufPtr - (uint8_t*)BRRBuffer);
 
     copy_func(buffer, spcram_run, PHspcsave);
@@ -173,8 +176,7 @@ static void copy_spc_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, 
         } else {
             copy_func(buffer, Voice0BufPtrSt, sizeof(Voice0BufPtrSt));
         }
-        copy_func(buffer, (uint8_t*)Voice0BufPtr + sizeof(Voice0BufPtr),
-            dsp - upto - sizeof(Voice0BufPtr));
+        copy_func(buffer, after, dsp - upto - sizeof(Voice0BufPtr));
     } else {
         copy_func(buffer, BRRBuffer, dsp);
     }

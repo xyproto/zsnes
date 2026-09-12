@@ -84,7 +84,7 @@ void UpdateArithStuff(void)
 
 static void executesa1dma(void)
 {
-    sa1dmaptrs = SA1DMAInfo & 0x01 ? &SA1RAMArea[SA1DMASource & 0x0003FFFF] : // BWRAM
+    sa1dmaptrs = SA1DMAInfo & 0x01 ? &SA1RAMArea[SA1DMASource & (SA1_BWRAM_BYTES - 1)] : // BWRAM
         SA1DMAInfo & 0x02 ? &IRAM[SA1DMASource & 0x000007FF]
                           : // IRAM
         ((u1* const*)snesmmap)[SA1DMASource >> 16 & 0xFF] + (SA1DMASource & 0x0000FFFF);
@@ -99,7 +99,7 @@ void sa1dmairam(void)
 
 void sa1dmabwram(void)
 {
-    sa1dmaptr = &SA1RAMArea[SA1DMADest & 0x03FFFF];
+    sa1dmaptr = &SA1RAMArea[SA1DMADest & (SA1_BWRAM_BYTES - 1)];
     executesa1dma();
 }
 
