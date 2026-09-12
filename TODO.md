@@ -3,6 +3,7 @@
 - [ ] Confirm the DSP4 division table on a DSP4 cart. `floor(0x8000/n)` verified, but not the chip's rounding.
 - [ ] Fix Super Mario RPG hanging in the attract demo at frame 19956, force-blank never cleared. Needs a reference trace.
 - [ ] Carry SRAM and the host's state into a netplay session; it power-cycles both sides instead.
+- [ ] `WITH_TLS`: build the netplay client against libssl/libtls when present, plaintext when not. The relay needs `-insecure` until then.
 - [ ] Move the Windows blitter (`win/winlink.c`) onto `video/filter.c`; it still size-matches the surface.
 - [ ] Retire the old graphics engine (`newengen=0` + `bgfixer`).
 - [ ] Use `SDL_Gamepad` for default bindings only. Saved bindings index the flat 256+ space and must not move.
