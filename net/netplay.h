@@ -35,5 +35,9 @@ extern u1 NetplayHostRole;
 /* Settings the panel edits. */
 extern char NetplayHostName[32];
 extern u1 NetplayUDPConfig;
+/* Reach the peer through the relay in server/ rather than directly, for when
+   neither player can accept a connection. The host field then reads
+   "relay[:port][/room]". */
+extern u1 NetplayRelayConfig;
 
 #endif

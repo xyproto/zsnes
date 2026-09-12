@@ -23,6 +23,7 @@
 #include "netplay.h"
 #include "packet.h"
 #include "transport.h"
+#include "znp.h"
 
 enum {
     NETPLAY_IDLE = 0,
@@ -30,7 +31,9 @@ enum {
     NETPLAY_CONNECTING = 2,
     NETPLAY_CONNECTED = 3,
     NETPLAY_JOINING = 4,
-    NETPLAY_HANDSHAKING = 5
+    NETPLAY_HANDSHAKING = 5,
+    /* Connected to the relay, waiting for it to pair us with someone. */
+    NETPLAY_RELAY_WAITING = 6
 };
 
 char NetplayStatusLine[64] = "IDLE";
@@ -50,8 +53,15 @@ static u1 NetplayRemoteSeqValid = 0;
 static u4 NetplayRemoteJoy = 0x00008000;
 static u4 NetplaySessionToken = 0;
 u1 NetplayUDPConfig = 1;
+u1 NetplayRelayConfig = 0;
 char NetplayHostName[32] = "127.0.0.1";
 #ifdef __UNIXSDL__
+/* Set for as long as the session runs through the relay, which changes how a
+   packet is framed and means neither side listens for the other. */
+static u1 NetplayRelayActive = 0;
+static char NetplayRelayRoom[ZNP_ROOM_BYTES + 1] = "";
+static char NetplayRelayFault[48] = "";
+static uint64_t NetplayRelayPingAt = 0;
 static u1 NetplayPendingRemoteValid = 0;
 static u1 NetplayHandshakePending = 0;
 static NetplayPacket NetplayPendingRemote;
@@ -59,6 +69,10 @@ static NetplayPacket NetplayPendingRemote;
 
 #define NETPLAY_INPUT_DELAY 3
 #define NETPLAY_FRAME_MS 17
+
+/* How often to poke the relay while waiting for a peer, which is well inside
+   the minute it gives up on a client that has gone quiet. */
+enum { NETPLAY_RELAY_PING_MS = 20000 };
 
 #ifdef __UNIXSDL__
 static u4 NetplayInputQueue[NETPLAY_INPUT_DELAY];
@@ -85,6 +99,8 @@ static int NetplaySendPacket(int const fd, NetplayPacket const* const packet, in
     uint8_t wire[NETPLAY_PACKET_BYTES];
 
     netplay_packet_encode(wire, packet);
+    if (NetplayRelayActive != 0)
+        return znp_frame_send(fd, ZNP_INPUT, wire, sizeof(wire), timeout_ms);
     if (NetplayUDPConfig == 0)
         return net_send_all(fd, wire, sizeof(wire), timeout_ms);
     if (net_wait(fd, 1, timeout_ms) <= 0)
@@ -104,6 +120,27 @@ static int NetplayRecvPacket(int const fd, NetplayPacket* const packet, int time
 {
     uint8_t wire[NETPLAY_PACKET_BYTES];
 
+    if (NetplayRelayActive != 0) {
+        uint64_t const until = net_now_ms() + (uint64_t)(timeout_ms > 0 ? timeout_ms : 0);
+
+        /* Anything else the relay has to say - a pong, a peer arriving twice -
+           is stepped over, but not at the cost of the deadline. */
+        for (;;) {
+            uint64_t const now = net_now_ms();
+            uint8_t frame[ZNP_MAX_PAYLOAD];
+            unsigned type = 0;
+            size_t len = 0;
+
+            if (!znp_frame_recv(fd, &type, frame, sizeof(frame), &len,
+                    now >= until ? 0 : (int)(until - now)))
+                return 0;
+            if (type == ZNP_BYE || type == ZNP_SERVER_ERROR)
+                return 0;
+            if (type == ZNP_INPUT && len == NETPLAY_PACKET_BYTES
+                && netplay_packet_decode(packet, frame))
+                return 1;
+        }
+    }
     if (NetplayUDPConfig == 0) {
         if (!net_recv_all(fd, wire, sizeof(wire), timeout_ms))
             return 0;
@@ -216,13 +253,88 @@ static int NetplayJoinHandshake(NetSocket const fd)
 }
 #endif
 
+#ifdef __UNIXSDL__
+/* Whatever text the relay sent with an error, as a status line. */
+static void NetplayRelayFaultFrom(uint8_t const* const buf, size_t const len)
+{
+    size_t const take = len < sizeof(NetplayRelayFault) - 1 ? len : sizeof(NetplayRelayFault) - 1;
+
+    memcpy(NetplayRelayFault, buf, take);
+    NetplayRelayFault[take] = '\0';
+}
+
+/* Prefix, hello, hello back. The relay hands out the roles, so unlike a
+   peer-to-peer session neither side knows which pad it is on until now. */
+static int NetplayRelayHandshake(NetSocket const fd)
+{
+    uint8_t hello[ZNP_HELLO_BYTES];
+    uint8_t buf[ZNP_MAX_PAYLOAD];
+    char const* const password = getenv("ZSNES_NETPLAY_PASSWORD");
+    char const* const nick = getenv("ZSNES_NETPLAY_NICK");
+    unsigned type = 0;
+    unsigned role = 0;
+    size_t len = 0;
+
+    NetplayRelayFault[0] = '\0';
+    if (!znp_prefix_exchange(fd, 5000)) {
+        snprintf(NetplayRelayFault, sizeof(NetplayRelayFault), "NOT A RELAY");
+        return 0;
+    }
+    /* CREATE, which the relay reads as "join the room or make it": whoever
+       gets there first is P1 and the next one is P2. */
+    znp_hello_encode(hello, ZNP_MODE_CREATE, NetplayRelayRoom,
+        password != NULL ? password : "", nick != NULL ? nick : "");
+    if (!znp_frame_send(fd, ZNP_CLIENT_HELLO, hello, sizeof(hello), 5000)
+        || !znp_frame_recv(fd, &type, buf, sizeof(buf), &len, 5000)) {
+        return 0;
+    }
+    if (type == ZNP_SERVER_ERROR) {
+        NetplayRelayFaultFrom(buf, len);
+        return 0;
+    }
+    if (type != ZNP_SERVER_HELLO
+        || !znp_server_hello_decode(buf, len, &role, NetplayRelayRoom,
+            sizeof(NetplayRelayRoom))) {
+        return 0;
+    }
+    NetplayHostRole = role == ZNP_ROLE_HOST ? 1 : 0;
+    return 1;
+}
+
+/* Both players do this, which is the point of the relay: nobody has to be
+   reachable from outside. HOST and JOIN therefore do the same thing. */
+static void NetplayRelayStart(void)
+{
+    char host[sizeof(NetplayHostName)];
+    uint16_t port = ZNP_DEFAULT_PORT;
+
+    NetplayDisconnectSession();
+    znp_parse_target(NetplayHostName, host, sizeof(host), &port,
+        NetplayRelayRoom, sizeof(NetplayRelayRoom));
+    memcpy(NetplayJoinHostCopy, host, sizeof(NetplayJoinHostCopy));
+    NetplayJoinIsUDP = 0;
+    if (!net_connect_start(NetplayJoinHostCopy, port, 0)) {
+        strcpy(NetplayLastEvent, "CONNECT FAILED");
+        return;
+    }
+    NetplayRelayActive = 1;
+    NetplaySessionState = NETPLAY_JOINING;
+}
+#endif
+
 void NetplayDisconnectSession(void)
 {
 #ifdef __UNIXSDL__
     if (NetplayClientSocket >= 0) {
+        if (NetplayRelayActive != 0) {
+            znp_frame_send(NetplayClientSocket, ZNP_BYE, NULL, 0, 100);
+        }
         net_close(NetplayClientSocket);
         NetplayClientSocket = -1;
     }
+    NetplayRelayActive = 0;
+    NetplayRelayRoom[0] = '\0';
+    NetplayRelayFault[0] = '\0';
     if (NetplayServerSocket >= 0) {
         net_close(NetplayServerSocket);
         NetplayServerSocket = -1;
@@ -252,7 +364,13 @@ void NetplayHostSession(void)
     NetplaySessionState = NETPLAY_IDLE;
 #else
     int const udp = NetplayUDPConfig != 0;
-    NetSocket const fd = net_open(udp);
+    NetSocket fd;
+
+    if (NetplayRelayConfig != 0) {
+        NetplayRelayStart();
+        return;
+    }
+    fd = net_open(udp);
 
     if (fd == NET_SOCKET_NONE) {
         strcpy(NetplayLastEvent, "SERVER SOCKET FAILED");
@@ -288,6 +406,10 @@ void NetplayJoinSession(void)
     strcpy(NetplayLastEvent, "UNSUPPORTED ON THIS PORT");
     NetplaySessionState = NETPLAY_IDLE;
 #else
+    if (NetplayRelayConfig != 0) {
+        NetplayRelayStart();
+        return;
+    }
     NetplayDisconnectSession();
     NetplayHostRole = 0;
     NetplayJoinIsUDP = NetplayUDPConfig != 0 ? 1 : 0;
@@ -307,27 +429,20 @@ static int NetplaySessionPending(void)
     return NetplaySessionState == NETPLAY_WAITING
         || NetplaySessionState == NETPLAY_CONNECTING
         || NetplaySessionState == NETPLAY_JOINING
-        || NetplaySessionState == NETPLAY_HANDSHAKING;
+        || NetplaySessionState == NETPLAY_HANDSHAKING
+        || NetplaySessionState == NETPLAY_RELAY_WAITING;
 }
 
 /* Hold the emulator still until the session is up.
  *
- * Without this the host runs at full speed while it waits for someone to
- * join, so by the time a peer arrives the two machines are thousands of
- * frames apart with nothing to reconcile them - they exchange input happily
- * and show different games. The pause is released as soon as the session is
- * either connected or over, and a pause the player set themselves is left
- * alone: only a pause netplay applied is one netplay may lift.
+ * Released once the session is connected or over, and a pause the player set
+ * is left alone. Held safely here because the input path runs before the pause
+ * check in c_cpuover, so the handshake still makes progress; the NMI counter
+ * runs on for the same reason, leaving the peers' emulated-frame numbers apart
+ * by however long the host waited - a debug counter, not state.
  *
- * Emulation can be held here because the input path runs before the pause
- * check in c_cpuover, so this function keeps being called and the handshake
- * still makes progress. The NMI counter runs on through a hold for the same
- * reason, so the two peers' emulated-frame numbers stay however far apart the
- * host waited - a debug counter, not state.
- *
- * The hold narrows the gap between the two machines; it cannot close it,
- * because each side booted its own copy of the game at its own moment. That
- * is what the power cycle behind NetplayStartPending is for. */
+ * This narrows the gap between the two machines but cannot close it: each side
+ * booted its own copy of the game. NetplayStartPending is what closes it. */
 static u1 NetplayHeldEmulation;
 
 static void NetplayHoldEmulation(int const hold)
@@ -464,20 +579,69 @@ void NetplayAdvanceState(int timeout_ms)
             /* The handshake runs here rather than on the connecting thread:
                it is protocol, not transport. Blocking for it costs nothing
                visible because emulation is held until the session is up. */
-            if (NetplayJoinHandshake(fd)) {
+            int const ok = NetplayRelayActive != 0 ? NetplayRelayHandshake(fd)
+                                                   : NetplayJoinHandshake(fd);
+
+            if (ok && NetplayRelayActive != 0) {
+                /* Paired later, by the relay, so the session is not up yet. */
+                NetplayClientSocket = fd;
+                NetplayRelayPingAt = net_now_ms() + NETPLAY_RELAY_PING_MS;
+                NetplaySessionState = NETPLAY_RELAY_WAITING;
+                snprintf(NetplayLastEvent, sizeof(NetplayLastEvent), "ROOM %s",
+                    NetplayRelayRoom);
+            } else if (ok) {
                 NetplayClientSocket = fd;
                 NetplaySessionResetTiming();
                 NetplaySessionState = NETPLAY_CONNECTED;
                 strcpy(NetplayLastEvent,
                     NetplayJoinIsUDP != 0 ? "UDP CONNECTED" : "TCP CONNECTED");
             } else {
+                char fault[sizeof(NetplayRelayFault)];
+
+                snprintf(fault, sizeof(fault), "%s", NetplayRelayFault);
                 net_close(fd);
+                NetplayRelayActive = 0;
                 NetplaySessionState = NETPLAY_IDLE;
-                strcpy(NetplayLastEvent, "HANDSHAKE FAILED");
+                if (fault[0] != '\0')
+                    snprintf(NetplayLastEvent, sizeof(NetplayLastEvent),
+                        "RELAY: %s", fault);
+                else
+                    strcpy(NetplayLastEvent, "HANDSHAKE FAILED");
             }
         } else if (got == NET_CONNECT_FAILED) {
+            NetplayRelayActive = 0;
             NetplaySessionState = NETPLAY_IDLE;
             strcpy(NetplayLastEvent, "CONNECT FAILED");
+        }
+    }
+
+    if (NetplaySessionState == NETPLAY_RELAY_WAITING && NetplayClientSocket >= 0) {
+        if (net_now_ms() >= NetplayRelayPingAt) {
+            NetplayRelayPingAt = net_now_ms() + NETPLAY_RELAY_PING_MS;
+            znp_frame_send(NetplayClientSocket, ZNP_PING, NULL, 0, 100);
+        }
+        if (net_wait(NetplayClientSocket, 0, timeout_ms) > 0) {
+            uint8_t frame[ZNP_MAX_PAYLOAD];
+            unsigned type = 0;
+            size_t len = 0;
+
+            if (!znp_frame_recv(NetplayClientSocket, &type, frame, sizeof(frame),
+                    &len, 1000)) {
+                NetplayDisconnectSession();
+                strcpy(NetplayLastEvent, "RELAY LOST");
+            } else if (type == ZNP_PEER_READY) {
+                NetplaySessionResetTiming();
+                NetplaySessionState = NETPLAY_CONNECTED;
+                strcpy(NetplayLastEvent, "RELAY CONNECTED");
+            } else if (type == ZNP_SERVER_ERROR) {
+                char fault[sizeof(NetplayRelayFault)];
+
+                NetplayRelayFaultFrom(frame, len);
+                snprintf(fault, sizeof(fault), "%s", NetplayRelayFault);
+                NetplayDisconnectSession();
+                snprintf(NetplayLastEvent, sizeof(NetplayLastEvent), "RELAY: %s",
+                    fault);
+            }
         }
     }
 #else
@@ -486,10 +650,10 @@ void NetplayAdvanceState(int timeout_ms)
 }
 
 #ifdef ZSNES_DEBUG_HOOKS
-/* ZSNES_NETPLAY=host, or =join:<address>, opens a session on the first frame
-   without anyone clicking the panel. That is what lets two headless instances
-   be paired in a test, which is the only way this code has ever been run end
-   to end. */
+/* ZSNES_NETPLAY=host, =join:<address> or =relay:<address>[/room] opens a
+   session on the first frame without anyone clicking the panel. That is what
+   lets two headless instances be paired in a test, which is the only way this
+   code has ever been run end to end. */
 static void NetplayDebugAutoStart(void)
 {
     static int done;
@@ -507,6 +671,10 @@ static void NetplayDebugAutoStart(void)
         NetplayHostSession();
     } else if (!strncmp(spec, "join:", 5)) {
         snprintf(NetplayHostName, sizeof(NetplayHostName), "%s", spec + 5);
+        NetplayJoinSession();
+    } else if (!strncmp(spec, "relay:", 6)) {
+        snprintf(NetplayHostName, sizeof(NetplayHostName), "%s", spec + 6);
+        NetplayRelayConfig = 1;
         NetplayJoinSession();
     }
 }
@@ -729,6 +897,10 @@ void NetplayUpdateStatus(void)
         return;
     case NETPLAY_JOINING:
         snprintf(NetplayStatusLine, sizeof(NetplayStatusLine), "RESOLVING %s...", NetplayJoinHostCopy);
+        return;
+    case NETPLAY_RELAY_WAITING:
+        snprintf(NetplayStatusLine, sizeof(NetplayStatusLine),
+            "ROOM %s - WAITING FOR PEER", NetplayRelayRoom);
         return;
     case NETPLAY_CONNECTED:
         snprintf(NetplayStatusLine, sizeof(NetplayStatusLine), "%s",
