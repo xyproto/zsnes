@@ -18,6 +18,11 @@
 #include "../win/winlink.h"
 #endif
 
+/* One doubled line of scratch for the interpolation blitter. The assembly
+   borrowed the tail of the sprite table, which on a 64-bit build is no longer
+   where it thought. */
+static u1 interp_line[256 * 4];
+
 u1* WinVidMemStart;
 u4 AddEndBytes;
 u4 NumBytesPerLine;
@@ -218,7 +223,7 @@ static void interpolate640x480x16bwin(u2* src, u1* dst, u1 dl)
             } else {
                 {
                     u4 ecx = 255;
-                    u1* edx = spritetablea + 512 * 256;
+                    u1* edx = interp_line;
                     do {
                         u4 eax = src[0];
                         u4 ebx = src[1];
@@ -235,7 +240,7 @@ static void interpolate640x480x16bwin(u2* src, u1* dst, u1 dl)
                 dst += AddEndBytes + 4;
                 {
                     u4 ecx = 255;
-                    u1* edx = spritetablea + 512 * 256;
+                    u1* edx = interp_line;
                     do {
                         u4 eax = (*(u4*)edx & HalfTrans[0]) >> 1;
                         u4 ebx = (eax & HalfTrans[0]) >> 1;
@@ -270,7 +275,7 @@ static void interpolate640x480x16bwin(u2* src, u1* dst, u1 dl)
             } else {
                 {
                     u4 ecx = 255;
-                    u1* edx = spritetablea + 512 * 256;
+                    u1* edx = interp_line;
                     do {
                         u4 eax = src[0];
                         u4 ebx = src[1];
@@ -287,7 +292,7 @@ static void interpolate640x480x16bwin(u2* src, u1* dst, u1 dl)
                 dst += 4 + AddEndBytes;
                 {
                     u4 ecx = 255;
-                    u1* edx = spritetablea + 512 * 256;
+                    u1* edx = interp_line;
                     do {
                         *(u4*)dst = (*(u4*)edx & HalfTrans[0]) >> 1;
                         dst += 4;
@@ -306,7 +311,7 @@ static void interpolate640x480x16bwin(u2* src, u1* dst, u1 dl)
         lineleft = dl;
         // do first line
         u4 ecx = 255;
-        u1* edx = spritetablea + 512 * 256;
+        u1* edx = interp_line;
         do {
             u4 eax = src[0];
             u4 ebx = src[1];
@@ -335,7 +340,7 @@ static void interpolate640x480x16bwin(u2* src, u1* dst, u1 dl)
             } else {
                 {
                     u4 ecx = 255;
-                    u1* edx = spritetablea + 512 * 256;
+                    u1* edx = interp_line;
                     do {
                         u4 eax = src[0];
                         u4 ebx = src[1];
@@ -354,7 +359,7 @@ static void interpolate640x480x16bwin(u2* src, u1* dst, u1 dl)
                     dst += 4 + AddEndBytes;
                 }
                 {
-                    u1* edx = spritetablea + 512 * 256;
+                    u1* edx = interp_line;
                     u4 ecx = 255;
                     do { // XXX memcpy()?
                         *(u4*)dst = *(u4*)edx;

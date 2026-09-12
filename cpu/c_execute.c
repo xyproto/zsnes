@@ -378,7 +378,7 @@ startagain:
     goto cpuover;
 
 sound:
-    r[R_EDI] = (zreg)tableadc[r[R_EBX]];
+    r[R_EDI] = (zreg)tableadc[r[R_EBX] & 0xFFu];
     {
         u4 const dspcyc = cycpbl;
         cycpbl = dspcyc - 55;

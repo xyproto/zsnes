@@ -1367,9 +1367,9 @@ void clearmem(void)
     memset(sram, 0, 65536 * 2);
     memset(regptra, 0, sizeof(regptra));
     memset(regptwa, 0, sizeof(regptwa));
-    memset(vcache2b, 0, 262144 + 256);
-    memset(vcache4b, 0, 131072 + 256);
-    memset(vcache8b, 0, 65536 + 256);
+    memset(vcache2b, 0, VCACHE2_BYTES);
+    memset(vcache4b, 0, VCACHE4_BYTES);
+    memset(vcache8b, 0, VCACHE8_BYTES);
     memset(pal16b, 0, sizeof(pal16b));
     memset(pal16bcl, 0, sizeof(pal16bcl));
     memset(pal16bclha, 0, 1024);
@@ -1391,7 +1391,7 @@ void clearvidsound(void)
     memset(BRRBuffer, 0, PHdspsave);
     memset(echoon0, 0, PHdspsave2);
     memset(&echobuf, 0, sizeof(echobuf));
-    memset(spcBuffera, 0, 65536 * 4 + 4096);
+    memset(spcBuffera, 0, SPCBUFFER_BYTES);
     memset(DSPMem, 0, 256);
 }
 

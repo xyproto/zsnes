@@ -27,11 +27,12 @@ static inline void add_dh(zreg* const r, u1 const n)
     set_dh(r, (u1)(DH(r) + n));
 }
 
-/* bl is the opcode index; the dispatcher only ever loads the low byte, which
-   is what keeps the upper three of ebx zero and the index inside the table. */
+/* bl is the opcode index. The assembly loaded only the low byte and relied
+   on every opcode leaving the upper three clear; loading the whole register
+   costs nothing and keeps a program that breaks that rule inside the table. */
 static inline void set_bl(zreg* const r, u1 const v)
 {
-    r[R_EBX] = (r[R_EBX] & 0xFFFFFF00u) | v;
+    r[R_EBX] = v;
 }
 
 /* Run one SPC700 opcode. */

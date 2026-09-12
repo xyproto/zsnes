@@ -690,16 +690,22 @@ uint64_t zst_state_hash(void)
        &sndrot is one byte to __builtin_object_size. OAM and CGRAM then get a
        block each, so a block-by-block comparison says which it was. */
     {
+        /* Minus hdmadata: its register-handler pointers are host addresses,
+           which made the hash differ between builds of the same emulator. */
         void* volatile ppu = &sndrot;
+        uint8_t* const base = (uint8_t*)ppu;
+        size_t const upto = (size_t)((uint8_t*)hdmadata - base);
+        size_t const live = sizeof(hdmadata);
 
-        state_hash_tally(&dummy, ppu, PHnum2writeppureg); /* 14 ppu regs */
+        state_hash_tally(&dummy, base, upto); /* 14 ppu regs before hdmadata */
+        state_hash_tally(&dummy, base + upto + live, PHnum2writeppureg - upto - live); /* 15 after */
     }
-    state_hash_tally(&dummy, oamram, 1024); /* 15 oam */
-    state_hash_tally(&dummy, cgram, sizeof(cgram)); /* 16 cgram */
-    state_hash_tally(&dummy, pcgram, 512); /* 17 pcgram */
-    state_hash_tally(&dummy, oamaddr_run, 14 * 4); /* 18 oam pointers */
-    state_hash_tally(&dummy, spc700read_run, 10 * 4); /* 19 spc700 regs */
-    state_hash_tally(&dummy, opcd_run, 6 * 4); /* 20 opcode state */
+    state_hash_tally(&dummy, oamram, 1024); /* 16 oam */
+    state_hash_tally(&dummy, cgram, sizeof(cgram)); /* 17 cgram */
+    state_hash_tally(&dummy, pcgram, 512); /* 18 pcgram */
+    state_hash_tally(&dummy, oamaddr_run, 14 * 4); /* 19 oam pointers */
+    state_hash_tally(&dummy, spc700read_run, 10 * 4); /* 20 spc700 regs */
+    state_hash_tally(&dummy, opcd_run, 6 * 4); /* 21 opcode state */
 
     /* Where in the frame the two machines think they are. */
     state_hash_tally(&dummy, &curcyc, 1);

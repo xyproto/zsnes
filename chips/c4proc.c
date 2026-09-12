@@ -826,11 +826,14 @@ static void c4_memcpy(void)
     uint8_t* ram = C4Ram;
     uint32_t len = RAMW(0x1F43);
     uint8_t* src = snesmmap[ram[0x1F42]] + RAMW(0x1F40);
-    uint8_t* dst = ram + (RAMW(0x1F45) & 0x1FFF);
+    uint32_t dst = RAMW(0x1F45) & 0x1FFF;
 
-    /* the asm looped 4G times on len 0; copy nothing instead */
+    /* the asm looped 4G times on len 0; copy nothing instead. The length is
+       a guest word, so the destination wraps inside the 8K rather than
+       running on into what follows it. */
     while (len--) {
-        *dst++ = *src++;
+        ram[dst] = *src++;
+        dst = (dst + 1) & 0x1FFF;
     }
 }
 

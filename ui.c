@@ -313,17 +313,17 @@ static _Noreturn void selftest(void)
         bad = 1;
     }
 
-    bad |= selftest_buf("BitConv32Ptr", BitConv32Ptr, 4096 + 65536 * 16);
-    bad |= selftest_buf("RGBtoYUVPtr", RGBtoYUVPtr, 65536 * 4 + 4096);
-    bad |= selftest_buf("spcBuffera", spcBuffera, 65536 * 4 + 4096);
-    bad |= selftest_buf("vbufaptr", vbufaptr, 512 * 296 * 4 + 4096 + 512 * 296 + 75036 * 4);
-    bad |= selftest_buf("vbufeptr", vbufeptr, 288 * 2 * 256 + 4096);
-    bad |= selftest_buf("ngwinptrb", ngwinptrb, 256 * 224 + 4096);
-    bad |= selftest_buf("vbufdptr", vbufdptr, 1024 * 296);
+    bad |= selftest_buf("BitConv32Ptr", BitConv32Ptr, BITCONV32_BYTES);
+    bad |= selftest_buf("RGBtoYUVPtr", RGBtoYUVPtr, RGBTOYUV_BYTES);
+    bad |= selftest_buf("spcBuffera", spcBuffera, SPCBUFFER_BYTES);
+    bad |= selftest_buf("vbufaptr", vbufaptr, VIDBUFFER_BYTES);
+    bad |= selftest_buf("vbufeptr", vbufeptr, VIDBUFFER2_BYTES);
+    bad |= selftest_buf("ngwinptrb", ngwinptrb, NGWIN_BYTES);
+    bad |= selftest_buf("vbufdptr", vbufdptr, VIDBUFFERD_BYTES);
     bad |= selftest_buf("romaptr", romaptr, ROM_BUFFER_BYTES);
     bad |= selftest_buf("sfxramdata", sfxramdata, SFX_RAM_BYTES);
     bad |= selftest_buf("setaramdata", setaramdata, SETA_RAM_BYTES);
-    bad |= selftest_buf("SA1RAMArea", SA1RAMArea, 131072);
+    bad |= selftest_buf("SA1RAMArea", SA1RAMArea, SA1_BWRAM_BYTES);
     bad |= selftest_buf("sram", sram, 65536 * 2);
 
     /* The emulator hands these on to other units; a narrower declaration on
@@ -344,27 +344,25 @@ static _Noreturn void selftest(void)
     exit(bad ? 1 : 0);
 }
 
+_Static_assert(256 * 64 * sizeof(SpriteInfo) <= SPRITETABLE_BYTES, "sprite table too small");
+
 static void allocmem(void)
 {
-    AllocmemFail(BitConv32Ptr, 4096 + 65536 * 16);
-    AllocmemFail(RGBtoYUVPtr, 65536 * 4 + 4096);
-    AllocmemFail(spcBuffera, 65536 * 4 + 4096);
-    /* 256 scanlines of 64 sprites; the GUI also borrows the tail as scratch. */
-    AllocmemFail(spritetablea, 256 * 64 * sizeof(SpriteInfo) + 4096);
-    /* The EXTBG mode 7 writers stash a priority byte per pixel at line + 75036*8
-       and hi-res mode 7 draws its second field 75036*4 further in, so the tail
-       has to leave room for both at once. */
-    AllocmemFail(vbufaptr, 512 * 296 * 4 + 4096 + 512 * 296 + 75036 * 4);
-    AllocmemFail(vbufeptr, 288 * 2 * 256 + 4096);
-    AllocmemFail(ngwinptrb, 256 * 224 + 4096);
-    AllocmemFail(vbufdptr, 1024 * 296);
-    AllocmemFail(vcache2bs, 65536 * 4 * 4 + 4096);
-    AllocmemFail(vcache4bs, 65536 * 4 * 2 + 4096);
-    AllocmemFail(vcache8bs, 65536 * 4 + 4096);
+    AllocmemFail(BitConv32Ptr, BITCONV32_BYTES);
+    AllocmemFail(RGBtoYUVPtr, RGBTOYUV_BYTES);
+    AllocmemFail(spcBuffera, SPCBUFFER_BYTES);
+    AllocmemFail(spritetablea, SPRITETABLE_BYTES);
+    AllocmemFail(vbufaptr, VIDBUFFER_BYTES);
+    AllocmemFail(vbufeptr, VIDBUFFER2_BYTES);
+    AllocmemFail(ngwinptrb, NGWIN_BYTES);
+    AllocmemFail(vbufdptr, VIDBUFFERD_BYTES);
+    AllocmemFail(vcache2bs, VCACHE2S_BYTES);
+    AllocmemFail(vcache4bs, VCACHE4S_BYTES);
+    AllocmemFail(vcache8bs, VCACHE8S_BYTES);
     AllocmemFail(sram, 65536 * 2);
-    AllocmemFail(vcache2b, 262144 + 256);
-    AllocmemFail(vcache4b, 131072 + 256);
-    AllocmemFail(vcache8b, 65536 + 256);
+    AllocmemFail(vcache2b, VCACHE2_BYTES);
+    AllocmemFail(vcache4b, VCACHE4_BYTES);
+    AllocmemFail(vcache8b, VCACHE8_BYTES);
     AllocmemFail(SA1RAMArea, SA1_BWRAM_BYTES);
     AllocmemFail(romaptr, ROM_BUFFER_BYTES);
 

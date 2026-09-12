@@ -85,8 +85,8 @@ void OP(COp82)(zreg* const r) /* BRL rl */
 {
     AX(r, xpc);
     SET8(r[R_EBX], GET8(xpb));
-    r[R_EAX] = (zreg)(uintptr_t)((r[R_EAX] & 0x8000u) ? snesmmap[r[R_EBX]]
-                                                    : snesmap2[r[R_EBX]]);
+    r[R_EAX] = (zreg)(uintptr_t)((r[R_EAX] & 0x8000u) ? snesmmap[r[R_EBX] & 0xFFu]
+                                                    : snesmap2[r[R_EBX] & 0xFFu]);
     r[R_EBX] = r[R_ESI] - r[R_EAX];
     SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + 2));
     r[R_EAX] = 0;
@@ -133,7 +133,7 @@ void OP(COp40)(zreg* const r) /* RTI s */
     r[R_EAX] = 0;
     AX(r, xpc);
     SET8(r[R_EBX], (u1)r[R_EDX]);
-    r[R_EDI] = (zreg)(uintptr_t)tablead[r[R_EBX]];
+    r[R_EDI] = (zreg)(uintptr_t)tablead[r[R_EBX] & 0xFFu];
     SET8(r[R_EBX], emul ? 0 : GET8(xpb));
     xpc = GET16(r[R_EAX]);
 
@@ -145,7 +145,7 @@ void OP(COp40)(zreg* const r) /* RTI s */
         u1* const base = bank_base(r[R_EAX], r[R_EBX], 1);
         int const low = (r[R_EAX] & 0x8000u) == 0;
         int const dma = low && r[R_EAX] >= 0x4300u;
-        if (dma && memtabler8[r[R_EBX]] != regaccessbankr8)
+        if (dma && memtabler8[r[R_EBX] & 0xFFu] != regaccessbankr8)
             doirqnext = 0;
         initaddrl = base;
         r[R_ESI] = (zreg)(uintptr_t)base + r[R_EAX];

@@ -247,7 +247,7 @@ void OP(COp22)(zreg* const r) /* JSL al */
         r[R_ESI] = (zreg)(uintptr_t)initaddrl + r[R_EAX];
         return;
     }
-    initaddrl = snesmap2[r[R_EBX]];
+    initaddrl = snesmap2[r[R_EBX] & 0xFFu];
     r[R_ESI] = (zreg)(uintptr_t)initaddrl + r[R_EAX];
 }
 
@@ -264,8 +264,8 @@ void OP(COp02)(zreg* const r) /* COP s */
     r[R_ESI]++;
     SET8(r[R_EBX], GET8(xpb));
     AX(r, xpc);
-    r[R_EAX] = (zreg)(uintptr_t)((r[R_EAX] & 0x8000u) ? snesmmap[r[R_EBX]]
-                                                    : snesmap2[r[R_EBX]]);
+    r[R_EAX] = (zreg)(uintptr_t)((r[R_EAX] & 0x8000u) ? snesmmap[r[R_EBX] & 0xFFu]
+                                                    : snesmap2[r[R_EBX] & 0xFFu]);
     r[R_EBX] = r[R_ESI] - r[R_EAX];
     xpc = GET16(r[R_EBX]);
 
@@ -332,7 +332,7 @@ void OP(COp40)(zreg* const r) /* RTI s */
     r[R_EBX] &= 0xFFFF00FFu;
     r[R_EAX] = 0;
     SET8(r[R_EBX], (u1)r[R_EDX]);
-    r[R_EDI] = (zreg)(uintptr_t)tablead[r[R_EBX]];
+    r[R_EDI] = (zreg)(uintptr_t)tablead[r[R_EBX] & 0xFFu];
     SET8(r[R_EBX], GET8(xpb));
     AX(r, xpc);
     jump_to(r, 1);

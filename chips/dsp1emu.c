@@ -461,6 +461,10 @@ short DSP1_Truncate(short C, short E)
         else if (C < 0)
             return -32767;
     } else {
+        /* The 1/2^n table at 0x31 only reaches n = 49; a smaller exponent
+           scaled by anything past it is zero. Pilotwings asks. */
+        if (E < -0x31)
+            return 0;
         if (E < 0)
             return C * DSP1ROM[0x0031 + E] >> 15;
     }

@@ -989,64 +989,66 @@ void c_membank0w16(void)
 /* --- bank 00-3F low RAM on an SA-1 cart ---------------------------------- *
  *
  * The WRAM mirror while the 65816 has the bus, the SA-1's own 2K of IRAM while
- * it does, zero above that. Only ecx is range-checked, so ebx can carry the
- * index a little past 800h - IRAM has room.
+ * it does, zero above that. The assembly range-checked ecx alone and let ebx
+ * carry the index past 800h into whatever followed IRAM; the check is on the
+ * whole address here, which is what "zero above that" meant.
  */
+static inline int mem_iram_in(u4 const a)
+{
+    return a < 0x800u;
+}
+
 void c_membank0r8ramSA1(void)
 {
+    u4 const a = MemSeamC + MemSeamB;
+
     if (SA1Status == 0) {
-        mem_set_al(*mem_wram(MemSeamC + MemSeamB));
+        mem_set_al(*mem_wram(a));
         return;
     }
-    if (MemSeamC >= 0x800u) {
-        mem_set_al(0);
-        return;
-    }
-    mem_set_al(IRAM[MemSeamC + MemSeamB]);
+    mem_set_al(mem_iram_in(a) ? IRAM[a] : 0);
 }
 
 void c_membank0r16ramSA1(void)
 {
-    if (SA1Status == 0) {
-        u4 const a = MemSeamC + MemSeamB;
+    u4 const a = MemSeamC + MemSeamB;
 
+    if (SA1Status == 0) {
         mem_set_ax((u2)(mem_wram(a)[0] | (mem_wram(a)[1] << 8)));
         return;
     }
-    if (MemSeamC >= 0x800u) {
-        mem_set_ax(0);
-        return;
-    }
-    mem_set_ax((u2)(IRAM[MemSeamC + MemSeamB]
-        | (IRAM[MemSeamC + MemSeamB + 1] << 8)));
+    mem_set_ax((u2)((mem_iram_in(a) ? IRAM[a] : 0)
+        | ((mem_iram_in(a + 1) ? IRAM[a + 1] : 0) << 8)));
 }
 
 void c_membank0w8ramSA1(void)
 {
+    u4 const a = MemSeamC + MemSeamB;
+
     if (SA1Status == 0) {
-        *mem_wram(MemSeamC + MemSeamB) = (u1)(MemSeamA & 0xFFu);
+        *mem_wram(a) = (u1)(MemSeamA & 0xFFu);
         return;
     }
-    if (MemSeamC >= 0x800u) {
-        return;
+    if (mem_iram_in(a)) {
+        IRAM[a] = (u1)(MemSeamA & 0xFFu);
     }
-    IRAM[MemSeamC + MemSeamB] = (u1)(MemSeamA & 0xFFu);
 }
 
 void c_membank0w16ramSA1(void)
 {
-    if (SA1Status == 0) {
-        u4 const a = MemSeamC + MemSeamB;
+    u4 const a = MemSeamC + MemSeamB;
 
+    if (SA1Status == 0) {
         mem_wram(a)[0] = (u1)(MemSeamA & 0xFFu);
         mem_wram(a)[1] = (u1)((MemSeamA >> 8) & 0xFFu);
         return;
     }
-    if (MemSeamC >= 0x800u) {
-        return;
+    if (mem_iram_in(a)) {
+        IRAM[a] = (u1)(MemSeamA & 0xFFu);
     }
-    IRAM[MemSeamC + MemSeamB] = (u1)(MemSeamA & 0xFFu);
-    IRAM[MemSeamC + MemSeamB + 1] = (u1)((MemSeamA >> 8) & 0xFFu);
+    if (mem_iram_in(a + 1)) {
+        IRAM[a + 1] = (u1)((MemSeamA >> 8) & 0xFFu);
+    }
 }
 
 /* --- the SA-1's view of its own RAM -------------------------------------- *

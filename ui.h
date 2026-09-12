@@ -51,4 +51,27 @@ extern u2 MouseButtons[2];
 extern u2 MouseMoveX[2];
 extern u2 MouseMoveY[2];
 
+/* Exact sizes. The assembly padded every buffer by a page, which is also what
+   hid every overrun found so far from AddressSanitizer: a read that lands in
+   your own slack is not a report. Where a tail is really used it is named. */
+enum {
+    BITCONV32_BYTES = 65536 * 4,
+    RGBTOYUV_BYTES = 65536 * 4,
+    SPCBUFFER_BYTES = 65536 * 4,
+    SPRITETABLE_BYTES = 256 * 64 * 12, /* 64 SpriteInfo per line; 12 bytes is the 64-bit size */
+    /* The EXTBG mode 7 writers stash a priority byte per pixel at line +
+       75036*8 and hi-res mode 7 draws its second field 75036*4 further in, so
+       the tail has to leave room for both at once. */
+    VIDBUFFER_BYTES = 512 * 296 * 4 + 512 * 296 + 75036 * 4,
+    VIDBUFFER2_BYTES = 288 * 2 * 256,
+    NGWIN_BYTES = 256 * 224,
+    VIDBUFFERD_BYTES = 1024 * 296,
+    VCACHE2S_BYTES = 65536 * 4 * 4,
+    VCACHE4S_BYTES = 65536 * 4 * 2,
+    VCACHE8S_BYTES = 65536 * 4,
+    VCACHE2_BYTES = 262144,
+    VCACHE4_BYTES = 131072,
+    VCACHE8_BYTES = 65536
+};
+
 #endif

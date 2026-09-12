@@ -70,7 +70,7 @@ static inline void setnz16(zreg* const r, u2 const ax)
 static inline void reload_table(zreg* const r)
 {
     r[R_EBX] = (r[R_EBX] & 0xFFFFFF00u) | (u1)r[R_EDX];
-    r[R_EDI] = (zreg)(uintptr_t)tablead[r[R_EBX]];
+    r[R_EDI] = (zreg)(uintptr_t)tablead[r[R_EBX] & 0xFFu];
 }
 
 /* Read and write the low byte or word of a 32-bit register global. */
@@ -360,6 +360,11 @@ void OP(COpFB)(zreg* const r) /* XCE i */
  * every access. S wraps inside a page in emulation mode and across the bank in
  * native mode; stackor/stackand carry that, and XCE sets them.
  */
+/* The bank tables have 256 entries. The assembly indexed them with all of
+   ebx and relied on its top bytes being clear, which a program the emulator
+   was not written against can break; the mask keeps a bad jump a bad jump. */
+#define BANK(r) ((r)[R_EBX] & 0xFFu)
+
 static inline void bank0_call(zreg* const r, void (*const fn)(void))
 {
     MemSeamA = r[R_EAX];
@@ -570,7 +575,7 @@ void OP(COp62)(zreg* const r) /* PER s */
     SET8(r[R_EBX], GET8(xpb));
     AX(r, xpc);
     map = (r[R_EAX] & 0x8000u) ? snesmmap : snesmap2;
-    r[R_EAX] = (zreg)(uintptr_t)map[r[R_EBX]];
+    r[R_EAX] = (zreg)(uintptr_t)map[BANK(r)];
     r[R_EBX] = r[R_ESI] - r[R_EAX];
     SET16(r[R_EBX], (u2)(GET16(r[R_EBX]) + rd16(r[R_ESI])));
     AX(r, GET16(r[R_EBX]));
@@ -612,10 +617,10 @@ static inline void mem_call(zreg* const r, eop* const fn)
     MemSeamDI = di;
 }
 
-#define TABR8(r) mem_call((r), memtabler8[(r)[R_EBX]])
-#define TABR16(r) mem_call((r), memtabler16[(r)[R_EBX]])
-#define TABW8(r) mem_call((r), memtablew8[(r)[R_EBX]])
-#define TABW16(r) mem_call((r), memtablew16[(r)[R_EBX]])
+#define TABR8(r) mem_call((r), memtabler8[BANK(r)])
+#define TABR16(r) mem_call((r), memtabler16[BANK(r)])
+#define TABW8(r) mem_call((r), memtablew8[BANK(r)])
+#define TABW16(r) mem_call((r), memtablew16[BANK(r)])
 
 /* `add cx,idx` / `jnc .np` / `inc bl` */
 static inline void idx_bank(zreg* const r, u2 const idx)
@@ -1978,10 +1983,10 @@ OPMODE(OP(COpFFm16d), a_alCx_16, o_SBC16d)
 static inline u1* bank_base(u4 const eax, u4 const ebx, int const dma)
 {
     if (eax & 0x8000u)
-        return snesmmap[ebx];
-    if (dma && eax >= 0x4300u && memtabler8[ebx] == regaccessbankr8)
+        return snesmmap[ebx & 0xFFu];
+    if (dma && eax >= 0x4300u && memtabler8[ebx & 0xFFu] == regaccessbankr8)
         return dmadata - 0x4300;
-    return snesmap2[ebx];
+    return snesmap2[ebx & 0xFFu];
 }
 static inline void jump_to(zreg* const r, int const dma)
 {
@@ -2251,8 +2256,8 @@ static inline void brk_cop(zreg* const r, u2 const vec, u2 const vec8, u4 const 
     r[R_ESI]++;
     SET8(r[R_EBX], GET8(xpb));
     AX(r, xpc);
-    r[R_EAX] = (zreg)(uintptr_t)((r[R_EAX] & 0x8000u) ? snesmmap[r[R_EBX]]
-                                                    : snesmap2[r[R_EBX]]);
+    r[R_EAX] = (zreg)(uintptr_t)((r[R_EAX] & 0x8000u) ? snesmmap[BANK(r)]
+                                                    : snesmap2[BANK(r)]);
     r[R_EBX] = r[R_ESI] - r[R_EAX];
     xpc = GET16(r[R_EBX]);
 
@@ -2335,7 +2340,7 @@ static inline void rti_body(zreg* const r)
     r[R_EAX] = 0;
     AX(r, xpc);
     SET8(r[R_EBX], (u1)r[R_EDX]);
-    r[R_EDI] = (zreg)(uintptr_t)tablead[r[R_EBX]];
+    r[R_EDI] = (zreg)(uintptr_t)tablead[r[R_EBX] & 0xFFu];
     SET8(r[R_EBX], emul ? 0 : GET8(xpb));
     xpc = GET16(r[R_EAX]);
 
@@ -2347,12 +2352,12 @@ static inline void rti_body(zreg* const r)
         u1* const base = bank_base(r[R_EAX], r[R_EBX], 1);
         int const low = (r[R_EAX] & 0x8000u) == 0;
         int const dma = low && r[R_EAX] >= 0x4300u;
-        if (dma && memtabler8[r[R_EBX]] != regaccessbankr8)
+        if (dma && memtabler8[BANK(r)] != regaccessbankr8)
             doirqnext = 0;
         initaddrl = base;
         r[R_ESI] = (zreg)(uintptr_t)base + r[R_EAX];
         /* Returning onto a WAI means the wait is still in force. */
-        if (low && !(dma && memtabler8[r[R_EBX]] == regaccessbankr8)
+        if (low && !(dma && memtabler8[BANK(r)] == regaccessbankr8)
             && *(u1 const*)r[R_ESI] == 0xCBu)
             intrset = 2;
     }
