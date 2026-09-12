@@ -40,7 +40,12 @@ extern u1 GUIpclicked;
 extern u1 GUIpmenupos;
 extern u1 GUIwinactiv[];
 extern u1 GUIwinorder[22];
-extern u1 cheatdata[28 * 255 + 56];
+/* One cheat entry, and the table proper. The table is reached through a
+   pointer into cheatblock because the entry before the first one is read. */
+enum { CHEAT_ENTRY = 28,
+    CHEAT_TABLE = 28 * 255 + 56 };
+extern u1 cheatblock[CHEAT_ENTRY + CHEAT_TABLE];
+extern u1* const cheatdata;
 extern u1 cplayernum;
 extern u1 cwindrawn;
 extern u1* GUICYLocPtr;

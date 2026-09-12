@@ -131,32 +131,29 @@ static void sa1speedhacks(zreg* const r)
             SA1SHb = 1;
     }
 
-    /* The 65816's program counter as a WRAM then a ROM offset. Both bases are
-       host pointers, so the subtraction is pointer-wide and the difference
-       fits a u4. SA1LBound and SA1UBound are written here and read nowhere -
-       the assembly that consumed them is gone - but stay because
-       cpu/c_execdata.c pins the layout. */
+    /* SA1LBound/SA1UBound are never read but ride in the save state, so they
+       hold offsets rather than the host addresses the assembly kept. */
     u4 const woff = (u4)(r[R_ESI] - (zreg)wramdata);
     if (woff >= 0x224 && woff <= 0x22E) {
-        SA1LBound = 0x224 + (u4)(uintptr_t)wramdata;
-        SA1UBound = 0x22E + (u4)(uintptr_t)wramdata;
+        SA1LBound = 0x224;
+        SA1UBound = 0x22E;
         SETB(SA1SH, 1);
     }
     if (woff >= 0x1F7C6 && woff <= 0x1F7CC) {
-        SA1LBound = 0x1F7C6 + (u4)(uintptr_t)wramdata;
-        SA1UBound = 0x1F7CC + (u4)(uintptr_t)wramdata;
+        SA1LBound = 0x1F7C6;
+        SA1UBound = 0x1F7CC;
         SETB(SA1SH, 1);
     }
     if (woff >= 0x14 && woff <= 0x1C && peek32(wramdata + 0x14) == 0xF023002C) {
-        SA1LBound = 0x14 + (u4)(uintptr_t)wramdata;
-        SA1UBound = 0x1C + (u4)(uintptr_t)wramdata;
+        SA1LBound = 0x14;
+        SA1UBound = 0x1C;
         SETB(SA1SH, 1);
     }
 
     u4 const roff = (u4)(r[R_ESI] - (zreg)romdata);
     if (roff >= 0xA56 && roff <= 0xA59) {
-        SA1LBound = 0xA56 + (u4)(uintptr_t)romdata;
-        SA1UBound = 0xA59 + (u4)(uintptr_t)romdata;
+        SA1LBound = 0xA56;
+        SA1UBound = 0xA59;
         SETB(SA1SH, 1);
     }
 

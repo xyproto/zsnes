@@ -27,6 +27,7 @@ extern unsigned char* setaramdata;
 extern uint8_t *romdata, *SA1RAMArea;
 
 extern uint8_t sndrot, SPCRAM[], DSPMem[256], SA1Status;
+extern uint8_t CurrentExecSA1, CurrentCPU;
 extern uint8_t DSP1Enable, DSP1COp, prevoamptr, BRRBuffer[];
 extern uint8_t curcyc, spcnumread, NextLineCache, HIRQNextExe;
 extern uint8_t vidmemch8[4096], vidmemch2[4096];

@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #include "../asmdata.h"
+#include "../types.h"
 
 /* RTC (not part of the save block) */
 uint8_t RTCData[16] = { [0] = 0x0F, [14] = 0x0F };
@@ -20,12 +21,8 @@ __asm__(
 uint8_t* SA1RAMArea;
 uint32_t SA1Temp, Sdd1Mode, Sdd1Bank, Sdd1Addr, Sdd1NewAddr;
 
-/* DMA pointers; zstate.c saves them as one adjacent 8-byte block, so force
-   their layout rather than letting -fdata-sections scatter them. */
-/* Host pointers, so pointer-sized; the same four bytes on i386. */
-/* zstate.c saves the pair as one 8-byte run; copying through sa1dmaptr
-   itself lets _FORTIFY_SOURCE bound it at 4 and abort the restore. */
-__asm__(ASM_SEC_DATA(".data.sa1dmaptr") ".balign " ASM_STR(__SIZEOF_POINTER__) "\n" ASM_GSYM(sa1dmaptr_run) ASM_GSYM(sa1dmaptr) ".skip " ASM_STR(__SIZEOF_POINTER__) "\n" ASM_GSYM(sa1dmaptrs) ".skip " ASM_STR(__SIZEOF_POINTER__) "\n" ASM_SEC_END);
+u1* sa1dmaptr; /* both set before every transfer */
+u1* sa1dmaptrs;
 
 /* ===== Stage 2: status reads (0x2300-0x230B) + IRAM access ===== */
 #include "regabi.h"
@@ -137,7 +134,7 @@ void c_sa12200w(uint8_t al) /* SA-1 CPU control */
         BYTE(SA1DoIRQ, 0) |= 2;
     SA1Control = al;
     if ((oldctrl & 0x20) && !(al & 0x20)) { /* SA-1 leaving reset */
-        SA1BankPtr = (uint32_t)(uintptr_t)romdata;
+        SA1BankPtr = 0; /* never read; in the save state, so no host address */
         SA1Ptr = romdata + (uint16_t)SA1ResetV - 0x8000;
         BYTE(SA1xpb, 0) = 0;
         SA1xs = (SA1xs & 0xFFFF0000u) | 0x1FFu;
@@ -629,7 +626,11 @@ SA1_QUICKW(sa12215w, SA1TimerCount, 3)
 REGABI_REG_WRITE8(dbstop);
 void c_dbstop(uint8_t al) { (void)al; }
 
-/* The save-state block above keeps a dword for each of these, as the file
-   format has it; these are the live host pointers. */
-__asm__(
-    ASM_SEC_BSS(".bss") ".balign " ASM_STR(__SIZEOF_POINTER__) "\n" ASM_GSYM(CurBWPtr) ".skip " ASM_STR(__SIZEOF_POINTER__) "\n" ASM_GSYM(SA1RegPCS) ".skip " ASM_STR(__SIZEOF_POINTER__) "\n" ASM_GSYM(SA1BWPtr) ".skip " ASM_STR(__SIZEOF_POINTER__) "\n" ASM_GSYM(SA1Ptr) ".skip " ASM_STR(__SIZEOF_POINTER__) "\n" ASM_GSYM(SNSRegPCS) ".skip " ASM_STR(__SIZEOF_POINTER__) "\n" ASM_GSYM(SNSBWPtr) ".skip " ASM_STR(__SIZEOF_POINTER__) "\n" ASM_GSYM(SNSPtr) ".skip " ASM_STR(__SIZEOF_POINTER__) "\n" ASM_SEC_END);
+/* Live host pointers; the save state carries offsets in the *St dwords above. */
+u1* CurBWPtr;
+u1* SA1RegPCS;
+u1* SA1BWPtr;
+u1* SA1Ptr;
+u1* SNSRegPCS;
+u1* SNSBWPtr;
+u1* SNSPtr;

@@ -79,6 +79,12 @@ static const struct {
 static size_t zst_ppureg_run;
 static size_t zst_dspsave_run;
 
+enum { HDMA_SAVED_BYTES = 8 * (4 * 4 + 3) }; /* hdmadata at 32-bit width */
+/* The 64-bit 2.3.0/2.3.1 releases wrote hdmadata and Voice0BufPtr at pointer
+   width, 160 bytes wider. Set while loading one of those. */
+enum { ZST_WIDE_EXTRA = 8 * (4 * 8 + 3) - HDMA_SAVED_BYTES + 8 * (8 - 4) };
+static int zst_wide_ptrs;
+
 static void copy_snes_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, size_t))
 {
     // 65816 status, etc.
@@ -125,27 +131,60 @@ static void copy_snes_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*,
            sizeof(sndrot) == 1 and _FORTIFY_SOURCE aborts the restore: the
            block being copied is the whole register file that follows it, and
            its length lives in the assembly. The 1.51 branch above hides the
-           address the same way. */
+           address the same way.
+
+           hdmadata holds host pointers, so it is stepped over and the file
+           keeps the 32-bit width; a load clears nexthdma and setuphdma
+           rebuilds it on the next $420C write. */
+        static uint8_t hdma_slot[8 * (4 * 8 + 3)];
         void* volatile block = &sndrot;
-        copy_func(buffer, block, PHnum2writeppureg);
+        uint8_t* const base = (uint8_t*)block;
+        size_t const upto = (size_t)((uint8_t*)hdmadata - base);
+        size_t const live = sizeof(hdmadata);
+
+        copy_func(buffer, base, upto);
+        copy_func(buffer, hdma_slot, zst_wide_ptrs ? sizeof(hdma_slot) : HDMA_SAVED_BYTES);
+        copy_func(buffer, base + upto + live, PHnum2writeppureg - upto - live);
     }
 }
 
 extern uint8_t oamram[1024], pcgram[512]; /* inside the PPU register file */
 extern uint8_t spcram_run[0x10140]; /* SPCRAM and the blocks saved with it */
-extern uint8_t sa1dmaptr_run[8]; /* sa1dmaptr + sa1dmaptrs */
+static uint32_t nmiprevaddr_slot[2];
+
+/* Held the two SA-1 DMA host pointers; both are set before every transfer. */
+static uint8_t sa1dmaptr_slot[8];
+extern s2* Voice0BufPtr[8];
+extern uint32_t Voice0BufPtrSt[8];
+
 static void copy_spc_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, size_t))
 {
-    // SPC stuff, DSP stuff
+    size_t const dsp = zst_dspsave_run ? zst_dspsave_run : (size_t)PHdspsave;
+    size_t const upto = (size_t)((uint8_t*)Voice0BufPtr - (uint8_t*)BRRBuffer);
+
     copy_func(buffer, spcram_run, PHspcsave);
-    copy_func(buffer, BRRBuffer, zst_dspsave_run ? zst_dspsave_run : (size_t)PHdspsave);
+    /* Voice0BufPtr holds host pointers; the file keeps the 32-bit dwords. */
+    if (upto < dsp) {
+        static uint8_t wide_slot[8 * 8];
+
+        copy_func(buffer, BRRBuffer, upto);
+        if (zst_wide_ptrs) {
+            copy_func(buffer, wide_slot, sizeof(wide_slot));
+        } else {
+            copy_func(buffer, Voice0BufPtrSt, sizeof(Voice0BufPtrSt));
+        }
+        copy_func(buffer, (uint8_t*)Voice0BufPtr + sizeof(Voice0BufPtr),
+            dsp - upto - sizeof(Voice0BufPtr));
+    } else {
+        copy_func(buffer, BRRBuffer, dsp);
+    }
     copy_func(buffer, &DSPMem, sizeof(DSPMem));
 }
 
 /* Each of these names the whole run the savestate copies, so the copy stays
    inside one object; the layout is pinned by the ASM_GSYM block that
    defines it. */
-extern uint8_t spc700read_run[40], opcd_run[24], oamaddr_run[56], SA1Status_run[3];
+extern uint8_t spc700read_run[40], opcd_run[24], oamaddr_run[56];
 extern uint8_t DSP1_run[6 + 32 + 32 + 1 + 256];
 extern uint8_t DSP1COp, DSP1RLeft, DSP1WLeft, DSP1CPtrW, DSP1CPtrR;
 void DSP1_copy_state(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, size_t));
@@ -164,8 +203,8 @@ static void copy_extra_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*
 {
     copy_func(buffer, &soundcycleft, 4);
     copy_func(buffer, &curexecstate, 4);
-    copy_func(buffer, &nmiprevaddrl, 4);
-    copy_func(buffer, &nmiprevaddrh, 4);
+    /* nmiprevaddrl/h are host addresses; the loader restarts the window. */
+    copy_func(buffer, nmiprevaddr_slot, sizeof(nmiprevaddr_slot));
     copy_func(buffer, &nmirept, 4);
     copy_func(buffer, &nmiprevline, 4);
     copy_func(buffer, &nmistatus, 4);
@@ -248,9 +287,11 @@ static void copy_state_data(uint8_t* buffer, void (*copy_func)(uint8_t**, void*,
         copy_func(&buffer, &SA1Mode, PHnum2writesa1reg);
         copy_func(&buffer, SA1RAMArea, 8192 * 16);
         if (method != csm_load_zst_old) {
-            copy_func(&buffer, SA1Status_run, 3);
+            copy_func(&buffer, &SA1Status, 1);
+            copy_func(&buffer, &CurrentExecSA1, 1);
+            copy_func(&buffer, &CurrentCPU, 1);
             copy_func(&buffer, &SA1xpc, 1 * 4);
-            copy_func(&buffer, sa1dmaptr_run, 2 * 4);
+            copy_func(&buffer, sa1dmaptr_slot, sizeof(sa1dmaptr_slot));
         }
     }
 
@@ -742,21 +783,25 @@ void DeallocSystemVars(void)
     }
 }
 
-extern s2* Voice0BufPtr[8]; // Ptr to Buffer Block to be played
+enum { SPC_BUFFER_BYTES = 65536 * 4 };
+uint32_t Voice0BufPtrSt[8]; /* the cursors as offsets, as the file has them */
 
 void PrepareSaveState(void)
 {
     int i;
 
     spcPCRamSt = (uint32_t)(spcPCRam - SPCRAM);
-    /* initaddrl used to be a dword in the opcd run. It is a host pointer, so it
-       lives in its own pointer-sized slot now and this keeps the dword the file
-       format expects; nothing reads it back. */
-    initaddrlSt = (uint32_t)(uintptr_t)initaddrl;
+    initaddrlSt = 0; /* a host pointer nothing reads back */
     spcRamDPSt = (uint32_t)(spcRamDP - SPCRAM);
 
+    /* A cursor outside the buffer (a voice that never played) saves as 0. */
     for (i = 0; i < 8; i++) {
-        Voice0BufPtr[i] = (s2*)((uintptr_t)Voice0BufPtr[i] - (uintptr_t)spcBuffera);
+        uintptr_t const base = (uintptr_t)spcBuffera;
+        uintptr_t const p = (uintptr_t)Voice0BufPtr[i];
+
+        Voice0BufPtrSt[i] = (uint32_t)(p >= base && p < base + SPC_BUFFER_BYTES
+                ? p - base
+                : 0);
     }
 }
 
@@ -789,8 +834,8 @@ void SaveSA1(void)
     CurBWPtrSt = (uint32_t)(CurBWPtr - SA1RAMArea);
     SA1BWPtrSt = (uint32_t)(SA1BWPtr - SA1RAMArea);
     SNSBWPtrSt = (uint32_t)(SNSBWPtr - SA1RAMArea);
-    SNSPtrSt = (uint32_t)(uintptr_t)SNSPtr;
-    SNSRegPCSSt = (uint32_t)(uintptr_t)SNSRegPCS;
+    SNSPtrSt = SNSRegPCS ? (uint32_t)(SNSPtr - SNSRegPCS) : 0; /* offsets, never read back */
+    SNSRegPCSSt = SNSRegPCS ? (uint32_t)(SNSRegPCS - romdata) : 0;
 }
 
 /* Bank bases run from -0x6000 to the top of the 128K area. Anything else was
@@ -816,11 +861,7 @@ void RestoreSA1(void)
     CurBWPtr = sa1_bwptr(CurBWPtrSt);
     SA1BWPtr = sa1_bwptr(SA1BWPtrSt);
     SNSBWPtr = sa1_bwptr(SNSBWPtrSt);
-    /* SNSPtrSt and SNSRegPCSSt are the raw host pointers a 32-bit build wrote,
-       so they cannot be restored on a 64-bit one - and need not be: both live
-       values are rewritten on the next SA-1 swap-in, before anything reads
-       them back on the way out. The save still writes the dwords the file
-       format expects. */
+    /* SNSPtrSt and SNSRegPCSSt are rewritten on the next SA-1 swap-in. */
 
     if ((SA1Stat & 0xFF) == 1) {
         SA1RegPCS = IRAM;
@@ -843,11 +884,10 @@ void ResetState(void)
     spcRamDP = SPCRAM + spcRamDPSt;
 
     for (i = 0; i < 8; i++) {
-        uintptr_t p = (uintptr_t)Voice0BufPtr[i] + (uintptr_t)spcBuffera;
-        if (p >= (uintptr_t)spcBuffera + 65536 * 4) {
-            p = (uintptr_t)spcBuffera;
-        }
-        Voice0BufPtr[i] = (s2*)p;
+        uint32_t const off = Voice0BufPtrSt[i];
+
+        Voice0BufPtr[i] = (s2*)((uintptr_t)spcBuffera
+            + (off < SPC_BUFFER_BYTES ? off : 0));
     }
 }
 
@@ -1188,6 +1228,7 @@ static bool zst_load_compressed(FILE* fp, size_t compressed_size)
    so only the length separates them: ZSNES2's PPU register run is longer. */
 enum zst_origin { ZST_UNKNOWN,
     ZST_ZSNES2,
+    ZST_ZSNES2_WIDE, /* the 64-bit 2.3.0/2.3.1 releases */
     ZST_151,
     ZST_V06 };
 
@@ -1198,6 +1239,8 @@ static size_t zst_body_size(enum zst_origin o)
     switch (o) {
     case ZST_ZSNES2:
         return cur_zst_size - hdr;
+    case ZST_ZSNES2_WIDE:
+        return cur_zst_size - hdr + ZST_WIDE_EXTRA;
     case ZST_151:
         return v143_zst_size - hdr
             - (PHnum2writeppureg - ZST_151_PPUREG) - (PHdspsave - ZST_151_DSPSAVE);
@@ -1213,7 +1256,7 @@ static size_t zst_body_size(enum zst_origin o)
    measure; a movie chapter sits partway through a .zmv. */
 static enum zst_origin zst_classify(FILE* fp, size_t zst_version, long* extra)
 {
-    static enum zst_origin const order[] = { ZST_ZSNES2, ZST_151, ZST_V06 };
+    static enum zst_origin const order[] = { ZST_ZSNES2, ZST_ZSNES2_WIDE, ZST_151, ZST_V06 };
     long const pos = ftell(fp);
     long size;
     size_t i;
@@ -1222,10 +1265,7 @@ static enum zst_origin zst_classify(FILE* fp, size_t zst_version, long* extra)
     if (zst_version == 60) {
         return (ZST_V06);
     }
-    if (zst_version == 144) {
-        return (ZST_ZSNES2);
-    }
-    /* V143: ours or 1.51's. */
+    /* V144: ours, at either pointer width. V143: ours or 1.51's. */
     if (!cur_zst_size || pos != 0 || fseek(fp, 0, SEEK_END)) {
         return (ZST_ZSNES2);
     }
@@ -1289,6 +1329,7 @@ bool zst_load(FILE* fp, size_t Compressed)
 
         zst_ppureg_run = (origin == ZST_151) ? ZST_151_PPUREG : 0;
         zst_dspsave_run = (origin == ZST_151) ? ZST_151_DSPSAVE : 0;
+        zst_wide_ptrs = (origin == ZST_ZSNES2_WIDE);
 
         load_save_size = 0;
         fhandle = fp; // Set global file handle
@@ -1297,6 +1338,7 @@ bool zst_load(FILE* fp, size_t Compressed)
                 : (zst_version == 143) ? csm_load_zst_143
                                        : csm_load_zst_old);
         zst_ppureg_run = zst_dspsave_run = 0;
+        zst_wide_ptrs = 0;
         Totalbyteloaded += load_save_size;
     }
 
@@ -1332,6 +1374,10 @@ bool zst_load(FILE* fp, size_t Compressed)
         nexthdma = 0;
     }
 
+    nmiprevaddrl = (zreg)-1; /* restart the NMI-idle window */
+    nmiprevaddrh = 0;
+    nmirept = 0;
+
     repackfunct();
     initpitch();
     ResetOffset();
@@ -1347,12 +1393,9 @@ bool zst_load(FILE* fp, size_t Compressed)
 }
 
 #ifdef ZSNES_DEBUG_HOOKS
-/* ZST_ROUNDTRIP=N self-checks the save-state path at frame N: save, load that
-   state back, save again, and compare the two files. A faithful round trip
-   makes them byte-identical, so any field the loader drops or restores wrongly
-   shows up as a mismatch - without having to enumerate the machine's state.
-   Reports to stderr and to <tmpdir>/zsnes_zst.txt, where <tmpdir> is $TMPDIR
-   or /tmp. */
+/* ZST_ROUNDTRIP=N: at frame N save, load, save, load, save, and compare the
+   last two files. Both are taken after a load, since the loader resets a few
+   fields on purpose (nexthdma). Reports to stderr and <tmpdir>/zsnes_zst.txt. */
 void zst_roundtrip_check(void);
 
 /* Build <tmpdir>/<name> into buf. Fixed /tmp paths collide between users on a
@@ -1397,10 +1440,11 @@ void zst_roundtrip_check(void)
            whether the body was read the way it was written: every section is
            a fixed length for a given cartridge, so a layout this build
            describes wrongly cannot come out at the right total. */
-        fit = (fsz == (long)cur_zst_size)  ? "V144"
-            : (fsz == (long)v143_zst_size) ? "V143"
-            : (fsz == (long)old_zst_size)  ? "V0.6"
-                                           : "NO-MATCH";
+        fit = (fsz == (long)cur_zst_size)                  ? "V144"
+            : (fsz == (long)cur_zst_size + ZST_WIDE_EXTRA) ? "V144-WIDE"
+            : (fsz == (long)v143_zst_size)                 ? "V143"
+            : (fsz == (long)old_zst_size)                  ? "V0.6"
+                                                           : "NO-MATCH";
         {
             char msg[192];
             snprintf(msg, sizeof(msg),
@@ -1416,18 +1460,26 @@ void zst_roundtrip_check(void)
         }
         return;
     }
+    if ((f = fopen(pb, "wb")) != NULL) { /* get into a loaded state first */
+        zst_save(f, false, false);
+        fclose(f);
+    }
+    if ((f = fopen(pb, "rb")) != NULL) {
+        loaded = zst_load(f, 0);
+        fclose(f);
+    }
     zst_dbg_on = 1;
     zst_dbg_off = 0;
-    if ((f = fopen(pa, "wb")) != NULL) {
+    if (loaded && (f = fopen(pa, "wb")) != NULL) {
         zst_save(f, false, false);
         na = ftell(f);
         fclose(f);
     }
-    if ((f = fopen(pa, "rb")) != NULL) {
+    zst_dbg_on = 0;
+    if (loaded && (f = fopen(pa, "rb")) != NULL) {
         loaded = zst_load(f, 0);
         fclose(f);
     }
-    zst_dbg_on = 0;
     if (loaded && (f = fopen(pb, "wb")) != NULL) {
         zst_save(f, false, false);
         nb = ftell(f);
