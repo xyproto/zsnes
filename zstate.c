@@ -930,6 +930,16 @@ void zst_mark(char const* const label)
 }
 #endif
 
+/* Which ZSNES wrote a state. 1.51 and ZSNES2 both head their files "V143",
+   so only the length separates them: ZSNES2's PPU register run is longer. */
+enum zst_origin { ZST_UNKNOWN,
+    ZST_ZSNES2,
+    ZST_ZSNES2_WIDE, /* the 64-bit 2.3.0/2.3.1 releases */
+    ZST_151,
+    ZST_V06 };
+
+static size_t zst_body_size(enum zst_origin o);
+
 static const char zst_header_old[] = "ZSNES Save State File V0.6\x1a\x3c";
 /* V144 differs from V143 only in the DSP1 section, which V143 described by a
    memory layout no compiler guarantees. Both older formats still load. */
@@ -949,6 +959,16 @@ void calculate_state_sizes(void)
     state_size = 0;
     copy_state_data(0, state_size_tally, csm_load_zst_old);
     old_zst_size = state_size + sizeof(zst_header_old) - 1;
+#ifdef ZSNES_DEBUG_HOOKS
+    /* The four lengths zst_classify picks between, which is all it has to go
+       on: two that match would make it load a state as the wrong format. */
+    if (getenv("ZSNES_STATE_SIZE")) {
+        fprintf(stderr, "ZST BODIES cur=%zu wide=%zu v143=%zu old=%zu thumb=%zu\n",
+            zst_body_size(ZST_ZSNES2), zst_body_size(ZST_ZSNES2_WIDE),
+            zst_body_size(ZST_151), zst_body_size(ZST_V06),
+            sizeof(PrevPicture));
+    }
+#endif
 }
 
 uint32_t current_zst = 0;
@@ -1230,14 +1250,6 @@ static bool zst_load_compressed(FILE* fp, size_t compressed_size)
     return (worked);
 }
 
-/* Which ZSNES wrote a state. 1.51 and ZSNES2 both head their files "V143",
-   so only the length separates them: ZSNES2's PPU register run is longer. */
-enum zst_origin { ZST_UNKNOWN,
-    ZST_ZSNES2,
-    ZST_ZSNES2_WIDE, /* the 64-bit 2.3.0/2.3.1 releases */
-    ZST_151,
-    ZST_V06 };
-
 /* Length of the body a given origin writes for this cartridge. */
 static size_t zst_body_size(enum zst_origin o)
 {
@@ -1255,6 +1267,98 @@ static size_t zst_body_size(enum zst_origin o)
     default:
         return 0;
     }
+}
+
+/* The loader has only a length to tell the formats apart, so two of them
+   coming out the same for some cartridge would load a save as the wrong
+   format. Sweep the seven chips and every SRAM size and check no pair meets,
+   thumbnail included. Returns the number of cartridges that would. */
+int zst_format_check(void)
+{
+    static enum zst_origin const order[] = { ZST_ZSNES2, ZST_ZSNES2_WIDE, ZST_151, ZST_V06 };
+    u1 const chips_were[7] = { DSP1Enable, (u1)C4Enable, (u1)SFXEnable,
+        (u1)SA1Enable, (u1)SPC7110Enable, (u1)SETAEnable, (u1)DSP4Enable };
+    u1 const msu_was = (u1)MSUEnable;
+    uint32_t const ramsize_was = ramsize;
+    size_t const sizes_were[3] = { cur_zst_size, v143_zst_size, old_zst_size };
+    unsigned mask;
+    int clashes = 0;
+
+    /* Every shape's own length, to answer the second question below. */
+    static size_t shape[256 * 8];
+    size_t shapes = 0;
+
+    for (mask = 0; mask < 256u; mask++) {
+        unsigned kb;
+
+        DSP1Enable = (mask & 1) != 0;
+        C4Enable = (mask & 2) != 0;
+        SFXEnable = (mask & 4) != 0;
+        SA1Enable = (mask & 8) != 0;
+        SPC7110Enable = (mask & 16) != 0;
+        SETAEnable = (mask & 32) != 0;
+        DSP4Enable = (mask & 64) != 0;
+        MSUEnable = (mask & 128) != 0;
+
+        for (kb = 0; kb <= 1024u; kb = kb ? kb * 2u : 16u) {
+            size_t i;
+            size_t j;
+
+            ramsize = kb * 128u;
+            calculate_state_sizes();
+            shape[shapes++] = cur_zst_size;
+            for (i = 0; i < sizeof(order) / sizeof(*order); i++) {
+                for (j = 0; j < i; j++) {
+                    size_t const a = zst_body_size(order[i]);
+                    size_t const b = zst_body_size(order[j]);
+
+                    if (a == b || a == b + sizeof(PrevPicture)
+                        || b == a + sizeof(PrevPicture)) {
+                        printf("SELFTEST: FAIL state lengths %u and %u meet at "
+                               "chips %02x sram %uK (%zu vs %zu)\n",
+                            (unsigned)order[i], (unsigned)order[j], mask, kb, a, b);
+                        clashes++;
+                    }
+                }
+            }
+        }
+    }
+
+    /* And whether one cartridge's own state is the length this build expects
+       a 64-bit 2.3.0 state of another to be. Such a file would be read at the
+       wrong pointer width: every field after the HDMA block shifts, and the
+       restored program counter then points anywhere. */
+    {
+        size_t i;
+        size_t j;
+
+        for (i = 0; i < shapes; i++) {
+            for (j = 0; j < shapes; j++) {
+                if (shape[i] == shape[j] + ZST_WIDE_EXTRA) {
+                    printf("SELFTEST: FAIL a %zu-byte state is also a wide "
+                           "%zu-byte one\n",
+                        shape[i], shape[j]);
+                    clashes++;
+                    i = shapes; /* one report is enough */
+                    break;
+                }
+            }
+        }
+    }
+
+    DSP1Enable = chips_were[0];
+    C4Enable = chips_were[1] != 0;
+    SFXEnable = chips_were[2] != 0;
+    SA1Enable = chips_were[3] != 0;
+    SPC7110Enable = chips_were[4] != 0;
+    SETAEnable = chips_were[5] != 0;
+    DSP4Enable = chips_were[6] != 0;
+    MSUEnable = msu_was != 0;
+    ramsize = ramsize_was;
+    cur_zst_size = sizes_were[0];
+    v143_zst_size = sizes_were[1];
+    old_zst_size = sizes_were[2];
+    return clashes;
 }
 
 /* Guess the origin from the header and the file length, allowing for the

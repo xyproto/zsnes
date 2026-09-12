@@ -27,4 +27,8 @@ extern u4 Totalbyteloaded;
 
 uint64_t zst_state_hash(void);
 
+/* Non-zero if any cartridge would produce two state formats of the same
+   length, which the loader tells apart by length alone. */
+int zst_format_check(void);
+
 #endif

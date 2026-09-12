@@ -21,6 +21,7 @@
 #include "video/makevid.h"
 #include "video/procvid.h"
 #include "zpath.h"
+#include "zstate.h"
 
 #define BIT(x) (1 << (x))
 
@@ -339,6 +340,10 @@ static _Noreturn void selftest(void)
     bad |= selftest_gap("mode7A..mode7B", &mode7A, &mode7B, 2);
     bad |= selftest_gap("mode7A_dw..mode7A", mode7A_dw, &mode7A, 0);
     bad |= selftest_gap("SA1Mode..SA1Control", &SA1Mode, &SA1Control, 4);
+
+    /* Whether any cartridge would make two save-state formats the same
+       length, which is all the loader has to tell them apart by. */
+    bad |= zst_format_check() != 0;
 
     puts(bad ? "SELFTEST: FAIL" : "SELFTEST: PASS");
     exit(bad ? 1 : 0);
