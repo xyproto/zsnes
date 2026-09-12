@@ -654,11 +654,9 @@ void zst_state_hash_tick(void)
 }
 #endif
 
-/* Only what the guest can see: the memories and the processor registers.
-   Deliberately not the rewind snapshot, which is the emulator's own
-   bookkeeping and carries host pointers - BRRBuffer and two pointer-valued
-   fields in it were measured varying between runs of the same binary, so a
-   hash over it says nothing about whether two builds agree. */
+/* Only what the guest can see. Deliberately not the rewind snapshot: that is
+   the emulator's own bookkeeping and carries host pointers, measured varying
+   between runs of one binary, so hashing it says nothing. */
 uint64_t zst_state_hash(void)
 {
     uint8_t* dummy = 0;

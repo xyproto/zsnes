@@ -526,7 +526,7 @@ static void test_znp_server_hello_decode(void)
     ZT_CHECK(role == ZNP_ROLE_CLIENT);
     ZT_CHECK(!strcmp(room, "abc"));
 
-    /* Short, wrong version, or a role this client has no pad for. */
+    /* Short, wrong version, or a role with no pad. */
     ZT_CHECK(znp_server_hello_decode(in, sizeof(in) - 1, &role, room, sizeof(room)) == 0);
     in[3] = ZNP_VERSION + 1;
     ZT_CHECK(znp_server_hello_decode(in, sizeof(in), &role, room, sizeof(room)) == 0);
@@ -572,12 +572,11 @@ static void test_znp_framing_loopback(void)
     ZT_CHECK(type == ZNP_BYE);
     ZT_CHECK(len == 0);
 
-    /* A payload the reader has no room for fails rather than being cut, since
-       the rest of it would be read as the next header. */
+    /* Too big for the buffer fails; a cut tail would read as a header. */
     ZT_CHECK(znp_frame_send(sv[0], ZNP_INPUT, payload, sizeof(payload), 1000) == 1);
     ZT_CHECK(znp_frame_recv(sv[1], &type, got, 4, &len, 1000) == 0);
 
-    /* Nothing to read, and it says so rather than blocking. */
+    /* Nothing to read, and it says so. */
     close(sv[0]);
     ZT_CHECK(znp_frame_recv(sv[1], &type, got, sizeof(got), &len, 50) == 0);
     close(sv[1]);
@@ -596,8 +595,7 @@ static void test_znp_prefix_exchange(void)
     net_adopt(sv[0], 0);
     net_adopt(sv[1], 0);
 
-    /* The other end sends its prefix first; exchanging both at once would
-       have each side waiting for a read before doing its write. */
+    /* The other end goes first; both at once would deadlock. */
     ZT_CHECK(net_send_all(sv[1], znp_prefix, ZNP_PREFIX_BYTES, 1000) == 1);
     ZT_CHECK(znp_prefix_exchange(sv[0], 1000) == 1);
     close(sv[0]);

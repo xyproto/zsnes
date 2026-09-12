@@ -116,8 +116,8 @@ VideoFilterPicture VideoFilterOutput(VideoFilter const f)
     return p;
 }
 
-/* Kreed's filters take one line at a time and read a row above and two below,
-   which the vidbuffer border already provides. */
+/* Kreed's filters take a line at a time and read one row above and two below,
+   which the vidbuffer border provides. */
 static void draw_2xsai(LineFilter* const line, u1* const dst, int const pitch)
 {
     u2* const base = (u2*)vidbuffer + VID_FIRST;

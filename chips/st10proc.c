@@ -6,11 +6,10 @@
  *   setaaccessbank*a   the 4-byte SetaCmdEnable register, 2-bit address mask
  *                      with a 0x4000 guard
  *
- * Two departures from the assembly. setaaccessbankw16 at 0x7FFF: NASM's
+ * Two departures from the assembly, both bugs in it: at 0x7FFF NASM's
  * `mov [setaramdata+0fffh], al` addressed the *pointer* plus 0xFFF rather than
- * the buffer, so this writes buffer[0xFFF] as intended. And setaaccessbankw16a
- * wrote setaramdata instead of SetaCmdEnable, which made read and write
- * asymmetric; fixed here.
+ * the buffer, and setaaccessbankw16a wrote setaramdata instead of
+ * SetaCmdEnable, making read and write asymmetric.
  */
 
 #include <stdint.h>

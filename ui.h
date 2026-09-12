@@ -51,9 +51,9 @@ extern u2 MouseButtons[2];
 extern u2 MouseMoveX[2];
 extern u2 MouseMoveY[2];
 
-/* Exact sizes. The assembly padded every buffer by a page, which is also what
-   hid every overrun found so far from AddressSanitizer: a read that lands in
-   your own slack is not a report. Where a tail is really used it is named. */
+/* Exact sizes. The assembly's page of padding on each buffer is what hid every
+   overrun found so far from AddressSanitizer - a read into your own slack is
+   not a report. Tails that are really used are named below. */
 enum {
     BITCONV32_BYTES = 65536 * 4,
     RGBTOYUV_BYTES = 65536 * 4,

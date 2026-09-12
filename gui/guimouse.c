@@ -1385,6 +1385,7 @@ static void DisplayNetOptnsClick(void)
         GUIInputLimit = 31;
     }
     GUIClickCButton(eax, edx, 8, 66, &NetplayUDPConfig);
+    GUIClickCButton(eax, edx, 110, 66, &NetplayRelayConfig);
     GUIPHoldbutton(eax, edx, 8, 74, 56, 85, 85);
     GUIPHoldbutton(eax, edx, 66, 74, 114, 85, 86);
     GUIPHoldbutton(eax, edx, 124, 74, 212, 85, 87);

@@ -1402,6 +1402,9 @@ static void GUINetplayKeys(char dh)
     case 'U':
         NetplayUDPConfig ^= 1;
         break;
+    case 'R':
+        NetplayRelayConfig ^= 1;
+        break;
     }
 }
 

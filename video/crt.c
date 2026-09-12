@@ -3,18 +3,14 @@
 #include "cfg.h"
 #include <math.h>
 
-/* Vibrancy and scanlines are one pass over the frame, through a table per
-   row of the group: every pixel is a single lookup, and the tables are rebuilt
-   only when a setting moves.
+/* Vibrancy and scanlines are one pass, through a table per row of the group:
+   one lookup per pixel, rebuilt only when a setting moves.
 
-   The shape matters more than the depth. Dimming whole rows by a flat
-   percentage reads as a grille laid over the picture, because the pattern is
-   the same whatever is underneath it. A tube instead paints each line with a
-   beam that has a soft profile, and the harder it is driven the wider that
-   beam spreads, so bright areas bloom across the gap while dark areas keep it
-   open. Making the profile depend on the pixel is what stops the scanlines
-   looking painted on, and it costs nothing per pixel: the weight is a function
-   of (row within the group, pixel), which is exactly what the table holds. */
+   The beam's shape matters more than its depth. Dimming whole rows by a flat
+   percentage reads as a grille, because the pattern ignores the picture; a
+   tube's beam widens the harder it is driven, so bright areas bloom across the
+   gap and dark ones keep it open. That costs nothing here - the weight is a
+   function of (row in group, pixel), which is what the table holds. */
 #define CRT_MAX_VSCALE 4
 #define CRT_LUMA_STEPS 256
 
@@ -23,12 +19,11 @@ static int crt_lut_bright = -1;
 static int crt_lut_dark = -1;
 static int crt_lut_vscale = -1;
 
-/* Beam weight at `d` line pitches from the centre of the beam, for a line
-   driven to `luma`. The spread with drive is the whole point: a dark line is a
-   thin bright thread with a black gap either side, a bright one swells until
-   the gap almost closes. Too narrow a range and the pattern stops responding
-   to the picture and reads as a grille painted over it. Over this range the
-   gap runs from about half brightness on black to nine tenths on white. */
+/* Beam weight `d` line pitches from the beam's centre, for a line driven to
+   `luma`. The spread with drive is the point: a dark line is a thin thread
+   between black gaps, a bright one swells until the gap nearly closes. Over
+   this range the gap runs from about half brightness on black to nine tenths
+   on white. */
 static double crt_beam(double const d, double const luma)
 {
     double const w = 0.15 + 0.35 * luma;
@@ -125,17 +120,13 @@ static void crt_build_luts(int const vscale)
     crt_lut_dark = sl_intensity;
     crt_lut_vscale = vscale;
 }
-/* Bloom: bright areas spill light into what surrounds them, the way a phosphor
-   does, and it is the one pass here whose output wants more range than it was
-   given - everything else is bounded by its input. On an SDR surface the spill
-   has to be clipped back into 565; on an HDR one it is allowed to go above
-   white, which is what makes a bright sprite read as glowing rather than as
-   pale.
+/* Bloom: bright areas spill into what surrounds them. The one pass whose
+   output wants more range than its input, so on SDR the spill is clipped into
+   565 and on HDR it goes above white - that is what makes a bright sprite glow
+   rather than pale.
 
-   Worked out at quarter resolution. Bloom is low-frequency so nothing is lost,
-   and it is most of the saving: measured over a 768x672 frame, a full
-   resolution blur costs 7.7ms against 2.3ms here, of which the blur itself is
-   the smaller part. */
+   Worked out at quarter resolution: bloom is low-frequency so nothing is lost,
+   and over a 768x672 frame a full-resolution blur costs 7.7ms against 2.3ms. */
 #define CRT_BLOOM_DIV 4
 #define CRT_BLOOM_W (CRT_MAX_W / CRT_BLOOM_DIV)
 #define CRT_BLOOM_H (CRT_MAX_H / CRT_BLOOM_DIV)
@@ -207,10 +198,9 @@ void CrtBloomBuild(u2 const* const px, int const w, int const h, int const pitch
     crt_bloom_h = bh;
 }
 
-/* Where each output pixel sits between the bloom cells. The mapping is the
-   same for every frame of a given size, so it is worked out once into a pair
-   of tables rather than with a floor and a divide per pixel - doing it per
-   pixel cost more than the blur it was sampling. */
+/* Where each output pixel sits between the bloom cells: one pair of tables per
+   frame size, because a floor and a divide per pixel cost more than the blur
+   they were sampling. */
 static short crt_bx0[CRT_MAX_W], crt_by0[CRT_MAX_H];
 static float crt_btx[CRT_MAX_W], crt_bty[CRT_MAX_H];
 static int crt_bmap_w = 0, crt_bmap_h = 0;

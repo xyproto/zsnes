@@ -49,23 +49,14 @@ extern u4 curaddrvalcs;
 extern u4 curentryval;
 extern u4 curvaluecs;
 
-/* Panel layout.
+/* Panel layout. A panel describes itself as a list of rows and asks where they
+ * go; drawing and click handling ask the same question, so they cannot drift
+ * apart the way duplicated pixel numbers did - twice leaving a control that
+ * drew correctly and ignored the mouse.
  *
- * Widget positions used to be literal pixel numbers written down twice: once
- * where the panel is drawn and again where its clicks are tested, in another
- * file. Nothing tied the two together, so moving a control meant editing both
- * and hoping they matched - and twice they did not, leaving controls that drew
- * correctly and ignored the mouse.
- *
- * Instead a panel describes itself as a list of rows and asks where they go.
- * Both the drawing and the click handling ask the same question and get the
- * same answer, so they cannot drift apart: a row added, resized or removed
- * moves everything below it on both sides at once.
- *
- * A row is either an item with a height, a fixed gap, or a gap that expands.
- * The expanding ones share out whatever the fixed rows leave over, which is
- * what keeps a panel balanced when a section appears or disappears with the
- * video mode.
+ * A row is an item with a height, a fixed gap, or a gap that expands; the
+ * expanding ones share out what the fixed rows leave, which keeps a panel
+ * balanced when a section appears with the video mode.
  */
 enum { GUI_ITEM,
     GUI_GAP,

@@ -39,11 +39,10 @@ void sr_end(void);
 void sr_clearwin(void);
 void sr_drawwin(void);
 
-/* The composed frame, and what carries it to the GPU. The texture is made at
-   the largest picture any mode produces - hq4x over a 239-line overscan frame,
-   which is wider and taller than the NTSC filter's 602x446, the 640x480 modes
-   and the doubled 512x448 - and each frame uploads and draws only the part it
-   filled, so the renderer scales whatever size came out to the window. */
+/* The composed frame, and what carries it to the GPU. The texture is sized for
+   the largest picture any mode makes - hq4x over a 239-line overscan frame -
+   and each frame uploads only the part it filled, so the renderer scales
+   whatever came out to the window. */
 #define SR_W 512
 #define SR_H 448
 #define SR_MAXW 1024
@@ -105,11 +104,10 @@ static void sr_apply_settings(void)
 
 static void sr_release(void);
 
-/* Render drivers to try, in order, before letting SDL pick for itself.
-   Vulkan first: measured on a Wayland session it is one of only two drivers
-   that will accept the linear-light colorspace HDR needs - opengl, opengles2
-   and software all refuse it - and it is the better backend regardless. NULL
-   is the last entry and means "whatever SDL would have chosen". */
+/* Render drivers to try before letting SDL pick. Vulkan first: measured on
+   Wayland it is one of only two that accept the linear-light colorspace HDR
+   needs - opengl, opengles2 and software refuse it - and is the better backend
+   anyway. The trailing NULL means "whatever SDL would have chosen". */
 static char const* const sr_drivers[] = { "vulkan", "gpu", NULL };
 
 /* Make a renderer for `win`, asking for linear light when `linear` is set,
@@ -390,10 +388,9 @@ static void sr_line(unsigned short* dst, int const line)
     memcpy(dst + SR_W, dst, SR_W * sizeof(unsigned short));
 }
 
-/* 565 holds sRGB, which is gamma encoded; a float texture in the linear
-   colorspace holds light. Writing the one into the other unconverted would
-   crush the mid-tones, so go through the transfer function. Only 32 and 64
-   levels exist, so a table each is enough. */
+/* 565 holds gamma-encoded sRGB; a linear float texture holds light. Writing
+   one into the other unconverted crushes the mid-tones, so go through the
+   transfer function - 32 and 64 levels, so a table each. */
 static float sr_lin5[32];
 static float sr_lin6[64];
 static int sr_lin_ready = 0;
@@ -416,11 +413,10 @@ static void sr_build_linear(void)
     sr_lin_ready = 1;
 }
 
-/* Widen the composed frame into linear light, adding the bloom without
-   clipping it. The source is 15-bit, so this buys headroom above white rather
-   than tonal resolution - stretching it would only make the banding easier to
-   see. The spill is what uses the headroom, and it is added here in linear
-   light, which is where light actually adds. */
+/* Widen the composed frame into linear light, adding the bloom unclipped. The
+   source is 15-bit, so this buys headroom above white rather than tonal
+   resolution; the spill is what uses it, added here because linear light is
+   where light adds. */
 static void sr_to_hdr(int const w, int const h)
 {
     float const room = sr_hdr_headroom;

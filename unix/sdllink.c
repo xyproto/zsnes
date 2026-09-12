@@ -2007,11 +2007,9 @@ void clearwin(void)
 #ifdef ZSNES_DEBUG_HOOKS
 unsigned zsnes_frame_dump_no = 0;
 
-/* ZSNES_FILTER_SOAK=N walks every filter, every CRT setting and every video
-   mode, one step each N frames, the way somebody clicking around the video
-   panel would. It exists to be run under a sanitizer: a display path that only
-   writes inside its buffer for the size it was built for fails here and
-   nowhere else. */
+/* ZSNES_FILTER_SOAK=N steps through every filter, CRT setting and video mode,
+   N frames apart, for running under a sanitizer: a display path that only
+   writes inside its buffer at the size it was built for fails here. */
 void ZSnesFilterSoak(void)
 {
     /* Software and accelerated, windowed and fullscreen, small and large. */

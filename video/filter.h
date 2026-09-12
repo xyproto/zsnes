@@ -1,15 +1,11 @@
-/* The picture filters, in one place.
+/* The picture filters, in one place: which one is on, how large a picture it
+ * makes, and draw it here. Each display path used to answer those for itself,
+ * gated on the window size it happened to meet - which is why a filter could
+ * behave differently per backend, be unreachable in a small window, or change
+ * when you went fullscreen. A backend now only finds somewhere to put it.
  *
- * Every display path asks the same three questions - which filter is on, how
- * large a picture it makes, and draw it here - and each used to answer them
- * for itself, gated on the window size it happened to meet. That is why a
- * filter behaved differently on the SDL_Renderer path than on the software
- * one, why some of them were unreachable in a small window, and why going
- * fullscreen changed which filter you got. The answers live here now, so a
- * backend only has to find somewhere to put the picture.
- *
- * The settings behind this are unchanged (En2xSaI, hqFilter, hqFilterlevel and
- * NTSCFilter, in cfg.psr), so saved configurations keep working. */
+ * The settings behind this are unchanged (En2xSaI, hqFilter, hqFilterlevel,
+ * NTSCFilter in cfg.psr), so saved configurations keep working. */
 
 #ifndef ZSNES_VIDEO_FILTER_H
 #define ZSNES_VIDEO_FILTER_H
@@ -55,10 +51,9 @@ char const* VideoFilterName(VideoFilter f);
 
 VideoFilterPicture VideoFilterOutput(VideoFilter f);
 
-/* Draw into `dst`, which has `pitch` bytes per row and `capacity` bytes in
-   total. A picture that does not fit is refused - 0 - rather than written past
-   the end, which is what the old size-matched paths did whenever a game turned
-   on overscan. Non-zero once the picture is there. */
+/* Draw into `dst`: `pitch` bytes per row, `capacity` in total. A picture that
+   does not fit is refused rather than written past the end, which is what the
+   old size-matched paths did on an overscan frame. */
 int VideoFilterDraw(VideoFilter f, void* dst, int pitch, size_t capacity);
 
 /* The largest picture any filter makes, for sizing a buffer that has to hold

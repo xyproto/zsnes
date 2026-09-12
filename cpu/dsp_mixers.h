@@ -4,13 +4,12 @@
  * bit-identical to the assembly.
  *
  * Textual include: the includer supplies the integer typedefs, the DSP globals
- * the bodies name, and the DSPInterpolate function pointer.
+ * and the DSPInterpolate pointer.
  *
- * Each w_<name> has the `mixfn` ABI from c_dspproc.c: reads the voice, the
- * DSP-buffer index (*pesi), the increment (*pebx) and the decoded samples
- * (edi), advances *pesi and, in the pitch-modulation variants, *pebx. They are
- * static inline so a partial includer draws no unused-function warnings;
- * taking their address for paramhack[] still works.
+ * Each w_<name> has c_dspproc.c's `mixfn` ABI: reads the voice, DSP-buffer
+ * index (*pesi), increment (*pebx) and decoded samples (edi); advances *pesi,
+ * and *pebx in the pitch-modulation variants. static inline so a partial
+ * includer draws no unused-function warnings.
  */
 
 #include "../unaligned.h"

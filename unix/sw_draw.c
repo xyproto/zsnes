@@ -111,13 +111,11 @@ static void LockSurface(void)
     }
 }
 
-/* Put a finished picture on the screen, scaled to the window if it is not
-   already the same size. That is the ordinary case once a filter is on, and
-   fullscreen, where the picture rarely divides into the panel a whole number
-   of times: at 448 rows into 1200 some source rows land on two and some on
-   three, and nearest neighbour shows that as a coarse line pattern that crawls
-   over anything moving. Honour the bilinear setting here as the other paths
-   do. */
+/* Put a finished picture on the screen, scaled to the window when the sizes
+   differ - the ordinary case with a filter on, and fullscreen, where 448 rows
+   into 1200 puts some source rows on two and some on three and nearest
+   neighbour shows that as a crawling line pattern. Honour the bilinear setting
+   here as the other paths do. */
 static void sw_present(SDL_Surface* const src)
 {
     SDL_Surface* const win_surface = SDL_GetWindowSurface(sdl_window);

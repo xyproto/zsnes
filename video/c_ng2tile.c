@@ -5,10 +5,10 @@
  * writers are one family flagged t/ms/s/w, plus a partial-tile form. Entered
  * by jmp with one word pushed, so the asm seam ends `pop ebx / ret`.
  *
- * A tilemap entry is one word, and only its flip bits are read here. The
- * assembly loaded a dword because that is what `mov eax,[vram+eax]` does; a
- * literal port of that reads two bytes past the end of VRAM for an entry in
- * the last word of it, which Chrono Trigger's attract demo does.
+ * A tilemap entry is one word and only its flip bits are read here. The
+ * assembly's `mov eax,[vram+eax]` loaded a dword, which ported literally reads
+ * two bytes past VRAM for an entry in its last word - Chrono Trigger's attract
+ * demo does exactly that.
  */
 #include <stdint.h>
 #include <string.h>

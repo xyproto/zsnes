@@ -1011,9 +1011,8 @@ fmt:
 test: $(BINARY)
 	$(MAKE) -C test run
 
-# The netplay relay (server/, Go). Players run their own; it pairs two clients
-# by room code and forwards their input frames. Not part of `all` - the
-# emulator does not need it to build.
+# The netplay relay (server/, Go): pairs two clients by room code and forwards
+# their input frames. Not part of `all`.
 GO ?= go
 .PHONY: server server-test
 server:

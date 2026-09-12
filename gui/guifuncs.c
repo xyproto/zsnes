@@ -264,10 +264,8 @@ u1 GUIScanlineIntensity(u1 const level)
     }
 }
 
-/* Turn off a filter the current video mode's panel does not offer. What is
-   drawn has to match a control the user can see: a filter picked in one mode
-   used to stay on in a mode with no box for it, with nothing on screen saying
-   so and no way to switch it off. */
+/* Turn off a filter this video mode's panel does not offer: one picked in
+   another mode used to stay on with no box to switch it off. */
 void GUIFilterForMode(void)
 {
     if (newgfx16b == 0 || GUIDSIZE[cvidmode] == 0) {
@@ -284,10 +282,9 @@ void GUIFilterForMode(void)
     VideoFilterNormalise();
 }
 
-/* Whether the Retro panel offers the 0..100 slider rather than the four fixed
-   steps the old setting names. Everything the SDL ports draw runs the shared
-   tube pass (video/crt.c) and so takes the slider; the DirectDraw blitter
-   dims alternate rows itself and only understands the steps. */
+/* Whether the Retro panel offers the 0..100 slider or the four old steps.
+   Everything the SDL ports draw runs the shared tube pass (video/crt.c) and
+   takes the slider; the DirectDraw blitter only understands the steps. */
 int GUIScanlineSlider(void)
 {
 #ifdef __UNIXSDL__
@@ -297,10 +294,9 @@ int GUIScanlineSlider(void)
 #endif
 }
 
-/* Scanline depth, in both the spellings that exist. The slider is the one the
-   renderers read; `scanlines` is what the configuration file and -n have
-   always held, and leaving the two disagreeing is what made the setting
-   appear to change every time the video mode did. */
+/* Scanline depth in both spellings: the renderers read the slider, the config
+   file and -n hold `scanlines`. Letting them disagree is what made the setting
+   appear to change with the video mode. */
 void GUISetScanlines(u1 const intensity)
 {
     sl_intensity = intensity > 100 ? 100 : intensity;
@@ -482,12 +478,10 @@ void GUIRestoreVars(void)
     CheckValueBounds(&sl_vibrancy, 0, 100, 45, UB);
     CheckValueBounds(&BloomLevel, 0, 100, 25, UB);
     CheckValueBounds(&scanlines, 0, 3, 0, UB);
-    /* Two spellings of one setting. Anything this version wrote has them
-       agreeing, because GUISetScanlines writes both; a configuration from
-       before the slider existed has only the old one, which is what an
-       untouched slider next to a set step means. Convert that case and leave
-       the slider alone otherwise, or a value the user chose would be rounded
-       to one of four steps every time the emulator started. */
+    /* Two spellings of one setting, kept agreeing by GUISetScanlines. Only a
+       configuration older than the slider has the step set and the slider at
+       zero; convert that and leave the slider alone otherwise, or a chosen
+       value would be rounded to one of four steps on every start. */
     if (scanlines != 0 && sl_intensity == 0) {
         sl_intensity = GUIScanlineIntensity(scanlines);
     }

@@ -988,10 +988,10 @@ void c_membank0w16(void)
 
 /* --- bank 00-3F low RAM on an SA-1 cart ---------------------------------- *
  *
- * The WRAM mirror while the 65816 has the bus, the SA-1's own 2K of IRAM while
- * it does, zero above that. The assembly range-checked ecx alone and let ebx
- * carry the index past 800h into whatever followed IRAM; the check is on the
- * whole address here, which is what "zero above that" meant.
+ * The WRAM mirror while the 65816 has the bus, the SA-1's 2K of IRAM while it
+ * does, zero above that. The assembly checked ecx alone and let ebx carry the
+ * index past 800h into whatever followed IRAM; the check is on the whole
+ * address here, which is what "zero above that" meant.
  */
 static inline int mem_iram_in(u4 const a)
 {
@@ -1054,9 +1054,9 @@ void c_membank0w16ramSA1(void)
 /* --- the SA-1's view of its own RAM -------------------------------------- *
  *
  * Banks 40-4F, four 64K slices of SA1RAMArea. The assembly masked the bank
- * with 3 and ran into whatever followed the 128K; BW-RAM mirrors at its own
- * size. During a character-conversion DMA reads come from the converter one
- * byte at a time; writes never do.
+ * with 3 and ran past the 128K; BW-RAM mirrors at its own size. During a
+ * character-conversion DMA reads come from the converter a byte at a time;
+ * writes never do.
  */
 /* Offset into BW-RAM of bank ebx, offset ecx, plus `k`; a word straddling the
    end mirrors like everything else. */

@@ -33,7 +33,7 @@ static uint32_t znp_get32(uint8_t const* const in)
         | ((uint32_t)in[2] << 8) | (uint32_t)in[3];
 }
 
-/* A fixed-width field: as much of `src` as fits, zeroes after it. */
+/* As much of `src` as fits, zeroes after it. */
 static void znp_put_field(uint8_t* const out, size_t const width, char const* const src)
 {
     size_t const n = src != NULL ? strlen(src) : 0;
@@ -42,7 +42,7 @@ static void znp_put_field(uint8_t* const out, size_t const width, char const* co
     memcpy(out, src, n < width ? n : width);
 }
 
-/* And back out, stopping at the first zero. */
+/* And back out, to the first zero. */
 static void znp_get_field(char* const out, size_t const out_sz,
     uint8_t const* const in, size_t const width)
 {
@@ -90,15 +90,14 @@ void znp_parse_target(char const* const spec, char* const host, size_t const hos
         snprintf(room, room_sz, "default");
     }
 
-    /* An IPv6 literal is full of colons, so a port only follows one when the
-       address is bracketed, or when there is a single colon to split on. */
+    /* A colon is a port separator only when bracketed or alone; an IPv6
+       literal is full of them. */
     if (copy[0] == '[') {
         char* const close = strchr(copy, ']');
 
         colon = close != NULL ? close + 1 : NULL;
         if (close != NULL) {
-            /* Drop the brackets. Only the address moves, so whatever follows
-               the bracket - a port, or nothing - stays where it was. */
+            /* Only the address moves, so `colon` still points at the port. */
             *close = '\0';
             memmove(copy, copy + 1, strlen(copy + 1) + 1);
         }

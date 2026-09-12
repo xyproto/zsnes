@@ -1,11 +1,8 @@
-/* The GUI's allocator.
- *
- * Nothing the GUI holds is large, hot, or long lived: the file lists are
- * rebuilt whenever the browser changes directory and thrown away whole. So
- * they are not freed a piece at a time. GUIAlloc hands out memory from a chain
- * of blocks and GUIArenaReset drops the lot at once, which is a collector of
- * sorts and is all this needs - a list cannot be leaked, freed twice, or read
- * after it is gone, because no single object is ever freed. */
+/* The GUI's allocator. Nothing it holds is large, hot or long lived - the
+ * browser's file lists are rebuilt whole whenever the directory changes - so
+ * GUIAlloc bump-allocates from a chain of blocks and GUIArenaReset drops the
+ * lot. Nothing is freed individually, so nothing can be leaked, double-freed
+ * or read after it is gone. */
 
 #ifndef ZSNES_GUI_GUIARENA_H
 #define ZSNES_GUI_GUIARENA_H
