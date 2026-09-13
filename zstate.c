@@ -880,14 +880,19 @@ void RestoreSA1(void)
     SA1Ptr = SA1RegPCS + (int32_t)SA1PtrSt;
 }
 
+/* RAM, then the IPL ROM the asm data layout puts straight after it. */
+enum { SPC_ADDRESS_BYTES = 0x10000 };
+
 void ResetState(void)
 {
     int i;
 
-    spcPCRam = SPCRAM + spcPCRamSt;
+    /* Offsets from a file, so bound them: a state that puts the SPC700 outside
+       its own address space would leave these pointing anywhere. */
+    spcPCRam = SPCRAM + (spcPCRamSt < SPC_ADDRESS_BYTES ? spcPCRamSt : 0);
     /* initaddrlSt is the same kind of raw pointer, and the exec loop works the
        bank base out from xpb/xpc on entry, so there is nothing to restore. */
-    spcRamDP = SPCRAM + spcRamDPSt;
+    spcRamDP = SPCRAM + (spcRamDPSt < SPC_ADDRESS_BYTES ? spcRamDPSt : 0);
 
     for (i = 0; i < 8; i++) {
         uint32_t const off = Voice0BufPtrSt[i];
@@ -1494,8 +1499,10 @@ bool zst_load(FILE* fp, size_t Compressed)
     ResetState();
     /* curexecstate rides in the extra block from V143 on, and its low byte is
        not always what procexecloop would derive: the execution loop clears
-       bit 0 while it is parked. Only the older format needs it filled in. */
-    if (zst_version < 143) {
+       bit 0 while it is parked. Only the older format needs it filled in -
+       and a state carrying anything but the four values the loop knows, which
+       is a file that is not the state it says it is. */
+    if (zst_version < 143 || curexecstate > 3) {
         procexecloop();
     }
 

@@ -291,6 +291,56 @@ static u4 DebugInputButtonMask(const char* name, size_t len)
     return 0;
 }
 
+#ifdef ZSNES_DEBUG_HOOKS
+/* ZSNES_HOTKEY="save:240,load:300": press the save-state or load-state key at
+   an emulated frame, so the path a player takes through F-keys can be driven
+   headlessly. Each entry fires once. */
+extern u4 KeySaveState, KeyLoadState;
+extern unsigned zsnes_emulated_frame;
+
+static void DebugHotkeyScript(void)
+{
+    static struct {
+        u4 frame;
+        u1 load;
+        u1 done;
+    } steps[16];
+    static u4 nsteps = 0;
+    static int inited = 0;
+    u4 i;
+
+    if (!inited) {
+        char const* s = getenv("ZSNES_HOTKEY");
+
+        inited = 1;
+        while (s && *s && nsteps < 16) {
+            int const load = strncasecmp(s, "load", 4) == 0;
+
+            while (*s && *s != ':')
+                s++;
+            if (*s == ':')
+                s++;
+            steps[nsteps].frame = 0;
+            while (*s >= '0' && *s <= '9')
+                steps[nsteps].frame = steps[nsteps].frame * 10 + (u4)(*s++ - '0');
+            steps[nsteps].load = (u1)load;
+            nsteps++;
+            if (*s == ',')
+                s++;
+        }
+    }
+
+    for (i = 0; i < nsteps; i++) {
+        if (steps[i].done || steps[i].frame != zsnes_emulated_frame)
+            continue;
+        steps[i].done = 1;
+        pressed[steps[i].load ? KeyLoadState : KeySaveState] = 1;
+        fprintf(stderr, "HOTKEY frame=%u %s\n", zsnes_emulated_frame,
+            steps[i].load ? "load" : "save");
+    }
+}
+#endif
+
 // Returns the scripted player-1 button mask for the current frame, or 0.
 static u4 DebugInputScript(void)
 {
@@ -550,6 +600,10 @@ void ReadInputDevice(void)
         if (device2 == 0)
             JoyBOrig = JoyDOrig;
     }
+
+#ifdef ZSNES_DEBUG_HOOKS
+    DebugHotkeyScript();
+#endif
 
     // Debug scripted input (DEBUG_INPUT_SCRIPT) overrides player-1 buttons.
     u4 scripted = DebugInputScript();
