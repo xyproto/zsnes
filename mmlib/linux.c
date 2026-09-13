@@ -152,7 +152,11 @@ static int poll_mouse(MouseStruct* mouse, ManyMouseEvent* outevent)
 
 static int init_mouse(const char* fname, int fd)
 {
-    MouseStruct* mouse = &mice[available_mice];
+    MouseStruct* mouse;
+
+    if (available_mice >= MAX_MICE)
+        return 0; /* evdev's minor range holds one more node than we keep */
+    mouse = &mice[available_mice];
     int has_absolutes = 0;
     int is_mouse = 0;
     unsigned char relcaps[(REL_MAX / 8) + 1];
@@ -276,8 +280,10 @@ static int linux_evdev_init(void)
 
 static void linux_evdev_quit(void)
 {
+    /* Decrement first: the last mouse is at available_mice - 1, and stepping
+       down from the count itself read past the array and left mice[0] open. */
     while (available_mice) {
-        int fd = mice[available_mice--].fd;
+        int fd = mice[--available_mice].fd;
         if (fd != -1)
             close(fd);
     } /* while */

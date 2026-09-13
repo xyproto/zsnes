@@ -360,6 +360,13 @@ static void net_extip_lookup(void)
         attr_type = ntohs(attr_type);
         attr_len = ntohs(attr_len);
 
+        /* The loop above only proves the header arrived. A last attribute that
+           claims a body it did not send would be read past the response, and
+           past resp[] itself once the datagram fills it. */
+        if (pos + 4 + (int)attr_len > (int)n) {
+            break;
+        }
+
         if (attr_type == 0x0020 && attr_len >= 8) { // XOR-MAPPED-ADDRESS
             uint32_t xaddr;
             memcpy(&xaddr, resp + pos + 8, 4);
