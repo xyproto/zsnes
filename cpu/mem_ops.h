@@ -73,8 +73,20 @@ void c_membank0r8inv(void) /* 4800-5FFF */
     mem_set_al((u1)((MemSeamC >> 8) & 0xFFu));
 }
 
+/* Defined further down; the ROM handlers below fall back to them. */
+void c_membank0r8chip(void);
+void c_membank0r16chip(void);
+
 void c_membank0r8rom(void) /* 8000-FFFF */
 {
+    /* The page table hands this handler direct pages from 7E00 up, because one
+       there reaches ROM once an offset is added. An address that stays below
+       8000 is not ROM at all, and the base is romdata - 8000, so indexing it
+       reads before the buffer; below 8000 the expansion area answers. */
+    if (!((MemSeamB + MemSeamC) & 0x8000u)) {
+        c_membank0r8chip();
+        return;
+    }
     MemSeamB += (uintptr_t)mem_rom();
     mem_set_al(*(u1*)(uintptr_t)(MemSeamB + MemSeamC));
     MemSeamB = 0;
@@ -151,6 +163,10 @@ void c_membank0r16inv(void) /* 4800-5FFF */
 
 void c_membank0r16rom(void) /* 8000-FFFF */
 {
+    if (!((MemSeamB + MemSeamC) & 0x8000u)) {
+        c_membank0r16chip();
+        return;
+    }
     MemSeamB += (uintptr_t)mem_rom();
     mem_set_ax((u2)(*(u1*)(uintptr_t)(MemSeamB + MemSeamC)
         | (*(u1*)(uintptr_t)(MemSeamB + MemSeamC + 1) << 8)));
