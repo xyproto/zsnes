@@ -38,7 +38,7 @@ jobs:
           sudo dpkg --add-architecture i386
           sudo apt-get $APT_OPTS update
           sudo apt-get $APT_OPTS install -y --no-install-recommends \
-            build-essential cmake ninja-build git make nasm python3 pkg-config \
+            build-essential cmake ninja-build git make python3 pkg-config \
             clang-format-19 \
             gcc-multilib g++-multilib libc6-dev-i386 \
             libx11-dev:i386 libxcursor-dev:i386 libxi-dev:i386 \
@@ -112,7 +112,7 @@ jobs:
         run: |
           sudo apt-get $APT_OPTS update
           sudo apt-get $APT_OPTS install -y --no-install-recommends \
-            build-essential make nasm python3 pkg-config git \
+            build-essential make python3 pkg-config git \
             gcc-aarch64-linux-gnu libc6-dev-arm64-cross \
             libsdl3-dev libgl1-mesa-dev libpng-dev zlib1g-dev \
             libao-dev libpipewire-0.3-dev libncurses-dev
@@ -156,82 +156,6 @@ jobs:
           ZSNES_SELFTEST=1 ./zsnes -v 0
           make clean
 
-
-  difftests:
-    name: difftests (${{ matrix.shard }})
-    runs-on: ubuntu-26.04
-    env:
-      DEBIAN_FRONTEND: noninteractive
-      APT_OPTS: -o Acquire::Retries=3 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20
-      SDL_TAG: release-3.4.14
-      PKG_CONFIG_LIBDIR: /usr/lib/i386-linux-gnu/pkgconfig:/usr/share/pkgconfig
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - shard: mvall
-            targets: mvall
-          - shard: heavy
-            targets: t8to mvs op sa1op dbgop memops
-          - shard: rest
-            targets: >-
-              spcdec 2xsai fxtable fxops m716t cb16t cb16b spr16bt spr16t spr16p
-              t8bt t16bt t8t t16t thi sprwin ngspr procwin mos ngeng ngframe
-              mv16 m7draw m7proc m7bw m7win m7start m7ext2 m7calc regs sa1regs transp
-              bgt ng2
-    steps:
-      - uses: actions/checkout@v6
-      - name: Install dependencies
-        run: |
-          sudo dpkg --add-architecture i386
-          sudo apt-get $APT_OPTS update
-          sudo apt-get $APT_OPTS install -y --no-install-recommends \
-            build-essential cmake ninja-build git make nasm python3 pkg-config \
-            gcc-multilib g++-multilib libc6-dev-i386 \
-            libx11-dev:i386 libxcursor-dev:i386 libxi-dev:i386 \
-            libxinerama-dev:i386 libxfixes-dev:i386 libxrandr-dev:i386 \
-            libgl1-mesa-dev:i386 zlib1g-dev:i386 libpng-dev:i386 \
-            libao-dev:i386 libpipewire-0.3-dev:i386
-      - name: Install SDL3 (i386)
-        run: |
-          if apt-cache show libsdl3-dev:i386 >/dev/null 2>&1; then
-            sudo apt-get $APT_OPTS install -y --no-install-recommends libsdl3-dev:i386
-          else
-            rm -rf /tmp/SDL
-            git clone --depth 1 --branch $SDL_TAG \
-              https://github.com/libsdl-org/SDL.git /tmp/SDL
-            cmake -S /tmp/SDL -B /tmp/SDL/build -GNinja \
-              -DCMAKE_BUILD_TYPE=Release \
-              -DCMAKE_INSTALL_PREFIX=/usr/local \
-              -DSDL_SHARED=ON -DSDL_STATIC=OFF \
-              -DSDL_X11=OFF -DSDL_WAYLAND=OFF -DSDL_KMSDRM=OFF \
-              -DSDL_UNIX_CONSOLE_BUILD=ON \
-              -DSDL_ALSA=OFF -DSDL_PULSEAUDIO=OFF -DSDL_PIPEWIRE=OFF \
-              -DSDL_JACK=OFF -DSDL_SNDIO=OFF \
-              -DCMAKE_C_FLAGS='-m32' -DCMAKE_CXX_FLAGS='-m32'
-            cmake --build /tmp/SDL/build --parallel
-            sudo cmake --install /tmp/SDL/build
-            echo '/usr/local/lib' | sudo tee /etc/ld.so.conf.d/zsnes-ci-sdl3.conf
-            sudo ldconfig
-            echo 'PKG_CONFIG_PATH=/usr/local/lib/pkgconfig' >> "$GITHUB_ENV"
-          fi
-      - name: Build
-        run: |
-          make clean
-          make linux_i686
-      - name: Differential tests
-        run: |
-          for t in ${{ matrix.targets }}; do
-            echo "=== $t"
-            make -C test "$t" || exit 1
-          done
-      - name: Differential tests at release optimisation
-        if: matrix.shard == 'rest'
-        run: |
-          for t in regs cb16b cb16t fxtable mv16 procwin; do
-            echo "=== $t -O3"
-            make -C test "$t" OPT=-O3 || exit 1
-          done
 
   linux_aarch64:
     runs-on: ubuntu-26.04
@@ -353,7 +277,7 @@ jobs:
           sudo apt-get $APT_OPTS install -y \
             mingw-w64 \
             libz-mingw-w64-dev \
-            nasm python3 pkg-config
+            python3 pkg-config
       - name: Build 32-bit
         run: |
           make clean

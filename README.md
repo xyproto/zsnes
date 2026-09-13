@@ -24,7 +24,6 @@ Pull requests that fixes inaccuracies with the emulation are welcome, as well as
 ### Requirements
 
 * `python3`, `sdl3`, `pipewire` (or `libao`), and a C compiler like `gcc` or `clang`.
-* `nasm` is only needed for testing.
 
 Tested on Arch Linux, Fedora and Debian 12 on x86_64, and on macOS on aarch64.
 

@@ -5,9 +5,9 @@
  * over deterministic pseudo-random state and the resulting machine state is
  * hashed; the same build at -m32 and -m64 has to print the same digest.
  *
- * The difftests cannot cover this: they assemble the original with nasm and so
- * only ever build -m32, where zreg and u4 are the same type and a width bug is
- * invisible. This compares the port against itself across word sizes instead.
+ * The -m32 unit tests cannot cover this: at that width zreg and u4 are the
+ * same type, so a 64-bit width bug is invisible. This compares the port
+ * against itself across word sizes instead.
  */
 #include <stdbool.h>
 #include <stdint.h>
