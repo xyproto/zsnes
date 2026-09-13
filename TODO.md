@@ -2,6 +2,7 @@
 
 - [ ] Confirm the DSP4 division table on a DSP4 cart. `floor(0x8000/n)` verified, but not the chip's rounding.
 - [ ] Fix Super Mario RPG hanging in the attract demo at frame 19956, force-blank never cleared. Needs a reference trace.
+- [ ] Bank 0 reads at $7E00-$7FFF go through the ROM handler (`GenerateBank0Table` maps high bytes 7E-FE), so they read up to 512 bytes before `romdata`. Measured, never observed in play; fixing it changes what every game reads there.
 - [ ] Carry SRAM and the host's state into a netplay session; it power-cycles both sides instead.
 - [ ] `WITH_TLS`: build the netplay client against libssl/libtls when present, plaintext when not. The relay needs `-insecure` until then.
 - [ ] Move the Windows blitter (`win/winlink.c`) onto `video/filter.c`; it still size-matches the surface.
