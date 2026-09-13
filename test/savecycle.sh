@@ -9,6 +9,13 @@ set -u
 BIN=${1:?debug-hooks build of zsnes}
 ROM=${2:?a rom}
 shift 2
+# The ROM is fetched by test/state_fixtures.sh (pinned checksum, gitignored).
+# If that was skipped - no network on the runner - skip here too rather than
+# redden the build over a fetch that never happened.
+if [ ! -f "$ROM" ]; then
+    echo "savecycle: $ROM absent (ROM fetch skipped?); skipping"
+    exit 0
+fi
 SAVE_AT=240
 HASH_AT=260
 LOAD_AT=30

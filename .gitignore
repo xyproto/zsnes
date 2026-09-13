@@ -1,4 +1,3 @@
-!test/difftest_*.c
 *.[do]
 *.log
 *.raw
@@ -10,7 +9,6 @@ include.txt
 parsegen
 server/server
 test/_*
-test/difftest_*
 test/harness/out/
 test/harness/out64
 test/roms/
