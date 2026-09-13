@@ -622,9 +622,11 @@ void DisplayGUILoad(void)
     cloadmaxlen = 39;
     u1 const colour = GUIWincoladd == 0 ? 202 : 196;
     if (GUIcurrentfilewin != 0) {
-        char const* const eax = d_names[GUIcurrentdircursloc + 2];
-        GUIOuttextwin2l(1, 6, 158, eax, colour);
-        GUIOuttextwin2l(1, 5, 157, eax, colour + 15);
+        if (d_names && (u4)GUIcurrentdircursloc < (u4)GUIdirentries) {
+            char const* const eax = d_names[GUIcurrentdircursloc + 2];
+            GUIOuttextwin2l(1, 6, 158, eax, colour);
+            GUIOuttextwin2l(1, 5, 157, eax, colour + 15);
+        }
     } else if (GUIfileentries != 0) {
         s4 const eax = GUIcurrentcursloc;
         if ((u4)eax < (u4)GUIfileentries) {

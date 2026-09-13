@@ -1079,10 +1079,27 @@ void SplitSupport(void)
             addOnSize = curromspace;
             SplitSetup(STPath, "STBIOS.ZIP", 3);
         } else if (maxromspace >= (curromspace << 2) + 0x100000) {
+            uint32_t const size1 = curromspace;
+
             memcpy(ROM + curromspace + curromspace, ROM, curromspace);
             memcpy(ROM + curromspace * 3, ROM, curromspace);
             curromspace = 0;
             load_file_fs(STCart2);
+            /* The slots are laid out for two carts of one size, and the room
+               was checked against the first; a second of another size - any
+               file can be named on the command line - is not paired, and the
+               first goes back where the BIOS expects it. */
+            if (curromspace != size1) {
+                char first[NAME_SIZE];
+
+                snprintf(first, sizeof(first), "%s", ZCartName);
+                curromspace = 0;
+                load_file_fs(first);
+                addOnStart = 0x100000;
+                addOnSize = curromspace;
+                SplitSetup(STPath, "STBIOS.ZIP", 3);
+                return;
+            }
             memcpy(ROM + curromspace, ROM, curromspace);
             SwapData((uint32_t*)romdata, ((uint32_t*)romdata + (curromspace >> 1)), curromspace >> 1);
             addOnSize = curromspace << 2;
