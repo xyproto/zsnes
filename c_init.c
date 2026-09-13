@@ -335,9 +335,11 @@ static void DebugHotkeyScript(void)
     for (i = 0; i < nsteps; i++) {
         if (steps[i].done || steps[i].frame != zsnes_emulated_frame)
             continue;
+        u4 const key = steps[i].key == 2 ? KeyRewind : steps[i].key == 1 ? KeyLoadState
+                                                                         : KeySaveState;
+
         steps[i].done = 1;
-        pressed[steps[i].key == 2 ? KeyRewind : steps[i].key == 1 ? KeyLoadState
-                                                                  : KeySaveState] = 1;
+        pressed[key] = 1;
         fprintf(stderr, "HOTKEY frame=%u %s\n", zsnes_emulated_frame,
             steps[i].key == 2 ? "rewind" : steps[i].key == 1 ? "load"
                                                              : "save");
