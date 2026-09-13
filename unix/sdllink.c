@@ -557,7 +557,10 @@ int Main_Proc(void)
             }
             // POV hats act as direction pad
             offset = HatOffset[idx];
-            if (offset >= (256 + 128 + 64)) {
+            /* Four slots, so the last one is what has to fit: the layout
+               keeps handing out offsets past the end once a set of pads
+               outgrows pressed[]. */
+            if (offset + 4 > (256 + 128 + 64)) {
                 break;
             }
             switch (event.jhat.value) {
@@ -626,7 +629,7 @@ int Main_Proc(void)
             }
             offset = AxisOffset[idx];
             offset += event.jaxis.axis * 2;
-            if (offset >= (256 + 128 + 64)) {
+            if (offset + 2 > (256 + 128 + 64)) { /* two slots, see the hat */
                 break;
             }
             if (event.jaxis.value < -(joy_sensitivity)) {

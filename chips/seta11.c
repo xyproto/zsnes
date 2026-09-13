@@ -117,7 +117,10 @@ void ST011_Reset(void)
 
 void ST011_OP01_A(void)
 {
-    if (ST011_dma_count--) {
+    /* A count of zero went negative here and never came back, and the index
+       walked on past the board. */
+    if (ST011_dma_count > 0) {
+        ST011_dma_count--;
         ST011_board[ST011_dma_index++] = ST011_DR;
     }
 
@@ -166,7 +169,8 @@ void ST011_OP01(void)
 
 void ST011_OP02_A(void)
 {
-    if (ST011_dma_count--) {
+    if (ST011_dma_count > 0) { /* as in OP01_A */
+        ST011_dma_count--;
         ST011_DR = ST011_ram[ST011_dma_index--];
     }
 

@@ -150,9 +150,23 @@ bool PatchUsingIPS(const char* ext)
     }
     valid = true;
 
-    while (IPSPatch.proccessed != IPSPatch.file_size) {
+    while (IPSPatch.proccessed < IPSPatch.file_size) {
         // Location is a 3 byte value (max 16MB)
-        int inloc = (IPSget() << 16) | (IPSget() << 8) | IPSget();
+        int const loc_hi = IPSget();
+        int const loc_mid = IPSget();
+        int const loc_lo = IPSget();
+        int inloc;
+        int len_hi;
+        int len_lo;
+
+        /* A patch that stops mid-record - a truncated file, or a zip member
+           whose directory claims more than it holds - leaves the reader at its
+           end, where it stops advancing and reports -1. Reading on from there
+           shifted a negative and never reached file_size. */
+        if (loc_hi < 0 || loc_mid < 0 || loc_lo < 0) {
+            break;
+        }
+        inloc = (loc_hi << 16) | (loc_mid << 8) | loc_lo;
 
         if (inloc == 0x454f46) // EOF
         {
@@ -163,7 +177,12 @@ bool PatchUsingIPS(const char* ext)
         location = inloc - sub;
 
         // Length is a 2 byte value (max 64KB)
-        length = (IPSget() << 8) | IPSget();
+        len_hi = IPSget();
+        len_lo = IPSget();
+        if (len_hi < 0 || len_lo < 0) {
+            break;
+        }
+        length = (len_hi << 8) | len_lo;
 
         if (length) // Not RLE
         {
@@ -185,7 +204,13 @@ bool PatchUsingIPS(const char* ext)
         {
             int i;
             unsigned char newVal;
-            length = (IPSget() << 8) | IPSget();
+
+            len_hi = IPSget();
+            len_lo = IPSget();
+            if (len_hi < 0 || len_lo < 0) {
+                break;
+            }
+            length = (len_hi << 8) | len_lo;
             newVal = (unsigned char)IPSget();
             for (i = 0; i < length; i++, location++) {
                 if (location >= 0) {

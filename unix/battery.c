@@ -108,7 +108,11 @@ static void update_battery_info(void)
             }
             if (present_rate < 0.0f) {
                 // Linux specifies rates in mWh or mAh
-                BatteryLifeTime = (int)floorf(remaining_capacity / (-present_rate) * 3600.0);
+                float const seconds = floorf(remaining_capacity / (-present_rate) * 3600.0f);
+
+                /* A rate near zero puts this past what an int holds, and the
+                   conversion is then undefined. */
+                BatteryLifeTime = seconds < 2147483647.0f ? (int)seconds : 2147483647;
             }
         }
         closedir(batt_dir);

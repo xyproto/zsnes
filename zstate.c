@@ -27,6 +27,7 @@
 #include "endmem.h"
 #include "gblvars.h"
 #include "gui/c_guiwindp.h"
+#include "gui/guifuncs.h"
 #include "init.h"
 #include "initc.h"
 #include "input.h"
@@ -81,8 +82,9 @@ static size_t zst_dspsave_run;
 
 enum { HDMA_SAVED_BYTES = 8 * (4 * 4 + 3) }; /* hdmadata at 32-bit width */
 /* The 64-bit 2.3.0/2.3.1 releases wrote hdmadata and Voice0BufPtr at pointer
-   width, 160 bytes wider. Set while loading one of those. */
-enum { ZST_WIDE_EXTRA = 8 * (4 * 8 + 3) - HDMA_SAVED_BYTES + 8 * (8 - 4) };
+   width, ZST_WIDE_EXTRA (zstate.h) bytes wider. Set while loading one. */
+_Static_assert(ZST_WIDE_EXTRA == 8 * (4 * 8 + 3) - HDMA_SAVED_BYTES + 8 * (8 - 4),
+    "ZST_WIDE_EXTRA");
 static int zst_wide_ptrs;
 
 static void copy_snes_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, size_t))
@@ -118,14 +120,21 @@ static void copy_snes_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*,
     // SNES PPU register block (sndrot is start; size is exported from asm).
     if (zst_ppureg_run) {
         static uint8_t old[ZST_151_PPUREG];
+        static HDMAInfo hdma_live[8];
         void* volatile block = &sndrot;
         size_t i;
 
         copy_func(buffer, old, sizeof(old));
+        /* The second run lands on hdmadata, whose pointers are 1.51's own.
+           Keep this process's, as the other branch does; a $420C write
+           rebuilds them, and until then nexthdma is off - except while a
+           movie records, when the HDMA loop would have called through them. */
+        memcpy(hdma_live, hdmadata, sizeof(hdma_live));
         for (i = 0; i < sizeof(zst_151_regmap) / sizeof(*zst_151_regmap); i++) {
             memcpy((uint8_t*)block + zst_151_regmap[i].to,
                 old + zst_151_regmap[i].from, zst_151_regmap[i].len);
         }
+        memcpy(hdmadata, hdma_live, sizeof(hdma_live));
     } else {
         /* Through a plain &sndrot, __builtin_object_size bounds the copy at
            sizeof(sndrot) == 1 and _FORTIFY_SOURCE aborts the restore: the
@@ -2079,5 +2088,6 @@ void LoadGameSpecificInput(void)
 
         setextension(ZSaveName, "inp");
         psr_cfg_run(read_input_vars, ZInpPath, ZSaveName);
+        ClampKeyBindings();
     }
 }

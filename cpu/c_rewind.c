@@ -11,6 +11,8 @@
 #include "c_rewind.h"
 #include "execute.h" /* pressed */
 
+extern u1 SPCRAM[];
+
 /* Order of the dwords pushad leaves on the stack, lowest address first. */
 enum { R_EDI,
     R_ESI,
@@ -48,10 +50,13 @@ void ProcessRewindC(zreg* const r)
 
     UpdateDPage();
 
-    /* Resume the core from the state the restored frame was saved with. */
+    /* Resume the core from the state the restored frame was saved with. esi
+       and edi are rebuilt before the next instruction; ebp is the SPC700's
+       PC and is not, so it travels as an offset - the slot is four bytes and
+       a pointer into .bss is not, on the PIE targets. */
     r[R_ESI] = tempesi;
     r[R_EDI] = tempedi;
-    r[R_EBP] = tempebp;
+    r[R_EBP] = (zreg)(uintptr_t)SPCRAM + (tempebp & 0xFFFFu);
     r[R_EDX] = tempedx;
 }
 
@@ -67,7 +72,7 @@ void UpdateRewindC(zreg* const r)
         tempedx = r[R_EDX];
         tempesi = r[R_ESI];
         tempedi = r[R_EDI];
-        tempebp = r[R_EBP];
+        tempebp = (u4)(r[R_EBP] - (zreg)(uintptr_t)SPCRAM);
         BackupCVFrame();
     }
 

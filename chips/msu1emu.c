@@ -12,6 +12,7 @@ u1 MSU_StatusRead;
 u4 MSU_Data_SeekPort;
 u4 MSU_Data_Addr;
 u1* MSU_DATA = NULL;
+u4 MSU_Data_Length; /* bytes in MSU_DATA */
 
 // DSP
 short* TRACK_DATA = NULL;
@@ -90,6 +91,7 @@ int readMSU(void)
         MSU_DATA = (u1*)malloc(filelen);
         if (MSU_DATA) {
             IGNORE_RESULT(fread(MSU_DATA, filelen, 1, MSUBinary));
+            MSU_Data_Length = (u4)filelen;
             fclose(MSUBinary);
             return 1;
         } else {
@@ -163,7 +165,13 @@ void MSU1HandleTrackChange(void)
 #ifdef DEBUG
             printf("Succesfully loaded Track %lu with length %lu\n", MSU_Track, filelen);
 #endif
-            MSU_Track_Length = filelen / 2;
+            /* Whole stereo pairs, so the right channel of the last one is
+               inside the buffer; and a loop point the file cannot honour -
+               negative, or past its end - restarts the track instead. */
+            MSU_Track_Length = (int)(filelen / 2) & ~1;
+            if (MSU_Loop_Point < 0 || MSU_Loop_Point > MSU_Track_Length / 2) {
+                MSU_Loop_Point = 0;
+            }
         } else {
             fclose(TrackFileReader);
             // Clear audio busy bit
@@ -211,7 +219,7 @@ void mixMSU1Audio(int* start, int* end, int rate)
         MSU_StatusRead |= MSU_STATUS_AUDIO_BUSY; // Set audio busy flag
         for (; start < end; start++) {
             // Check if the pointer of the track is valid.
-            if (MSU_Track_Position < MSU_Track_Length) {
+            if (MSU_Track_Position >= 0 && MSU_Track_Position < MSU_Track_Length) {
                 *start += (TRACK_DATA[MSU_Track_Position] * MSU_AudioVolume * MusicVol) / 0x4000;
 
                 // Stereo Mixer

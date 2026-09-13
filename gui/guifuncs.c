@@ -26,6 +26,7 @@
 #include <unistd.h>
 #endif
 
+#include "../cpu/execute.h" /* pressed[] */
 #include "../initc.h"
 #include "cfg.h"
 #include "input.h"
@@ -312,6 +313,99 @@ void GUISetScanlineStep(u1 const level)
     sl_intensity = GUIScanlineIntensity(level);
 }
 
+/* Every key binding the two config files carry. A binding indexes pressed[],
+   and neither file is checked as it is read, so one that was edited by hand
+   or damaged put the index anywhere. */
+#define PLAYER_KEYS(p)                                                       \
+    &p##selk, &p##startk, &p##upk, &p##downk, &p##leftk, &p##rightk, &p##Xk, \
+        &p##Ak, &p##Lk, &p##Yk, &p##Bk, &p##Rk, &p##Atk, &p##Btk, &p##Xtk,   \
+        &p##Ytk, &p##Ltk, &p##Rtk, &p##ULk, &p##URk, &p##DLk, &p##DRk
+static u4* const key_bindings[] = {
+    PLAYER_KEYS(pl1),
+    PLAYER_KEYS(pl2),
+    PLAYER_KEYS(pl3),
+    PLAYER_KEYS(pl4),
+    PLAYER_KEYS(pl5),
+    &SSAutoFire,
+    &SSPause,
+    &KeyExtraEnab1,
+    &KeyExtraEnab2,
+    &KeyExtraRotate,
+    &KeySaveState,
+    &KeyStateSelct,
+    &KeyLoadState,
+    &KeyIncStateSlot,
+    &KeyDecStateSlot,
+    &KeyStateSlc0,
+    &KeyStateSlc1,
+    &KeyStateSlc2,
+    &KeyStateSlc3,
+    &KeyStateSlc4,
+    &KeyStateSlc5,
+    &KeyStateSlc6,
+    &KeyStateSlc7,
+    &KeyStateSlc8,
+    &KeyStateSlc9,
+    &KeyRewind,
+    &KeyFastFrwrd,
+    &KeySlowDown,
+    &KeyFRateUp,
+    &KeyFRateDown,
+    &KeyEmuSpeedUp,
+    &KeyEmuSpeedDown,
+    &KeyResetSpeed,
+    &EMUPauseKey,
+    &INCRFrameKey,
+    &KeyBGDisble0,
+    &KeyBGDisble1,
+    &KeyBGDisble2,
+    &KeyBGDisble3,
+    &KeySprDisble,
+    &KeyDisableSC0,
+    &KeyDisableSC1,
+    &KeyDisableSC2,
+    &KeyDisableSC3,
+    &KeyDisableSC4,
+    &KeyDisableSC5,
+    &KeyDisableSC6,
+    &KeyDisableSC7,
+    &KeyVolUp,
+    &KeyVolDown,
+    &KeyQuickExit,
+    &KeyQuickLoad,
+    &KeyQuickRst,
+    &KeyResetAll,
+    &KeyQuickClock,
+    &KeyQuickChat,
+    &KeyQuickSnapShot,
+    &KeyQuickSaveSPC,
+    &KeyUsePlayer1234,
+    &KeyDisplayFPS,
+    &KeyDisplayCPU,
+    &KeyDisplayBatt,
+    &KeyNewGfxSwt,
+    &KeyWinDisble,
+    &KeyOffsetMSw,
+    &KeyIncreaseGamma,
+    &KeyDecreaseGamma,
+    &KeyInsrtChap,
+    &KeyPrevChap,
+    &KeyNextChap,
+    &KeyRTRCycle,
+};
+#undef PLAYER_KEYS
+
+void ClampKeyBindings(void)
+{
+    size_t i;
+
+    for (i = 0; i < sizeof(key_bindings) / sizeof(*key_bindings); i++) {
+        if (*key_bindings[i] >= sizeof(pressed) / sizeof(*pressed)) {
+            *key_bindings[i] = 0;
+        }
+    }
+}
+
 static void CheckValueBounds(void* ptr, int min, int max, int val, enum vtype type)
 {
     switch (type) {
@@ -389,6 +483,7 @@ void GUIRestoreVars(void)
     psr_cfg_run(read_cfg_vars, ZCfgPath, ZCfgFile);
     psr_cfg_run(read_md_vars, ZCfgPath, "zmovie.cfg");
     psr_cfg_run(read_input_vars, ZCfgPath, "zinput.cfg");
+    ClampKeyBindings();
 
     CheckValueBounds(&pl1contrl, 0, 1, 1, UB);
     CheckValueBounds(&pl2contrl, 0, 1, 0, UB);
@@ -727,14 +822,17 @@ void CheatCodeLoad(void)
                 i = 28 * NumCheats;
                 j = cheat_file_size - (cheat_file_size % 18);
 
-                do {
+                /* A while, not a do-while: a file too short to hold one entry
+                   leaves nothing to convert, and both counters are unsigned,
+                   so the first decrement wrapped and wrote off the array. */
+                while (i > 0) {
                     i -= 28;
                     j -= 18;
 
                     memset(&cheatdata[i + 20], 0, 8);
                     memmove(&cheatdata[i + 8], &cheatdata[j + 6], 12);
                     memmove(&cheatdata[i], &cheatdata[j], 6);
-                } while (i > 0);
+                }
             }
         }
 
@@ -1095,13 +1193,23 @@ void GUIloadfilename(char* filename)
     }
 }
 
+/* The recent-games list as cfg.psr lays it out and the config file stores it:
+   ten fixed slots, with the directory one byte into its own. Nothing promises
+   a slot is terminated - the config is a file like any other - so every copy
+   in or out is bounded. */
+enum { QUICK_SLOT_BYTES = 512,
+    QUICK_DIR_BYTES = QUICK_SLOT_BYTES - 1,
+    QUICK_LAST_SLOT = 9 };
+
 void loadquickfname(u1 const slot)
 {
     if (prevloaddnamel[1 + slot * 512]) // replace with better test
     {
-        strcpy(ZRomPath, (char*)prevloaddnamel + 1 + slot * 512);
+        snprintf(ZRomPath, PATH_SIZE, "%.*s", QUICK_DIR_BYTES,
+            (char*)prevloaddnamel + 1 + slot * QUICK_SLOT_BYTES);
         strcatslash(ZRomPath);
-        strcpy(ZCartName, (char*)prevloadfnamel + slot * 512);
+        snprintf(ZCartName, NAME_SIZE, "%.*s", NAME_SIZE - 1,
+            (char*)prevloadfnamel + slot * QUICK_SLOT_BYTES);
 
         if (!access_dir(ZRomPath, ZCartName, R_OK)) {
             if (slot || !prevlfreeze) {
@@ -1192,6 +1300,10 @@ void GUILoadData(void)
     char* nameptr;
 
     GUICBHold = 0;
+    /* An empty listing has no list at all, and LOAD is a button. */
+    if (GUIcurrentfilewin ? (!d_names || GUIcurrentdircursloc >= GUIdirentries)
+                          : (!main_names || GUIcurrentcursloc >= GUIfileentries))
+        return;
     if (GUIcurrentfilewin) // directories
     {
         nameptr = d_names[GUIcurrentdircursloc + 2];
@@ -1208,7 +1320,7 @@ void GUILoadData(void)
         {
             if (!strcmp(nameptr, "..")) {
                 strdirname(ZRomPath);
-            } else {
+            } else if (strlen(ZRomPath) + strlen(nameptr) + 2 <= PATH_SIZE) {
                 strcat(ZRomPath, nameptr);
             }
             strcatslash(ZRomPath);
@@ -1240,8 +1352,13 @@ void GUILoadData(void)
             if (!dupfound) {
                 strncpy((char*)prevloadiname + 9 * 28, selected_names[GUIcurrentcursloc], 28);
                 prevloadiname[9 * 28 + 27] = 0;
-                strcpy((char*)prevloaddnamel + 9 * 512 + 1, ZRomPath);
-                strcpy((char*)prevloadfnamel + 9 * 512, ZCartName);
+                /* A directory longer than a slot wrote 3.5KB past this
+                   array; recording it truncated means the entry simply never
+                   matches again. */
+                snprintf((char*)prevloaddnamel + QUICK_LAST_SLOT * QUICK_SLOT_BYTES + 1,
+                    QUICK_DIR_BYTES, "%s", ZRomPath);
+                snprintf((char*)prevloadfnamel + QUICK_LAST_SLOT * QUICK_SLOT_BYTES,
+                    QUICK_SLOT_BYTES, "%s", ZCartName);
             }
 
             loadquickfname(i);

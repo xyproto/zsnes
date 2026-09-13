@@ -1446,7 +1446,9 @@ SkipProcess2 : {
         Voice0Prev1[p1] = prev1;
         Voice0Loop[p1] = loopbl;
         Voice0End[p1] = lastbl;
-        Voice0Ptr[p1] += 9;
+        /* A 16-bit address, as on the chip: a stream with no end flag walked
+           this past 64K and took the decode buffer with it. */
+        Voice0Ptr[p1] = (Voice0Ptr[p1] + 9) & 0xFFFFu;
     }
 
 ProcessNextEnvelope:

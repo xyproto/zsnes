@@ -34,7 +34,7 @@ extern u2 mode7A, mode7B;
 extern u1 mode7A_dw[4];
 extern uint32_t xa, maxromspace;
 extern uint8_t spcon, device1, device2;
-extern char CSStatus[], CSStatus2[], CSStatus3[], CSStatus4[];
+extern char CSStatus[41], CSStatus2[41], CSStatus3[41], CSStatus4[41]; /* initc.h */
 
 u2 selcA000;
 
@@ -95,61 +95,46 @@ extern bool input2mouse;
 extern bool input2scope;
 extern bool input2just;
 
+/* Two devices, so two tries. A cart can declare neither - the NSRT header's
+   Lasabirdie port type turns both off - and the search then never ended. */
 void cycleinputdevice1(void)
 {
-    for (;;) {
+    u1 const was = device1;
+    int tries;
+
+    for (tries = 0; tries < 2; tries++) {
         device1++;
         if (device1 >= 2) {
             device1 = 0;
         }
-        if (device1 == 0) {
-            if (input1gp) {
-                return;
-            }
-            device1++;
-        }
-        if (device1 == 1) {
-            if (input1mouse) {
-                return;
-            }
+        if (device1 == 0 ? input1gp : input1mouse) {
+            return;
         }
     }
+    device1 = was;
 }
 
+/* Five devices, five tries, for the same reason. */
 bool cycleinputdevice2(void)
 {
+    u1 const was = device2;
     bool wrap = false;
-    for (;;) {
+    int tries;
+
+    for (tries = 0; tries < 5; tries++) {
         device2++;
         if (device2 >= 5) {
             wrap = true;
             device2 = 0;
         }
-        if (device2 == 0) {
-            if (input2gp)
-                break;
-            device2++;
-        }
-        if (device2 == 1) {
-            if (input2mouse)
-                break;
-            device2++;
-        }
-        if (device2 == 2) {
-            if (input2scope)
-                break;
-            device2++;
-        }
-        if (device2 == 3) {
-            if (input2just)
-                break;
-            device2++;
-        }
-        if (device2 == 4) {
-            if (input2just)
-                break;
+        if (device2 == 0       ? input2gp
+                : device2 == 1 ? input2mouse
+                : device2 == 2 ? input2scope
+                               : input2just) {
+            return wrap;
         }
     }
+    device2 = was;
     return wrap;
 }
 
@@ -507,7 +492,7 @@ void DisplayBatteryStatus(void)
 
         strcpy(CSStatus, "PC is plugged in");
         if (percent > 0) {
-            sprintf(CSStatus2, "%d%% charged", percent);
+            snprintf(CSStatus2, sizeof(CSStatus2), "%d%% charged", percent);
         }
     } break;
 
@@ -518,10 +503,14 @@ void DisplayBatteryStatus(void)
 
         strcpy(CSStatus, "PC is running off of battery");
         if (battery_time > 0) {
-            sprintf(CSStatus2, "Time remaining: %s", seconds_to_asc(battery_time));
+            /* The estimate divides by the discharge rate, so a battery
+               reporting next to none makes this line far longer than it
+               looks. */
+            snprintf(CSStatus2, sizeof(CSStatus2), "Time remaining: %s",
+                seconds_to_asc(battery_time));
         }
         if (percent > 0) {
-            sprintf(CSStatus3, "%d%% remaining", percent);
+            snprintf(CSStatus3, sizeof(CSStatus3), "%d%% remaining", percent);
         }
     } break;
     }

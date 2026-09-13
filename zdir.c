@@ -123,8 +123,11 @@ struct dirent_info* readdir_info(z_DIR* dir)
     static struct dirent_info info;
     struct dirent_info* infop = 0;
 
-    struct dirent* entry = readdir(dir);
-    if (entry) {
+    /* A loop, not a recursion: a directory of entries that cannot be stat'ed -
+       broken symlinks, say - used to nest one frame deep per entry. */
+    struct dirent* entry;
+
+    while (!infop && (entry = readdir(dir)) != NULL) {
         struct stat stat_buffer;
         if (!fstatat(dirfd(dir), entry->d_name, &stat_buffer, 0)) {
             info.name = entry->d_name;
@@ -133,8 +136,6 @@ struct dirent_info* readdir_info(z_DIR* dir)
             info.uid = stat_buffer.st_uid;
             info.gid = stat_buffer.st_gid;
             infop = &info;
-        } else {
-            infop = readdir_info(dir);
         }
     }
     return (infop);

@@ -20,6 +20,7 @@
 extern uint8_t MSU_StatusRead;
 extern uint32_t MSU_Data_SeekPort;
 extern uint32_t MSU_Data_Addr;
+extern uint32_t MSU_Data_Length;
 extern uint8_t* MSU_DATA;
 extern uint16_t MSU_Track;
 extern uint8_t MSU_AudioVolume;
@@ -35,12 +36,17 @@ uint8_t c_msustatusread(void)
 
 uint8_t c_msudataread(void)
 {
+    /* The address is whatever the game seeked to, and the file is whatever
+       size it is; past the end reads as nothing, as with no file at all. */
+    uint8_t const byte = MSU_DATA && MSU_Data_Addr < MSU_Data_Length
+        ? MSU_DATA[MSU_Data_Addr]
+        : 0;
+
     // Reads have no effect when data busy bit set
-    if (MSU_StatusRead & MSU_STATUS_DATA_BUSY) {
-        return MSU_DATA[MSU_Data_Addr];
-    } else {
-        return MSU_DATA[MSU_Data_Addr++];
+    if (!(MSU_StatusRead & MSU_STATUS_DATA_BUSY)) {
+        MSU_Data_Addr++;
     }
+    return byte;
 }
 
 uint8_t c_msuid1(void) { return 'S'; }

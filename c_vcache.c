@@ -107,6 +107,15 @@ static void ToggleLayer(u4 const layer)
     SetMessage(msg);
 }
 
+/* Two digits in place. sprintf would put its terminator where the rest of the
+   message is, leaving the player with "STATE SLOT 05". */
+static void ShowStateSlot(u4 const slot)
+{
+    sselm[11] = (char)('0' + slot / 10);
+    sselm[12] = (char)('0' + slot % 10);
+    SetMessage(sselm);
+}
+
 static void stateselcomp(u4 const* const key, u1 const slot_x)
 {
     if (!TestKey2(*key))
@@ -114,8 +123,7 @@ static void stateselcomp(u4 const* const key, u1 const slot_x)
 
     u4 const slot = current_zst / 10 * 10 + slot_x;
     current_zst = slot;
-    sprintf(sselm + 11, "%02d", slot);
-    SetMessage(sselm);
+    ShowStateSlot(slot);
 }
 
 static void soundselcomp(u4 const* const key, u1* const disable, u1* const status, char const chan_id)
@@ -484,8 +492,7 @@ fastforb:
         if (cur == 100)
             cur = 0;
         current_zst = cur;
-        sprintf(sselm + 11, "%02d", cur);
-        SetMessage(sselm);
+        ShowStateSlot(cur);
     }
 
     if (TestKey2(KeyDecStateSlot)) {
@@ -494,8 +501,7 @@ fastforb:
             cur = 100;
         --cur;
         current_zst = cur;
-        sprintf(sselm + 11, "%02d", cur);
-        SetMessage(sselm);
+        ShowStateSlot(cur);
     }
 
     if (TestKey2(KeyUsePlayer1234)) {

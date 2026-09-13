@@ -553,6 +553,8 @@ static void init_mouse(const RAWINPUTDEVICELIST* dev)
 {
     MouseStruct* mouse = &mice[available_mice];
 
+    if (available_mice >= MAX_MICE)
+        return;
     if (accept_device(dev)) {
         ZeroMemory(mouse, sizeof(MouseStruct));
         get_device_product_name(mouse->name, sizeof(mouse->name), dev);

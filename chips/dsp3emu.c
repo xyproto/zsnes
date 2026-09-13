@@ -568,6 +568,13 @@ int16_t op1e_lcv_radius;
 int16_t op1e_lcv_steps;
 int16_t op1e_lcv_turns;
 
+/* The map arrays hold 0x2000 cells, and OP03 can name up to 65535 - a
+   coordinate no real map has, but nothing stopped one. */
+static int16_t op1e_index(uint16_t const v)
+{
+    return (int16_t)(v & 0x1FFF);
+}
+
 void DSP3_OP3E(void)
 {
     op3e_x = (uint8_t)(DSP3_DR & 0x00ff);
@@ -575,9 +582,9 @@ void DSP3_OP3E(void)
 
     DSP3_OP03();
 
-    op1e_terrain[DSP3_DR] = 0x00;
-    op1e_cost[DSP3_DR] = 0xff;
-    op1e_weight[DSP3_DR] = 0;
+    op1e_terrain[op1e_index(DSP3_DR)] = 0x00;
+    op1e_cost[op1e_index(DSP3_DR)] = 0xff;
+    op1e_weight[op1e_index(DSP3_DR)] = 0;
 
     op1e_max_search_radius = 0;
     op1e_max_path_radius = 0;
@@ -670,7 +677,7 @@ void DSP3_OP1E_A(void)
     DSP3_DR = (uint8_t)(op1e_x) | ((uint8_t)(op1e_y) << 8);
     DSP3_OP03();
 
-    op1e_cell = DSP3_DR;
+    op1e_cell = op1e_index(DSP3_DR);
 
     DSP3_SR = 0x0080;
     SetDSP3 = &DSP3_OP1E_A1;
@@ -731,7 +738,7 @@ void DSP3_OP1E_B(void)
                 DSP3_DR = (uint8_t)(op1e_x) | ((uint8_t)(op1e_y) << 8);
                 DSP3_OP03();
 
-                op1e_cell = DSP3_DR;
+                op1e_cell = op1e_index(DSP3_DR);
                 op1e_weight[op1e_cell] = 0xff;
             }
 
@@ -775,7 +782,7 @@ void DSP3_OP1E_B1(void)
                     DSP3_DR = (uint8_t)(op1e_x) | ((uint8_t)(op1e_y) << 8);
                     DSP3_OP03();
 
-                    op1e_cell = DSP3_DR;
+                    op1e_cell = op1e_index(DSP3_DR);
                     if (op1e_cost[op1e_cell] < 0x80 && op1e_terrain[op1e_cell] < 0x40) {
                         DSP3_OP1E_B2();
                     } // end cell perimeter
@@ -814,7 +821,7 @@ void DSP3_OP1E_B2(void)
         DSP3_DR = (uint8_t)(x) | ((uint8_t)(y) << 8);
         DSP3_OP03();
 
-        cell = DSP3_DR;
+        cell = op1e_index(DSP3_DR);
 
         if (0 <= y && y < DSP3_WinHi && 0 <= x && x < DSP3_WinLo) {
 
@@ -904,7 +911,7 @@ void DSP3_OP1E_C1(void)
     DSP3_DR = (uint8_t)(op1e_x) | ((uint8_t)(op1e_y) << 8);
     DSP3_OP03();
 
-    op1e_cell = DSP3_DR;
+    op1e_cell = op1e_index(DSP3_DR);
 
     DSP3_SR = 0x0080;
     SetDSP3 = &DSP3_OP1E_C2;

@@ -478,7 +478,7 @@ nonewgfx:
         RestorePauseFrame();
         r[R_ESI] = tempesi;
         r[R_EDI] = tempedi;
-        r[R_EBP] = tempebp;
+        r[R_EBP] = (zreg)(uintptr_t)SPCRAM + (tempebp & 0xFFFFu); /* an offset, see c_rewind.c */
         r[R_EDX] = tempedx;
     }
 
@@ -487,7 +487,7 @@ nonewgfx:
             tempedx = r[R_EDX];
             tempesi = r[R_ESI];
             tempedi = r[R_EDI];
-            tempebp = r[R_EBP];
+            tempebp = (u4)(r[R_EBP] - (zreg)(uintptr_t)SPCRAM);
             BackupPauseFrame();
         }
 

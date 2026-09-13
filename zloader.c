@@ -877,7 +877,9 @@ static void handle_params(int argc, char* argv[])
                 } else {
                     p++;
                 }
-                strcpy(ZSaveST2Name, p);
+                /* argv, so not necessarily a name any filesystem would
+                   allow: a long enough one used to smash the heap here. */
+                snprintf(ZSaveST2Name, NAME_SIZE, "%s", p);
                 setextension(ZSaveST2Name, "srm");
             }
             break;

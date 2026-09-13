@@ -1231,9 +1231,12 @@ static void replay_pad(uint8_t pad, uint8_t flag, uint8_t* buffer, size_t* skip_
     latchy = zmv_vars.last_joy_state.latchy;
 }
 
+/* A loop rather than the tail recursion this had: a command, an RLE run and a
+   chapter marker each continued the scan, and a movie made of markers - none
+   of which costs a frame - nested one call per marker. */
 static bool zmv_replay(void)
 {
-    if (zmv_open_vars.frames_replayed < zmv_vars.header.frames) {
+    while (zmv_open_vars.frames_replayed < zmv_vars.header.frames) {
         if (zmv_vars.rle_count) {
             JoyAOrig = zmv_vars.last_joy_state.A;
             JoyBOrig = zmv_vars.last_joy_state.B;
@@ -1260,7 +1263,7 @@ static bool zmv_replay(void)
                     return true;
                 }
                 if (zmv_replay_command(command)) {
-                    return (zmv_replay());
+                    continue;
                 }
                 return false;
             }
@@ -1268,13 +1271,13 @@ static bool zmv_replay(void)
             else if (flag & BIT(1)) // RLE
             {
                 zmv_vars.rle_count = fread4(zmv_vars.fp) - zmv_open_vars.frames_replayed;
-                return (zmv_replay());
+                continue;
             }
 
             else if (flag & BIT(2)) // Internal Chapter
             {
                 fseek(zmv_vars.fp, INT_CHAP_SIZE(ftell(zmv_vars.fp)), SEEK_CUR);
-                return (zmv_replay());
+                continue;
             }
 
             else {

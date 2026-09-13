@@ -511,7 +511,10 @@ static void load_decompression_state(void)
             if ((fp_gfx = gzopen_dir(ZSramPath, fname, "rb"))) {
                 struct address_lookup* lookup_ptr = decompression_state.lookup - 1;
 
-                uint32_t address = 0, last_address = 0;
+                /* No 3-byte address can equal this, so the first record
+                   always opens a lookup; starting at 0 meant a record with
+                   address 0 wrote through the entry before the table. */
+                uint32_t address = 0, last_address = 0xFFFFFFFFu;
                 uint16_t length;
                 uint8_t entry;
                 bool valid = true;

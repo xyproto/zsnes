@@ -309,10 +309,15 @@ void outputhex16(u2* const buf, u1 const val)
     OutputText16b(buf + 8, FontData[(val & 0x0F) + 1], edx);
 }
 
+/* ASCII2Font names glyphs up to 140 for the 141-row GUI font, but this table
+   stops at 56: a character it lacks draws as a blank rather than as whatever
+   follows the table. */
 void outputchar16b(u2* const buf, u1 const glyph)
 {
     u4 const edx = (u2)vesa2_clbitng >> 1 << 16 | (u2)vesa2_clbitng;
-    OutputText16b(buf, FontData[glyph], edx);
+    u4 const rows = sizeof(FontData) / sizeof(*FontData);
+
+    OutputText16b(buf, FontData[glyph < rows ? glyph : 0], edx);
 }
 
 static void outputchar16b5x5(u2* buf, u1 const glyph)

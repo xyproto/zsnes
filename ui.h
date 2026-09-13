@@ -57,7 +57,9 @@ extern u2 MouseMoveY[2];
 enum {
     BITCONV32_BYTES = 65536 * 4,
     RGBTOYUV_BYTES = 65536 * 4,
-    SPCBUFFER_BYTES = 65536 * 4,
+    /* Four bytes of decoded sample per byte of SPC RAM, plus one BRR block:
+       a block that starts in the last nine bytes decodes past the 64K mark. */
+    SPCBUFFER_BYTES = 65536 * 4 + 64,
     SPRITETABLE_BYTES = 256 * 64 * 12, /* 64 SpriteInfo per line; 12 bytes is the 64-bit size */
     /* The EXTBG mode 7 writers stash a priority byte per pixel at line +
        75036*8 and hi-res mode 7 draws its second field 75036*4 further in, so

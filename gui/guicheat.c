@@ -210,12 +210,22 @@ void CheatCodeSearchInit(void)
     vidbuffer[129600 + 65536 * 2 + 16383] &= val;
 }
 
+extern uint32_t maxromspace; /* initc.c */
+
+/* A ROM cheat carries a 24-bit offset straight from the .cht file, which can
+   name more ROM than the buffer holds. */
+static int rom_cheat_in_range(u4 const offset)
+{
+    return offset < maxromspace;
+}
+
 static void DisableCheatCode(u1* const esi)
 {
     esi[0] |= 0x04;
     if (esi[0] & 0x01) {
         u4 const ecx = *(u4 const*)(esi + 2) & 0x00FFFFFF; // XXX unaligned
-        romdata[ecx] = esi[5];
+        if (rom_cheat_in_range(ecx))
+            romdata[ecx] = esi[5];
     } else if (!(esi[0] & 0x80) && !(esi[-28] & 0x80)) {
         memw8(esi[4], *(u2 const*)(esi + 2), esi[5]);
     }
@@ -238,10 +248,12 @@ static void EnableCheatCode(u1* const esi)
     if (esi[0] & 0x01) {
         u1 const al = esi[1];
         u4 const ecx = *(u4 const*)(esi + 2) & 0x00FFFFFF; // XXX unaligned
-        u1* const esi = romdata;
-        u1 const bl = esi[ecx];
-        esi[ecx] = al;
-        esi[5] = bl;
+        /* Into the entry, not the ROM: see EnableCheatCodeNoPrevMod. */
+        if (rom_cheat_in_range(ecx)) {
+            u1 const bl = romdata[ecx];
+            romdata[ecx] = al;
+            esi[5] = bl;
+        }
     } else {
         u1 const al = esi[1];
         u2 const cx = *(u2 const*)(esi + 2);
@@ -270,8 +282,15 @@ void CheatCodeRemove(void)
         return;
 
     u1* const esi = cheatdata + GUIcurrentcheatcursloc * 28;
+    /* The entries after this one, each 28 bytes. The 18 this used moved too
+       little once the list passed 165 entries and read past the table from
+       the last few slots. */
+    u4 const after = GUIcurrentcheatcursloc < NumCheats
+        ? NumCheats - 1 - GUIcurrentcheatcursloc
+        : 0;
+
     DisableCheatCode(esi);
-    memmove(esi, esi + 28, (255 - GUIcurrentcheatcursloc) * 18); // XXX 18? Probably should be 28
+    memmove(esi, esi + 28, after * 28);
 
     u4 const eax = GUIcurrentcheatcursloc;
     if (--NumCheats != 0 && eax == NumCheats) {
@@ -318,10 +337,13 @@ void EnableCheatCodeNoPrevMod(u1* const esi)
     if (esi[0] & 0x01) {
         u1 const al = esi[1];
         u4 const ecx = *(u4 const*)(esi + 2) & 0x00FFFFFF; // XXX unaligned
-        u1* const esi = romdata;
-        u1 const bl = esi[ecx];
-        esi[ecx] = al;
-        esi[5] = bl;
+        /* Into the entry, not the ROM: a shadowing `esi = romdata` here sent
+           the byte being saved to romdata[5] instead. */
+        if (rom_cheat_in_range(ecx)) {
+            u1 const bl = romdata[ecx];
+            romdata[ecx] = al;
+            esi[5] = bl;
+        }
     } else if (!(esi[0] & 0x80) && !(esi[-28] & 0x80)) {
         memw8(esi[4], *(u2 const*)(esi + 2), esi[1]);
     }

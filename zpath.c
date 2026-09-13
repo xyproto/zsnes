@@ -383,17 +383,35 @@ char* strdupcat(const char* str1, const char* str2)
 
 #ifndef DEBUG
 // This function is only for this file, and it uses an internal buffer, and is intended for path file merging
+/* Appends what is left of the buffer, always terminating: three pieces that
+   are each allowed to approach PATH_SIZE do not fit in one of twice that, and
+   every file the emulator opens is named through here. */
+static void path_append(char* const buf, size_t const size, size_t* const n,
+    char const* const s)
+{
+    size_t const room = size > *n + 1 ? size - *n - 1 : 0;
+    size_t const len = strlen(s);
+    size_t const take = len < room ? len : room;
+
+    memcpy(buf + *n, s, take);
+    *n += take;
+    buf[*n] = '\0';
+}
+
 static const char* strdupcat_internal(const char* path, const char* file)
 {
     static char buffer_dir[PATH_SIZE * 2];
+    size_t n = 0;
+
     *buffer_dir = 0;
     if (!IS_ABSOLUTE(file)) {
         if (!IS_ABSOLUTE(path)) {
-            strcat(buffer_dir, RelPathBase ? ZRomPath : ZCfgPath);
+            path_append(buffer_dir, sizeof(buffer_dir), &n,
+                RelPathBase ? ZRomPath : ZCfgPath);
         }
-        strcat(buffer_dir, path);
+        path_append(buffer_dir, sizeof(buffer_dir), &n, path);
     }
-    strcat(buffer_dir, file);
+    path_append(buffer_dir, sizeof(buffer_dir), &n, file);
     return (buffer_dir);
 }
 
@@ -404,14 +422,17 @@ static const char* strdupcat_internal(const char* path, const char* file)
 static const char* strdupcat_internal(const char* path, const char* file, const char* func, const char* mode)
 {
     static char buffer_dir[PATH_SIZE * 2];
+    size_t n = 0;
+
     *buffer_dir = 0;
     if (!IS_ABSOLUTE(file)) {
         if (!IS_ABSOLUTE(path)) {
-            strcat(buffer_dir, RelPathBase ? ZRomPath : ZCfgPath);
+            path_append(buffer_dir, sizeof(buffer_dir), &n,
+                RelPathBase ? ZRomPath : ZCfgPath);
         }
-        strcat(buffer_dir, path);
+        path_append(buffer_dir, sizeof(buffer_dir), &n, path);
     }
-    strcat(buffer_dir, file);
+    path_append(buffer_dir, sizeof(buffer_dir), &n, file);
 
 #ifndef NO_DEBUGGER
     // maybe checking isendwin() would be better anyway, but only after we scrap

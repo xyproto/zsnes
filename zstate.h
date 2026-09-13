@@ -31,4 +31,7 @@ uint64_t zst_state_hash(void);
    length, which the loader tells apart by length alone. */
 int zst_format_check(void);
 
+/* How much longer a state from the 64-bit 2.3.0/2.3.1 releases is. */
+enum { ZST_WIDE_EXTRA = 8 * (4 * 8 + 3) - 8 * (4 * 4 + 3) + 8 * (8 - 4) };
+
 #endif

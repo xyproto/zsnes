@@ -16,6 +16,7 @@
 #endif
 #include "../zmovie.h"
 #include "../zpath.h"
+#include "../zstate.h"
 #include "procvidc.h"
 
 extern uint8_t newengen;
@@ -82,7 +83,9 @@ void LoadPicture(void)
         fseek(fp, 0, SEEK_END);
         file_size = ftell(fp);
 
-        if ((file_size - pic_size == cur_zst_size) || (file_size - pic_size == v143_zst_size)
+        if ((file_size - pic_size == cur_zst_size)
+            || (file_size - pic_size == cur_zst_size + ZST_WIDE_EXTRA)
+            || (file_size - pic_size == v143_zst_size)
             || (file_size - pic_size == old_zst_size)) {
             fseek(fp, -((signed)pic_size), SEEK_END);
             IGNORE_RESULT(fread(PrevPicture, 1, pic_size, fp));

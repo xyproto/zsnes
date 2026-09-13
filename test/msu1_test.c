@@ -29,6 +29,7 @@ uint8_t MSU_StateControl;
 
 static uint8_t mock_data[256];
 uint8_t* MSU_DATA = mock_data;
+uint32_t MSU_Data_Length = sizeof(mock_data);
 
 static int handle_track_calls;
 void MSU1HandleTrackChange(void) { handle_track_calls++; }
@@ -113,6 +114,13 @@ static void test_msudataread(void)
     MSU_Data_Addr = 100;
     ZT_CHECK(c_msudataread() == 0xAB);
     ZT_CHECK(MSU_Data_Addr == 101);
+
+    /* past the file: reads as nothing, still steps */
+    MSU_Data_Addr = sizeof(mock_data);
+    ZT_CHECK(c_msudataread() == 0);
+    ZT_CHECK(MSU_Data_Addr == sizeof(mock_data) + 1);
+    MSU_Data_Addr = 0xFFFFFFFFu;
+    ZT_CHECK(c_msudataread() == 0);
 
     /* DATA_BUSY bit set: read returns current byte but does not advance */
     MSU_StatusRead = MSU_STATUS_DATA_BUSY;

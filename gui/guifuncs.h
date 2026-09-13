@@ -51,4 +51,6 @@ extern s4* GUIJT_currentcursloc;
 extern s4* GUIJT_currentviewloc;
 extern u4 GUIcurrentfilewin;
 
+void ClampKeyBindings(void);
+
 #endif
