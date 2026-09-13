@@ -136,7 +136,9 @@ static struct {
 } const fields[] = {
     { "SA1Mode", &SA1Mode },
     { "SA1Control", &SA1Control },
-    { "SA1BankPtr", &SA1BankPtr },
+    /* SA1BankPtr is not compared: the assembly stores a host pointer in it
+       when the SA-1 leaves reset, the port stores 0 - it is never read, and it
+       rides in the save state, where a host address does not belong. */
     { "SA1ResetV", &SA1ResetV },
     { "SA1NMIV", &SA1NMIV },
     { "SA1IRQV", &SA1IRQV },

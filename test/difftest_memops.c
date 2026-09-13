@@ -627,8 +627,12 @@ int main(void)
                              : dt_mod(65536 - 256 - 1);
             break;
         case 2:
-            /* ebx is folded into the ROM base, ecx is the offset. */
-            in.c = dt_mod(ROM_SIZE - 256 - 1);
+            /* ebx is folded into the ROM base, ecx is the offset. From 8000:
+               the handlers are installed for 8000-FFFF and the real map puts
+               entry 0 at romdata - 8000, so a lower offset read before the
+               ROM in the assembly; the port sends it to the expansion handler
+               instead, which this harness does not model. */
+            in.c = 0x8000u + dt_mod(0x8000 - 256 - 1);
             break;
         case 3:
             /* Bias hard at the 1FFF boundary, which is the whole point of the
@@ -706,13 +710,18 @@ int main(void)
             }
             in.b = dt_mod(256);
             break;
-        case 13:
-            /* ebx picks one of four 64K slices; ecx addresses inside it. The
-               DMA path overwrites the low half of SA1_DMA_ADDR with ecx before
-               advancing it, so the word wrap is reachable only from here. */
-            in.b = dt_mod(2) ? dt_mod(4) : dt_mod(256);
-            in.c = dt_mod(2) ? 0xFFFEu + dt_mod(2) : dt_mod(0x10000);
+        case 13: {
+            /* An address in the first 128K, with room for the 16-bit +1 below
+               that edge. Above 128K the assembly's `and ebx,3` runs off the
+               BW-RAM a real cart carries while the port mirrors it back
+               (mem_bwram) - the point of that fix, not a port bug - so the
+               sweep stays where the two agree. The ecx=FFFF word wrap in
+               slice 0 is reached from the random branch. */
+            u4 const addr = dt_mod(2) ? 0x1FFFEu - dt_mod(3) : dt_mod(0x1FFFF);
+            in.b = addr >> 16;
+            in.c = addr & 0xFFFFu;
             break;
+        }
         case 18:
             /* Banks C0-FF, one logical 1Mb bank per group of 16; below C0
                there is no mapping at all, which the bank log reports as 0Fh.
@@ -775,10 +784,18 @@ int main(void)
             }
             break;
         case 12:
-            /* ebx + ecx must stay inside the 2K window plus its slack, and the
-               800h edge is the whole point of the bounds check. */
-            in.b = dt_mod(0x100);
-            in.c = dt_mod(2) ? 0x7FEu + dt_mod(4) : dt_mod(0x1000);
+            /* The SA-1 low window. When the SA-1 has the bus (sa1st != 0) this
+               is its 2K IRAM: the assembly let ebx carry the index past 800h
+               into whatever followed IRAM, the port returns zero there
+               (mem_iram_in), so keep ebx+ecx (and the 16-bit +1) below 800h,
+               biased at the edge. The WRAM path has no such limit. */
+            if (in.sa1st != 0) {
+                in.b = dt_mod(0x80);
+                in.c = dt_mod(2) ? 0x7FEu - in.b : dt_mod(0x7FFu - in.b);
+            } else {
+                in.b = dt_mod(0x100);
+                in.c = dt_mod(0x10000 - 0x100);
+            }
             break;
         case 11:
             /* Same windows as case 10, but these mask the address to 16 bits

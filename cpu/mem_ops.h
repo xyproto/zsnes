@@ -8,6 +8,7 @@
 #ifndef MEM_OPS_H
 #define MEM_OPS_H
 
+#include "../chips/sa1const.h" /* SA1_BWRAM_BYTES */
 #include "memseam.h" /* the seam block, mem_set_al/mem_set_ax */
 
 /* wramdataa is the 64K WRAM window the assembly indexes as a flat array. */
@@ -82,8 +83,9 @@ void c_membank0r8rom(void) /* 8000-FFFF */
     /* The page table hands this handler direct pages from 7E00 up, because one
        there reaches ROM once an offset is added. An address that stays below
        8000 is not ROM at all, and the base is romdata - 8000, so indexing it
-       reads before the buffer; below 8000 the expansion area answers. */
-    if (!((MemSeamB + MemSeamC) & 0x8000u)) {
+       reads before the buffer; below 8000 the expansion area answers. A sum
+       that carried past FFFF is left as it was: in bounds, as the assembly. */
+    if (MemSeamB + MemSeamC < 0x8000u) {
         c_membank0r8chip();
         return;
     }
@@ -163,7 +165,7 @@ void c_membank0r16inv(void) /* 4800-5FFF */
 
 void c_membank0r16rom(void) /* 8000-FFFF */
 {
-    if (!((MemSeamB + MemSeamC) & 0x8000u)) {
+    if (MemSeamB + MemSeamC < 0x8000u) { /* see c_membank0r8rom */
         c_membank0r16chip();
         return;
     }
