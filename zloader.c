@@ -394,7 +394,13 @@ struct backup_cmdline_vars saved_cmdline_vars;
    flag becomes permanent - the config is rewritten on exit from the running
    values. -n, -g, -k, -1 and -2 were missing, so each of them rewrote the
    setting it was meant to override only for that run. The nesting is what the
-   formatter makes of a macro this long; the order does not matter. */
+   formatter makes of a macro this long; the order does not matter.
+
+   Frozen: clang-format 19 and 22 disagree here - on the column the macro's
+   continuation backslashes align to, and on whether a one-statement function
+   body keeps its brace on the signature line - so leaving it formatted would
+   fail the gate under whichever version the committer did not run. */
+/* clang-format off */
 #define BACKUP_HELP(func)                                                     \
     func(guioff)                                                              \
         func(per2exec)                                                        \
@@ -426,6 +432,7 @@ static struct backup_cmdline_vars cmdline_var_set;
 static void mark_overridden_vars(void) {
     BACKUP_HELP(MARK_VAR)
 }
+/* clang-format on */
 
 #define SWAP_BACKUP_VAR(var)              \
     if (cmdline_var_set._##var) {         \

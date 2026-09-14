@@ -64,28 +64,26 @@ u4 Totalbyteloaded;
 #define ZST_151_PPUREG 3049
 #define ZST_151_DSPSAVE 1068
 
-/* Where 1.51's register block sits in ours. Derived by assembling its
-   cpu/regs.inc and comparing symbol offsets with this build's: we dropped two
-   bytes at 318 and added 126 at 480, four at 2578 and 32 at the end. The four
-   runs carry 3017 of its 3019 bytes; what we added keeps its reset value. */
+/* 1.51's sndrot block (3049 bytes) mapped into this build's (3181). Recovered
+   field by field from ZSNES 1.51 src/cpu/regs.inc against this build's symbol
+   offsets: the layouts are identical except hdmadata holds 152 data bytes there
+   and 280 host-pointer bytes here, and this build adds a 4-byte h_dot_counter
+   before tempdat. Both ALIGN32 pads (24 then 5) land at the same offset. */
 static const struct {
-    unsigned short from, to, len;
-/* 1.51's sndrot block (3049 bytes) into this build's (3181). Recovered field by
-   field from ZSNES 1.51 src/cpu/regs.inc: the layouts are identical except
-   hdmadata holds 152 data bytes there and 280 host-pointer bytes here, and this
-   build adds a 4-byte h_dot_counter before tempdat. Both ALIGN32 pads (24 then
-   5) fall at the same place. .to is this build's offset, .from is 1.51's. */
+    unsigned short from, to, len; /* .from is 1.51's offset, .to is this build's */
 } zst_151_regmap[] = {
     { 0, 0, 321 }, /* sndrot .. curhdma, incl the 24-byte pad - identical */
     /* skip 1.51 hdmadata [321,473); this build keeps its own live pointers */
-    { 601, 473, 2103 }, /* the 5-byte pad, hdmatype .. rtoflags */
+    { 473, 601, 2103 }, /* the 5-byte pad, hdmatype .. rtoflags */
     /* skip this build's h_dot_counter [2704,2708); 1.51 has no such field */
-    { 2708, 2576, 473 }, /* tempdat */
+    { 2576, 2708, 473 }, /* tempdat */
 };
 
 /* Zero means "this build's own layout". */
 static size_t zst_ppureg_run;
 static size_t zst_dspsave_run;
+static int zst_load_151; /* set across a 1.51 load, so ResetState rebuilds the
+                            narrowed pointer arrays (BRRPlace0) it carried */
 
 enum { HDMA_SAVED_BYTES = 8 * (4 * 4 + 3) }; /* hdmadata at 32-bit width */
 /* The 64-bit 2.3.0/2.3.1 releases wrote hdmadata and Voice0BufPtr at pointer
@@ -127,21 +125,23 @@ static void copy_snes_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*,
     // SNES PPU register block (sndrot is start; size is exported from asm).
     if (zst_ppureg_run) {
         static uint8_t old[ZST_151_PPUREG];
-        static HDMAInfo hdma_live[8];
+        /* volatile: &sndrot names a one-byte object, but the register file runs
+           past it; without this the copy is bounds-checked against that byte. */
         void* volatile block = &sndrot;
+        uint8_t* const dst = (uint8_t*)block;
         size_t i;
 
         copy_func(buffer, old, sizeof(old));
-        /* The second run lands on hdmadata, whose pointers are 1.51's own.
-           Keep this process's, as the other branch does; a $420C write
-           rebuilds them, and until then nexthdma is off - except while a
-           movie records, when the HDMA loop would have called through them. */
-        memcpy(hdma_live, hdmadata, sizeof(hdma_live));
+        /* Scatter each run byte by byte. hdmadata (skipped between the runs)
+           keeps this process's host pointers; a $420C write rebuilds it, and
+           nexthdma is cleared on load. */
         for (i = 0; i < sizeof(zst_151_regmap) / sizeof(*zst_151_regmap); i++) {
-            memcpy((uint8_t*)block + zst_151_regmap[i].to,
-                old + zst_151_regmap[i].from, zst_151_regmap[i].len);
+            size_t j;
+
+            for (j = 0; j < zst_151_regmap[i].len; j++) {
+                dst[zst_151_regmap[i].to + j] = old[zst_151_regmap[i].from + j];
+            }
         }
-        memcpy(hdmadata, hdma_live, sizeof(hdma_live));
     } else {
         /* Through a plain &sndrot, __builtin_object_size bounds the copy at
            sizeof(sndrot) == 1 and _FORTIFY_SOURCE aborts the restore: the
@@ -172,6 +172,10 @@ static uint32_t nmiprevaddr_slot[2];
 static uint8_t sa1dmaptr_slot[8];
 extern s2* Voice0BufPtr[8];
 extern uint32_t Voice0BufPtrSt[8];
+extern u4 BRRPlace0[8][2];
+/* The 1.51 file holds BRRPlace0 at 32-bit width; these hold its dwords until
+   ResetState turns them back into this build's host pointers. */
+uint32_t BRRPlaceSt[8];
 
 static void copy_spc_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, size_t))
 {
@@ -182,17 +186,29 @@ static void copy_spc_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, 
     size_t const upto = (size_t)((uint8_t*)Voice0BufPtr - (uint8_t*)BRRBuffer);
 
     copy_func(buffer, spcram_run, PHspcsave);
-    /* Voice0BufPtr holds host pointers; the file keeps the 32-bit dwords. */
+    /* Voice0BufPtr - and, for 1.51, BRRPlace0 too - hold host pointers; the
+       file keeps them as 32-bit dwords. The region sizes are this build's
+       (PHdspsave); only the pointer arrays narrow, so a 1.51 block reads 32
+       bytes where this build's is 64 and the rest lines up. */
     if (upto < dsp) {
         static uint8_t wide_slot[8 * 8];
 
-        copy_func(buffer, BRRBuffer, upto);
+        if (zst_dspsave_run && !zst_wide_ptrs) {
+            size_t const brrp = (size_t)((uint8_t*)BRRPlace0 - (uint8_t*)BRRBuffer);
+            uint8_t* volatile mid = (uint8_t*)BRRPlace0 + sizeof(BRRPlace0);
+
+            copy_func(buffer, BRRBuffer, brrp);
+            copy_func(buffer, BRRPlaceSt, sizeof(BRRPlaceSt));
+            copy_func(buffer, mid, upto - brrp - sizeof(BRRPlace0));
+        } else {
+            copy_func(buffer, BRRBuffer, upto);
+        }
         if (zst_wide_ptrs) {
             copy_func(buffer, wide_slot, sizeof(wide_slot));
         } else {
             copy_func(buffer, Voice0BufPtrSt, sizeof(Voice0BufPtrSt));
         }
-        copy_func(buffer, after, dsp - upto - sizeof(Voice0BufPtr));
+        copy_func(buffer, after, (size_t)PHdspsave - upto - sizeof(Voice0BufPtr));
     } else {
         copy_func(buffer, BRRBuffer, dsp);
     }
@@ -916,6 +932,20 @@ void ResetState(void)
         Voice0BufPtr[i] = (s2*)((uintptr_t)spcBuffera
             + (off < SPC_BUFFER_BYTES ? off : 0));
     }
+
+    if (zst_load_151) {
+        /* 1.51 stored BRRPlace0 as absolute 32-bit pointers into BRRBuffer;
+           the dwords are stale here, so clamp anything outside the 32-byte
+           decode buffer to its start, as the Voice0BufPtr loop does. */
+        for (i = 0; i < 8; i++) {
+            uint32_t const off = BRRPlaceSt[i];
+            uintptr_t const p = (uintptr_t)BRRBuffer
+                + (off < 32u ? off : 0u); /* BRRBuffer is the 32-byte decode buffer */
+
+            memcpy(&BRRPlace0[i], &p, sizeof(p));
+        }
+        zst_load_151 = 0;
+    }
 }
 
 /* SfxRomBuffer and SfxLastRamAdr are host pointers, so they are pointer-wide.
@@ -1307,8 +1337,13 @@ static size_t zst_body_size(enum zst_origin o)
     case ZST_ZSNES2_WIDE:
         return cur_zst_size - hdr + ZST_WIDE_EXTRA;
     case ZST_151:
+        /* v143_zst_size is tallied at this build's layout. Convert each block
+           that 1.51 wrote shorter: the PPU register file (its hdmadata is data,
+           not host pointers, so the tally's HDMA_SAVED_BYTES already covers the
+           width - only the added h_dot_counter is extra), and the DSP block. */
         return v143_zst_size - hdr
-            - (PHnum2writeppureg - ZST_151_PPUREG) - (PHdspsave - ZST_151_DSPSAVE);
+            - (PHnum2writeppureg - ZST_151_PPUREG) + (sizeof(hdmadata) - HDMA_SAVED_BYTES)
+            - (PHdspsave - ZST_151_DSPSAVE);
     case ZST_V06:
         return old_zst_size - (sizeof(zst_header_old) - 1);
     default:
@@ -1501,8 +1536,19 @@ bool zst_load(FILE* fp, size_t Compressed)
             return false;
         }
 
+        /* 1.51/1.43 (V143 from ZSNES itself): its PPU and DSP register blocks
+           are translated (zst_151_regmap, the BRRPlace0/Voice0BufPtr paths),
+           but its SPC block still differs - 1.51's SPCRAM is 65472 bytes where
+           this build's is 65536, which shifts spcS and the other SPC registers.
+           Until that block is translated too, decline the file rather than load
+           it and crash in the SPC core. */
+        if (origin == ZST_151) {
+            return false;
+        }
+
         zst_ppureg_run = (origin == ZST_151) ? ZST_151_PPUREG : 0;
         zst_dspsave_run = (origin == ZST_151) ? ZST_151_DSPSAVE : 0;
+        zst_load_151 = (origin == ZST_151);
         zst_wide_ptrs = (origin == ZST_ZSNES2_WIDE);
 
         load_save_size = 0;
