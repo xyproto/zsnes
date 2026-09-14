@@ -33,6 +33,8 @@ char const VERSION_PLATFORM[] = "Unknown";
 char const VERSION_ARCH[] = "x86_64";
 #elif defined(__aarch64__) || defined(_M_ARM64)
 char const VERSION_ARCH[] = "aarch64";
+#elif defined(__riscv) && __riscv_xlen == 64
+char const VERSION_ARCH[] = "riscv64";
 #elif defined(__i386__) || defined(_M_IX86)
 char const VERSION_ARCH[] = "i686";
 #else

@@ -41,6 +41,7 @@ make win_x86_64
 make linux_i686
 make linux_x86_64
 make linux_aarch64
+make linux_riscv64
 make macos_x86_64
 make macos_aarch64
 make freebsd_x86_64
