@@ -1537,11 +1537,11 @@ bool zst_load(FILE* fp, size_t Compressed)
         }
 
         /* 1.51/1.43 (V143 from ZSNES itself): its PPU and DSP register blocks
-           are translated (zst_151_regmap, the BRRPlace0/Voice0BufPtr paths),
-           but its SPC block still differs - 1.51's SPCRAM is 65472 bytes where
-           this build's is 65536, which shifts spcS and the other SPC registers.
-           Until that block is translated too, decline the file rather than load
-           it and crash in the SPC core. */
+           are translated (zst_151_regmap, the BRRPlace0/Voice0BufPtr paths), but
+           its SPC register block does not yet decode - the on-disk register
+           bytes do not line up with the layout the asm describes, so the SPC700
+           restarts with a wild stack and crashes. Until that block is resolved,
+           decline the file rather than load it and crash in the SPC core. */
         if (origin == ZST_151) {
             return false;
         }
