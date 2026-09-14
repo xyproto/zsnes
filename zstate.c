@@ -61,7 +61,7 @@ u4 Totalbyteloaded;
 /* ZSNES 1.51 heads its states "V143" exactly as we do, so only the length
    separates them: its PPU register block and DSP block are shorter, and the
    162 added register bytes are interleaved rather than appended. */
-#define ZST_151_PPUREG 3019
+#define ZST_151_PPUREG 3049
 #define ZST_151_DSPSAVE 1068
 
 /* Where 1.51's register block sits in ours. Derived by assembling its
@@ -70,11 +70,17 @@ u4 Totalbyteloaded;
    runs carry 3017 of its 3019 bytes; what we added keeps its reset value. */
 static const struct {
     unsigned short from, to, len;
+/* 1.51's sndrot block (3049 bytes) into this build's (3181). Recovered field by
+   field from ZSNES 1.51 src/cpu/regs.inc: the layouts are identical except
+   hdmadata holds 152 data bytes there and 280 host-pointer bytes here, and this
+   build adds a 4-byte h_dot_counter before tempdat. Both ALIGN32 pads (24 then
+   5) fall at the same place. .to is this build's offset, .from is 1.51's. */
 } zst_151_regmap[] = {
-    { 0, 0, 318 },
-    { 320, 318, 160 },
-    { 480, 606, 2098 },
-    { 2578, 2708, 441 },
+    { 0, 0, 321 }, /* sndrot .. curhdma, incl the 24-byte pad - identical */
+    /* skip 1.51 hdmadata [321,473); this build keeps its own live pointers */
+    { 601, 473, 2103 }, /* the 5-byte pad, hdmatype .. rtoflags */
+    /* skip this build's h_dot_counter [2704,2708); 1.51 has no such field */
+    { 2708, 2576, 473 }, /* tempdat */
 };
 
 /* Zero means "this build's own layout". */
