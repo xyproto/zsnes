@@ -653,6 +653,7 @@ SRCS += zdir.c
 SRCS += zip/zipread.c
 SRCS += zip/zpng.c
 SRCS += zloader.c
+SRCS += saveload.c
 SRCS += zmovie.c
 SRCS += zpath.c
 SRCS += zstate.c

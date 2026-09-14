@@ -76,6 +76,8 @@ MODE7     := zsnes_mode716b_test
 MODE7_SRC := mode716b_test.c
 ASMDATA   := zsnes_asmdata_test
 ASMDATA_SRC := asmdata_test.c
+SAVELOAD  := zsnes_saveload_test
+SAVELOAD_SRC := saveload_test.c ../saveload.c
 # Objects from the parent tree belong to the real build, so let the top
 # Makefile make them. make's built-in %.o: %.c would use the flags below
 # instead, quietly dropping -fdata-sections and every -D the configuration
@@ -97,7 +99,7 @@ OBJS      := $(PBUILD)/zpath.o
 
 .PHONY: all run clean spc64
 
-all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(HQX) $(FILTER) $(C4) $(MODE7) $(ASMDATA)
+all: $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(HQX) $(FILTER) $(C4) $(MODE7) $(ASMDATA) $(SAVELOAD)
 
 $(BIN): $(SRC) zstest.h $(OBJS)
 	$(CC) $(CFLAGS) $(SRC) $(OBJS) $(NOPIE) $(GCSECT) -o $(BIN)
@@ -134,6 +136,11 @@ $(C4): $(C4_SRC) zstest.h ../chips/c4proc.c ../chips/c4emu.c
 
 $(MODE7): $(MODE7_SRC) zstest.h ../video/mode716b.c
 	$(CC) $(CFLAGS) $(MODE7_SRC) ../video/mode716b.c $(NOPIE) -o $(MODE7)
+
+# The V2 save-state envelope is self-contained (its own CRC32, no zlib), so the
+# test links only saveload.c.
+$(SAVELOAD): $(SAVELOAD_SRC) zstest.h ../saveload.h
+	$(CC) $(CFLAGS) $(SAVELOAD_SRC) $(NOPIE) -o $(SAVELOAD)
 
 # endmem.o supplies winbgdata, which makevid's cwinptr points at.
 $(ASMDATA): $(ASMDATA_SRC) zstest.h ../cpu/dspproc.c ../cpu/c_spcdata.c ../cpu/c_execdata.c ../cpu/c_regsdata.c ../cpu/c_regswdata.c ../video/c_mode716data.c ../chips/c_sa1data.c ../video/c_makev16tdata.c ../video/c_newgfx16data.c ../video/makevid.c ../video/newgfx.c $(PBUILD)/endmem.o
@@ -174,6 +181,7 @@ run: all
 	@./$(C4)
 	@./$(MODE7)
 	@./$(ASMDATA)
+	@./$(SAVELOAD)
 
 # The SPC700 core run at both word sizes and compared. Every other test here
 # builds -m32 only, where zreg and u4 are the same type, so a 64-bit width bug
@@ -186,6 +194,6 @@ spc64: spc64_test.c ../cpu/spc_ops.h ../cpu/spc_ioregs.h
 	  else echo "spc700 32 vs 64: FAIL"; echo "  m32 $$a"; echo "  m64 $$b"; exit 1; fi
 
 clean:
-	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(HQX) $(FILTER) $(C4) $(MODE7) $(ASMDATA)
+	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(HQX) $(FILTER) $(C4) $(MODE7) $(ASMDATA) $(SAVELOAD)
 	rm -f zsnes_spc32_test zsnes_spc64_test
 	rm -fr $(PBUILD)
