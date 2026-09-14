@@ -10,10 +10,13 @@
 # linker's --gc-sections drops every function not reachable from main, so no
 # SDL, zlib, or audio symbols are pulled in.
 
-# The unit tests are portable C. They build -m32 to match the emulator's usual
-# word size, except on macOS, which has had no 32-bit userland since 10.15 and
-# no GNU linker at all, so they build for the host there.
+# The unit tests are portable C. They build -m32 on x86 Linux to match the
+# emulator's usual word size. macOS has had no 32-bit userland since 10.15
+# and no GNU linker at all; RISC-V and ARM have no -m32. Build those for
+# the host instead of not at all.
 HOST_OS := $(shell uname -s)
+HOST_CPU := $(shell uname -m 2>/dev/null | tr '[:upper:]' '[:lower:]')
+X86_HOST := $(filter x86_64 amd64 i386 i486 i586 i686,$(HOST_CPU))
 ifeq ($(HOST_OS),Darwin)
 CC      := cc
 BITFLAG :=
@@ -23,10 +26,16 @@ GCSECT  := -Wl,-dead_strip
 # side the tests use - INADDR_LOOPBACK in netplay_test.c among it. Same swap
 # the top-level Makefile makes.
 FEATURE  := -D_DARWIN_C_SOURCE
-else
+else ifneq ($(X86_HOST),)
 CC      := gcc
 BITFLAG := -m32
 NOPIE   := -no-pie
+GCSECT  := -Wl,--gc-sections
+FEATURE  := -D_XOPEN_SOURCE=700
+else
+CC      := gcc
+BITFLAG :=
+NOPIE   :=
 GCSECT  := -Wl,--gc-sections
 FEATURE  := -D_XOPEN_SOURCE=700
 endif
@@ -88,8 +97,10 @@ PBUILD     := ../build/test
 PBUILD_REL := build/test
 ifeq ($(HOST_OS),Darwin)
 PBUILD_TARGET :=
-else
+else ifneq ($(X86_HOST),)
 PBUILD_TARGET := BITS=32 CPU=x86
+else
+PBUILD_TARGET :=
 endif
 
 $(PBUILD)/%.o:
@@ -185,13 +196,20 @@ run: all
 
 # The SPC700 core run at both word sizes and compared. Every other test here
 # builds -m32 only, where zreg and u4 are the same type, so a 64-bit width bug
-# cannot show up; this one exists to catch exactly that.
+# cannot show up; this one exists to catch exactly that. Hosts without -m32
+# still run the native width so the core is exercised.
 spc64: spc64_test.c ../cpu/spc_ops.h ../cpu/spc_ioregs.h
+ifneq ($(X86_HOST),)
 	@$(CC) -m32 -std=c11 $(FEATURE) -I.. -O2 -Wall -o zsnes_spc32_test spc64_test.c
 	@$(CC) -m64 -std=c11 $(FEATURE) -I.. -O2 -Wall -o zsnes_spc64_test spc64_test.c
 	@a=$$(./zsnes_spc32_test) && b=$$(./zsnes_spc64_test) && \
 	  if [ "$$a" = "$$b" ]; then echo "spc700 32 vs 64: PASS ($$a)"; \
 	  else echo "spc700 32 vs 64: FAIL"; echo "  m32 $$a"; echo "  m64 $$b"; exit 1; fi
+else
+	@$(CC) -std=c11 $(FEATURE) -I.. -O2 -Wall -o zsnes_spc64_test spc64_test.c
+	@./zsnes_spc64_test >/dev/null
+	@echo "spc700 native width: PASS"
+endif
 
 clean:
 	rm -f $(BIN) $(NETPLAY) $(ST10) $(ST11) $(OBC1) $(MSU1) $(DSP2) $(SAI) $(SA1) $(SPC7110) $(VCACHE) $(SPRITES) $(HQX) $(FILTER) $(C4) $(MODE7) $(ASMDATA) $(SAVELOAD)
