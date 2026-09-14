@@ -31,6 +31,7 @@
 #include "init.h"
 #include "initc.h"
 #include "input.h"
+#include "saveload.h"
 #include "ui.h"
 #include "video/procvid.h"
 #include "zmovie.h"
@@ -927,14 +928,6 @@ size_t zst_dbg_off;
 int zst_dbg_on;
 #endif
 
-static void write_save_state_data(uint8_t** dest, void* data, size_t len)
-{
-    fwrite(data, 1, len, fhandle);
-#ifdef ZSNES_DEBUG_HOOKS
-    zst_dbg_off += len;
-#endif
-}
-
 #ifdef ZSNES_DEBUG_HOOKS
 void zst_mark(char const* label);
 void zst_mark(char const* const label)
@@ -954,11 +947,13 @@ enum zst_origin { ZST_UNKNOWN,
 
 static size_t zst_body_size(enum zst_origin o);
 
-static const char zst_header_old[] = "ZSNES Save State File V0.6\x1a\x3c";
-/* V144 differs from V143 only in the DSP1 section, which V143 described by a
-   memory layout no compiler guarantees. Both older formats still load. */
-static const char zst_header_143[] = "ZSNES Save State File V143\x1a\x8f";
-static const char zst_header_cur[] = "ZSNES Save State File V144\x1a\x8f";
+/* The magic strings live in saveload.h, the one registry of format identity;
+   these keep sizeof() working for the body-length arithmetic below. V143
+   described its DSP1 section by a memory layout no compiler guarantees, which
+   is why V144 exists; both older formats still load. */
+static const char zst_header_old[] = SL_HDR_V06;
+static const char zst_header_143[] = SL_HDR_V143;
+static const char zst_header_cur[] = SL_HDR_V144;
 
 void calculate_state_sizes(void)
 {
@@ -1092,6 +1087,46 @@ static bool zst_save_compressed(FILE* fp)
     return (worked);
 }
 
+/* Which coprocessors this cartridge uses, in the bit order zst_format_check
+   sweeps. Stamped into a V2 state and checked on load, so a state from another
+   game - whose body happens to be the same length - is refused rather than
+   restored over this one. */
+static u4 zst_feature_mask(void)
+{
+    return (u4)((DSP1Enable ? 1u : 0u)
+        | (C4Enable ? 2u : 0u)
+        | (SFXEnable ? 4u : 0u)
+        | (SA1Enable ? 8u : 0u)
+        | (SPC7110Enable ? 16u : 0u)
+        | (SETAEnable ? 32u : 0u)
+        | (DSP4Enable ? 64u : 0u)
+        | (MSUEnable ? 128u : 0u));
+}
+
+/* Write a standalone V2 (.zst) state: the self-describing envelope, then the
+   body, then an optional thumbnail. The body is buffered first so its length
+   and CRC can head the file. */
+static bool zst_write_v2(FILE* fp, bool thumbnail)
+{
+    size_t const body_len = cur_zst_size - (sizeof(zst_header_cur) - 1);
+    uint8_t* const buffer = (uint8_t*)malloc(body_len ? body_len : 1);
+    bool ok = false;
+
+    if (buffer) {
+        copy_state_data(buffer, memcpyinc, csm_save_zst_new);
+        if (sl_v2_write_header(fp, zst_feature_mask(), (u4)body_len, sl_crc32(buffer, body_len))
+            && fwrite(buffer, 1, body_len, fp) == body_len) {
+            ok = true;
+            if (thumbnail) {
+                CapturePicture();
+                fwrite(PrevPicture, 1, sizeof(PrevPicture), fp);
+            }
+        }
+        free(buffer);
+    }
+    return ok;
+}
+
 void zst_save(FILE* fp, bool Thumbnail, bool Compress)
 {
     PrepareOffset();
@@ -1109,15 +1144,7 @@ void zst_save(FILE* fp, bool Thumbnail, bool Compress)
 
     if (!Compress || !zst_save_compressed(fp)) // If we don't want compressed or compression failed
     {
-        fwrite(zst_header_cur, 1, sizeof(zst_header_cur) - 1, fp); //-1 for null
-
-        fhandle = fp; // Set global file handle
-        copy_state_data(0, write_save_state_data, csm_save_zst_new);
-
-        if (Thumbnail) {
-            CapturePicture();
-            fwrite(PrevPicture, 1, sizeof(PrevPicture), fp);
-        }
+        zst_write_v2(fp, Thumbnail);
     }
 
     if (SA1Enable) {
@@ -1417,6 +1444,33 @@ bool zst_load(FILE* fp, size_t Compressed)
         if (!zst_load_compressed(fp, Compressed)) {
             return false;
         }
+    } else if (sl_detect(fp) == SL_FMT_V2) {
+        /* Self-describing standalone state: the envelope tells us the body's
+           length and a CRC over it, and the feature mask that it belongs to
+           this cartridge. A wrong length, wrong game, or corrupt body is
+           refused here rather than restored into random memory. */
+        sl_v2_header h;
+        size_t const expect = cur_zst_size - (sizeof(zst_header_cur) - 1);
+        uint8_t* buffer;
+
+        if (!sl_v2_read_header(fp, &h)) {
+            return false;
+        }
+        if (h.body_len != expect || h.feature_mask != zst_feature_mask()) {
+            return false;
+        }
+        if (!(buffer = (uint8_t*)malloc(h.body_len ? h.body_len : 1))) {
+            return false;
+        }
+        if (fread(buffer, 1, h.body_len, fp) != h.body_len
+            || sl_crc32(buffer, h.body_len) != h.body_crc32) {
+            free(buffer);
+            return false;
+        }
+        copy_state_data(buffer, memcpyrinc, csm_load_zst_new);
+        free(buffer);
+        zst_version = SL_V2_VERSION;
+        Totalbyteloaded += h.body_len;
     } else {
         char zst_header_check[sizeof(zst_header_cur) - 1];
         enum zst_origin origin;
@@ -1424,21 +1478,11 @@ bool zst_load(FILE* fp, size_t Compressed)
 
         Totalbyteloaded += fread(zst_header_check, 1, sizeof(zst_header_check), fp);
 
-        if (!memcmp(zst_header_check, zst_header_cur, sizeof(zst_header_check) - 2)) {
-            zst_version = 144; // ZSNES2
-        }
-
-        if (!memcmp(zst_header_check, zst_header_143, sizeof(zst_header_check) - 2)) {
-            zst_version = 143; // v1.43 - v1.51
-        }
-
-        if (!memcmp(zst_header_check, zst_header_old, sizeof(zst_header_check) - 2)) {
-            zst_version = 60; // v0.60 - v1.42
-        }
+        zst_version = (size_t)sl_legacy_version(zst_header_check);
 
         if (!zst_version) {
             return false;
-        } // Pre v0.60 saves are no longer loaded
+        } // Unrecognised header; pre v0.60 saves are no longer loaded
 
         if (fseek(fp, -(long)sizeof(zst_header_check), SEEK_CUR) == 0) {
             origin = zst_classify(fp, zst_version, &extra);
@@ -1566,11 +1610,13 @@ void zst_roundtrip_check(void)
            whether the body was read the way it was written: every section is
            a fixed length for a given cartridge, so a layout this build
            describes wrongly cannot come out at the right total. */
-        fit = (fsz == (long)cur_zst_size)                  ? "V144"
-            : (fsz == (long)cur_zst_size + ZST_WIDE_EXTRA) ? "V144-WIDE"
-            : (fsz == (long)v143_zst_size)                 ? "V143"
-            : (fsz == (long)old_zst_size)                  ? "V0.6"
-                                                           : "NO-MATCH";
+        fit = (fsz == (long)(cur_zst_size + SL_V2_DESC_LEN))                       ? "V2"
+            : (fsz == (long)(cur_zst_size + SL_V2_DESC_LEN + sizeof(PrevPicture))) ? "V2+thumb"
+            : (fsz == (long)cur_zst_size)                                          ? "V144"
+            : (fsz == (long)cur_zst_size + ZST_WIDE_EXTRA)                         ? "V144-WIDE"
+            : (fsz == (long)v143_zst_size)                                         ? "V143"
+            : (fsz == (long)old_zst_size)                                          ? "V0.6"
+                                                                                   : "NO-MATCH";
         {
             char msg[192];
             snprintf(msg, sizeof(msg),

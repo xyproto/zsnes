@@ -21,8 +21,17 @@
 
 #define SL_V2_MAGIC "ZSNES Save State File V200\x1a\x8f"
 #define SL_V2_MAGIC_LEN 28u /* sizeof(SL_V2_MAGIC) - 1 */
+#define SL_V2_DESC_LEN 20u /* the five u4 fields that follow the magic */
 #define SL_V2_VERSION 200u
 #define SL_V2_FLAG_LE 1u /* body scalars are stored little-endian */
+
+/* The pre-2.4.0 header strings, kept here so this module is the one place that
+   names every save format. Each shares V2's 28-byte magic length; the two
+   trailing bytes vary between builds and are not part of the identity. V144
+   differs from V143 only in the DSP1 section. */
+#define SL_HDR_V144 "ZSNES Save State File V144\x1a\x8f"
+#define SL_HDR_V143 "ZSNES Save State File V143\x1a\x8f"
+#define SL_HDR_V06 "ZSNES Save State File V0.6\x1a\x3c"
 
 enum sl_format { SL_FMT_UNKNOWN,
     SL_FMT_V2,
@@ -38,6 +47,10 @@ typedef struct {
 
 /* IEEE CRC32 (zlib-compatible) over len bytes of buf. */
 u4 sl_crc32(void const* buf, size_t len);
+
+/* Map a 28-byte legacy header to its version - 144, 143, or 60 - or 0 when it
+   is none of them. The two build-specific trailing bytes are not compared. */
+int sl_legacy_version(char const header[SL_V2_MAGIC_LEN]);
 
 /* Whether the file at its current offset opens with the V2 magic; the offset
    is left unchanged. A file that is not V2 is reported SL_FMT_LEGACY, to be

@@ -34,6 +34,16 @@ int main(void)
     /* CRC is order sensitive. */
     ZT_CHECK(sl_crc32("ab", 2) != sl_crc32("ba", 2));
 
+    ZT_SECTION("legacy version registry");
+    ZT_CHECK(sl_legacy_version(SL_HDR_V144) == 144);
+    ZT_CHECK(sl_legacy_version(SL_HDR_V143) == 143);
+    ZT_CHECK(sl_legacy_version(SL_HDR_V06) == 60);
+    /* The two trailing bytes are ignored, so a build-specific variant matches. */
+    ZT_CHECK(sl_legacy_version("ZSNES Save State File V144\x00\x00") == 144);
+    /* A foreign or V2 header is not a legacy version. */
+    ZT_CHECK(sl_legacy_version(SL_V2_MAGIC) == 0);
+    ZT_CHECK(sl_legacy_version("ZSNES Save State File V999\x1a\x8f") == 0);
+
     ZT_SECTION("header round-trip");
     {
         FILE* f = scratch();

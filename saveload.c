@@ -62,6 +62,22 @@ static bool sl_get_u4(FILE* fp, u4* v)
     return true;
 }
 
+int sl_legacy_version(char const header[SL_V2_MAGIC_LEN])
+{
+    size_t const n = SL_V2_MAGIC_LEN - 2; /* the last two bytes vary by build */
+
+    if (!memcmp(header, SL_HDR_V144, n)) {
+        return 144;
+    }
+    if (!memcmp(header, SL_HDR_V143, n)) {
+        return 143;
+    }
+    if (!memcmp(header, SL_HDR_V06, n)) {
+        return 60;
+    }
+    return 0;
+}
+
 enum sl_format sl_detect(FILE* fp)
 {
     char magic[SL_V2_MAGIC_LEN];

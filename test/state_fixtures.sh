@@ -3,7 +3,8 @@
 # check each decodes to the machine it decoded to when it was recorded.
 #
 # This guards the formats users depend on across releases:
-#   *.v144.zst  this build's own format
+#   *.v2.zst    this build's own format (2.4.0+, self-describing envelope)
+#   *.v144.zst  the 2.3.x format this build still reads
 #   *.wide.zst  the 64-bit 2.3.0/2.3.1 releases (pointer-width fields)
 #   *.v143.zst  1.51 (add one when a genuine 1.51 save is available; the check
 #               picks it up automatically once a golden hash is set for it)
@@ -25,6 +26,7 @@ rom_url=https://raw.githubusercontent.com/PeterLemon/SNES/master/CPUTest/CPU/MSC
 # fixture           expected fits   post-load hash (frame 61)
 expect() {
     case $1 in
+    cpumsc.v2) echo "V2 3f6a387ddd48a187" ;;
     cpumsc.v144) echo "V144 32b57e5eb5e22d14" ;;
     cpumsc.wide) echo "V144-WIDE c955754bdcc22e6e" ;;
     *) echo "" ;;
