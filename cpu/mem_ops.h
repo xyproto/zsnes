@@ -273,7 +273,9 @@ void c_membank0w16romram(void) /* 0000-1FFF */
    silently reads the wrong entry. */
 static inline u1* mem_bank(void)
 {
-    return snesmmap[MemSeamB];
+    /* The SNES bank is 8 bits and snesmmap has 256 entries; the asm indexed it
+       through a movzx, so mask off any high bits an opcode left in the bank. */
+    return snesmmap[MemSeamB & 0xFFu];
 }
 
 void c_memaccessbankr8(void)

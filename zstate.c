@@ -61,7 +61,7 @@ u4 Totalbyteloaded;
 /* ZSNES 1.51 heads its states "V143" exactly as we do, so only the length
    separates them: its PPU register block and DSP block are shorter, and the
    162 added register bytes are interleaved rather than appended. */
-#define ZST_151_PPUREG 3049
+#define ZST_151_PPUREG 3019
 #define ZST_151_DSPSAVE 1068
 
 /* 1.51's sndrot block (3049 bytes) mapped into this build's (3181). Recovered
@@ -76,14 +76,12 @@ static const struct {
     /* skip 1.51 hdmadata [321,473); this build keeps its own live pointers */
     { 473, 601, 2103 }, /* the 5-byte pad, hdmatype .. rtoflags */
     /* skip this build's h_dot_counter [2704,2708); 1.51 has no such field */
-    { 2576, 2708, 473 }, /* tempdat */
+    { 2576, 2708, 443 }, /* tempdat: 1.51 saves 3019 of its 3049-byte block */
 };
 
 /* Zero means "this build's own layout". */
 static size_t zst_ppureg_run;
 static size_t zst_dspsave_run;
-static int zst_load_151; /* set across a 1.51 load, so ResetState rebuilds the
-                            narrowed pointer arrays (BRRPlace0) it carried */
 
 enum { HDMA_SAVED_BYTES = 8 * (4 * 4 + 3) }; /* hdmadata at 32-bit width */
 /* The 64-bit 2.3.0/2.3.1 releases wrote hdmadata and Voice0BufPtr at pointer
@@ -172,10 +170,6 @@ static uint32_t nmiprevaddr_slot[2];
 static uint8_t sa1dmaptr_slot[8];
 extern s2* Voice0BufPtr[8];
 extern uint32_t Voice0BufPtrSt[8];
-extern u4 BRRPlace0[8][2];
-/* The 1.51 file holds BRRPlace0 at 32-bit width; these hold its dwords until
-   ResetState turns them back into this build's host pointers. */
-uint32_t BRRPlaceSt[8];
 
 static void copy_spc_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, size_t))
 {
@@ -186,23 +180,13 @@ static void copy_spc_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, 
     size_t const upto = (size_t)((uint8_t*)Voice0BufPtr - (uint8_t*)BRRBuffer);
 
     copy_func(buffer, spcram_run, PHspcsave);
-    /* Voice0BufPtr - and, for 1.51, BRRPlace0 too - hold host pointers; the
-       file keeps them as 32-bit dwords. The region sizes are this build's
-       (PHdspsave); only the pointer arrays narrow, so a 1.51 block reads 32
-       bytes where this build's is 64 and the rest lines up. */
+    /* Only Voice0BufPtr narrows between 1.51 and this build; BRRPlace0 and every
+       other field in the block have the same width, so the surrounding runs are
+       byte-identical and only the pointer array is converted. */
     if (upto < dsp) {
         static uint8_t wide_slot[8 * 8];
 
-        if (zst_dspsave_run && !zst_wide_ptrs) {
-            size_t const brrp = (size_t)((uint8_t*)BRRPlace0 - (uint8_t*)BRRBuffer);
-            uint8_t* volatile mid = (uint8_t*)BRRPlace0 + sizeof(BRRPlace0);
-
-            copy_func(buffer, BRRBuffer, brrp);
-            copy_func(buffer, BRRPlaceSt, sizeof(BRRPlaceSt));
-            copy_func(buffer, mid, upto - brrp - sizeof(BRRPlace0));
-        } else {
-            copy_func(buffer, BRRBuffer, upto);
-        }
+        copy_func(buffer, BRRBuffer, upto);
         if (zst_wide_ptrs) {
             copy_func(buffer, wide_slot, sizeof(wide_slot));
         } else {
@@ -932,20 +916,6 @@ void ResetState(void)
         Voice0BufPtr[i] = (s2*)((uintptr_t)spcBuffera
             + (off < SPC_BUFFER_BYTES ? off : 0));
     }
-
-    if (zst_load_151) {
-        /* 1.51 stored BRRPlace0 as absolute 32-bit pointers into BRRBuffer;
-           the dwords are stale here, so clamp anything outside the 32-byte
-           decode buffer to its start, as the Voice0BufPtr loop does. */
-        for (i = 0; i < 8; i++) {
-            uint32_t const off = BRRPlaceSt[i];
-            uintptr_t const p = (uintptr_t)BRRBuffer
-                + (off < 32u ? off : 0u); /* BRRBuffer is the 32-byte decode buffer */
-
-            memcpy(&BRRPlace0[i], &p, sizeof(p));
-        }
-        zst_load_151 = 0;
-    }
 }
 
 /* SfxRomBuffer and SfxLastRamAdr are host pointers, so they are pointer-wide.
@@ -1337,13 +1307,14 @@ static size_t zst_body_size(enum zst_origin o)
     case ZST_ZSNES2_WIDE:
         return cur_zst_size - hdr + ZST_WIDE_EXTRA;
     case ZST_151:
-        /* v143_zst_size is tallied at this build's layout. Convert each block
-           that 1.51 wrote shorter: the PPU register file (its hdmadata is data,
-           not host pointers, so the tally's HDMA_SAVED_BYTES already covers the
-           width - only the added h_dot_counter is extra), and the DSP block. */
+        /* v143_zst_size is tallied at this build's layout. Only the PPU register
+           file differs on disk: 1.51 wrote ZST_151_PPUREG (3019) of it, and its
+           hdmadata is data rather than host pointers, so the tally's
+           HDMA_SAVED_BYTES already accounts for the width. The SPC and DSP blocks
+           are byte-identical on disk (Voice0BufPtr is stored as a dword offset in
+           both), so they need no adjustment. */
         return v143_zst_size - hdr
-            - (PHnum2writeppureg - ZST_151_PPUREG) + (sizeof(hdmadata) - HDMA_SAVED_BYTES)
-            - (PHdspsave - ZST_151_DSPSAVE);
+            - (PHnum2writeppureg - ZST_151_PPUREG) + (sizeof(hdmadata) - HDMA_SAVED_BYTES);
     case ZST_V06:
         return old_zst_size - (sizeof(zst_header_old) - 1);
     default:
@@ -1536,19 +1507,11 @@ bool zst_load(FILE* fp, size_t Compressed)
             return false;
         }
 
-        /* 1.51/1.43 (V143 from ZSNES itself): its PPU and DSP register blocks
-           are translated (zst_151_regmap, the BRRPlace0/Voice0BufPtr paths), but
-           its SPC register block does not yet decode - the on-disk register
-           bytes do not line up with the layout the asm describes, so the SPC700
-           restarts with a wild stack and crashes. Until that block is resolved,
-           decline the file rather than load it and crash in the SPC core. */
-        if (origin == ZST_151) {
-            return false;
-        }
-
+        /* 1.51/1.43 (V143 from ZSNES itself): its PPU register block is
+           translated by zst_151_regmap, and its SPC/DSP blocks share this build's
+           layout bar Voice0BufPtr, which the shared path already converts. */
         zst_ppureg_run = (origin == ZST_151) ? ZST_151_PPUREG : 0;
         zst_dspsave_run = (origin == ZST_151) ? ZST_151_DSPSAVE : 0;
-        zst_load_151 = (origin == ZST_151);
         zst_wide_ptrs = (origin == ZST_ZSNES2_WIDE);
 
         load_save_size = 0;
@@ -1662,11 +1625,15 @@ void zst_roundtrip_check(void)
            whether the body was read the way it was written: every section is
            a fixed length for a given cartridge, so a layout this build
            describes wrongly cannot come out at the right total. */
+        long const hdrlen = (long)(sizeof(zst_header_cur) - 1);
+        long const v143body = (long)zst_body_size(ZST_151) + hdrlen;
+
         fit = (fsz == (long)(cur_zst_size + SL_V2_DESC_LEN))                       ? "V2"
             : (fsz == (long)(cur_zst_size + SL_V2_DESC_LEN + sizeof(PrevPicture))) ? "V2+thumb"
             : (fsz == (long)cur_zst_size)                                          ? "V144"
             : (fsz == (long)cur_zst_size + ZST_WIDE_EXTRA)                         ? "V144-WIDE"
-            : (fsz == (long)v143_zst_size)                                         ? "V143"
+            : (fsz == v143body)                                                    ? "V143"
+            : (fsz == v143body + (long)sizeof(PrevPicture))                        ? "V143+thumb"
             : (fsz == (long)old_zst_size)                                          ? "V0.6"
                                                                                    : "NO-MATCH";
         {
