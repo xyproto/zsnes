@@ -7,10 +7,10 @@ LEGACY_UNSUPPORTED_ARCHES := DOS BEOS AMIGA
 HOST_OS := $(shell uname -s 2>/dev/null | tr '[:lower:]' '[:upper:]')
 HOST_OS := $(if $(filter MINGW% MSYS% CYGWIN%,$(HOST_OS)),WIN,$(HOST_OS))
 HOST_CPU := $(shell uname -m 2>/dev/null | tr '[:upper:]' '[:lower:]')
-HOST_CPU_FAMILY := $(if $(filter aarch64 arm64,$(HOST_CPU)),arm64,x86)
-HOST_BITS := $(if $(filter x86_64 amd64 aarch64 arm64,$(HOST_CPU)),64,32)
-HOST_ARCH := $(if $(filter arm64,$(HOST_CPU_FAMILY)),aarch64,$(if $(filter 64,$(HOST_BITS)),x86_64,i686))
-NAMED_TARGETS := linux_i686 linux_x86_64 linux_aarch64 \
+HOST_CPU_FAMILY := $(if $(filter aarch64 arm64,$(HOST_CPU)),arm64,$(if $(filter riscv64 riscv,$(HOST_CPU)),riscv64,x86))
+HOST_BITS := $(if $(filter x86_64 amd64 aarch64 arm64 riscv64 riscv,$(HOST_CPU)),64,32)
+HOST_ARCH := $(if $(filter arm64,$(HOST_CPU_FAMILY)),aarch64,$(if $(filter riscv64,$(HOST_CPU_FAMILY)),riscv64,$(if $(filter 64,$(HOST_BITS)),x86_64,i686)))
+NAMED_TARGETS := linux_i686 linux_x86_64 linux_aarch64 linux_riscv64 \
                  macos_aarch64 macos_x86_64 \
                  freebsd_aarch64 freebsd_x86_64 \
                  win_i686 win_x86_64
@@ -119,10 +119,10 @@ CPU  ?= $(HOST_CPU_FAMILY)
 ifeq ($(filter $(BITS),32 64),)
 $(error Unsupported BITS '$(BITS)'. Supported values: 32 64)
 endif
-ifeq ($(filter $(CPU),x86 arm64),)
-$(error Unsupported CPU '$(CPU)'. Supported values: x86 arm64)
+ifeq ($(filter $(CPU),x86 arm64 riscv64),)
+$(error Unsupported CPU '$(CPU)'. Supported values: x86 arm64 riscv64)
 endif
-ifeq ($(CPU),arm64)
+ifneq ($(filter $(CPU),arm64 riscv64),)
 override BITS := 64
 endif
 
@@ -154,8 +154,8 @@ WARN_FLAGS ?= -Wall -Wextra -Wno-unused-parameter -Werror=unused-variable \
               -Wshift-overflow=2 -Warray-bounds=2 -Wundef \
               -Wstrict-prototypes -Wold-style-definition -Wwrite-strings \
               -Wjump-misses-init -Wformat=2
-# x86 uses absolute addressing; ARM and Darwin require PIC.
-PIC_FLAGS := $(if $(or $(filter arm64,$(CPU)),$(filter DARWIN,$(ARCH))),,-no-pie -fno-pic)
+# x86 uses absolute addressing; ARM, RISC-V and Darwin require PIC.
+PIC_FLAGS := $(if $(or $(filter arm64 riscv64,$(CPU)),$(filter DARWIN,$(ARCH))),,-no-pie -fno-pic)
 # XSI exposes setreuid/setregid on Linux and the BSDs.
 FEATURE_FLAGS := -D_XOPEN_SOURCE=700
 ifeq ($(ARCH),DARWIN)
@@ -185,7 +185,7 @@ endif
 ifeq ($(ARCH),DARWIN)
 LDFLAGS += -Wl,-dead_strip -lz -lm
 else
-LDFLAGS += -Wl,--as-needed $(if $(filter arm64,$(CPU)),,-no-pie) -Wl,--gc-sections -lz -lm
+LDFLAGS += -Wl,--as-needed $(if $(filter arm64 riscv64,$(CPU)),,-no-pie) -Wl,--gc-sections -lz -lm
 endif
 
 WITH_OPENGL   := yes
@@ -262,7 +262,7 @@ endif
 
 # Wrapper targets defer dependency checks to their sub-make.
 WRAPPER_GOALS := clean distclean debug linux_pi4 \
-                 linux_i686 linux_x86_64 linux_aarch64 \
+                 linux_i686 linux_x86_64 linux_aarch64 linux_riscv64 \
                  macos_aarch64 macos_x86_64 \
                  freebsd_aarch64 freebsd_x86_64 \
                  win_i686 win_x86_64 portcheck portasm help test fmt unused
@@ -824,12 +824,14 @@ MINGW64_PREFIX ?= x86_64-w64-mingw32
 LINUX_I686_PREFIX ?= i686-linux-gnu
 LINUX_X86_64_PREFIX ?= x86_64-linux-gnu
 LINUX_AARCH64_PREFIX ?= aarch64-linux-gnu
+LINUX_RISCV64_PREFIX ?= riscv64-linux-gnu
 FREEBSD_X86_64_PREFIX ?= x86_64-unknown-freebsd
 FREEBSD_AARCH64_PREFIX ?= aarch64-unknown-freebsd
 
 LINUX_I686_NATIVE := $(if $(and $(filter LINUX,$(HOST_OS)),$(filter i386 i486 i586 i686 x86_64 amd64,$(HOST_CPU))),yes)
 LINUX_X86_64_NATIVE := $(if $(and $(filter LINUX,$(HOST_OS)),$(filter x86_64 amd64,$(HOST_CPU))),yes)
 LINUX_AARCH64_NATIVE := $(if $(and $(filter LINUX,$(HOST_OS)),$(filter aarch64 arm64,$(HOST_CPU))),yes)
+LINUX_RISCV64_NATIVE := $(if $(and $(filter LINUX,$(HOST_OS)),$(filter riscv64 riscv,$(HOST_CPU))),yes)
 FREEBSD_X86_64_NATIVE := $(if $(and $(filter FREEBSD,$(HOST_OS)),$(filter x86_64 amd64,$(HOST_CPU))),yes)
 FREEBSD_AARCH64_NATIVE := $(if $(and $(filter FREEBSD,$(HOST_OS)),$(filter aarch64 arm64,$(HOST_CPU))),yes)
 MINGW32_NATIVE := $(if $(and $(filter WIN,$(HOST_OS)),$(findstring i686,$(CC_TARGET_TRIPLE))),yes)
@@ -838,9 +840,11 @@ MINGW64_NATIVE := $(if $(and $(filter WIN,$(HOST_OS)),$(findstring x86_64,$(CC_T
 LINUX_I686_CC ?= $(if $(LINUX_I686_NATIVE),$(CC),$(LINUX_I686_PREFIX)-gcc)
 LINUX_X86_64_CC ?= $(if $(LINUX_X86_64_NATIVE),$(CC),$(LINUX_X86_64_PREFIX)-gcc)
 LINUX_AARCH64_CC ?= $(if $(LINUX_AARCH64_NATIVE),$(CC),$(LINUX_AARCH64_PREFIX)-gcc)
+LINUX_RISCV64_CC ?= $(if $(LINUX_RISCV64_NATIVE),$(CC),$(LINUX_RISCV64_PREFIX)-gcc)
 LINUX_I686_PKG_CONFIG ?= $(if $(LINUX_I686_NATIVE),pkg-config,$(LINUX_I686_PREFIX)-pkg-config)
 LINUX_X86_64_PKG_CONFIG ?= $(if $(LINUX_X86_64_NATIVE),pkg-config,$(LINUX_X86_64_PREFIX)-pkg-config)
 LINUX_AARCH64_PKG_CONFIG ?= $(if $(LINUX_AARCH64_NATIVE),pkg-config,$(LINUX_AARCH64_PREFIX)-pkg-config)
+LINUX_RISCV64_PKG_CONFIG ?= $(if $(LINUX_RISCV64_NATIVE),pkg-config,$(LINUX_RISCV64_PREFIX)-pkg-config)
 
 FREEBSD_X86_64_CC ?= $(if $(FREEBSD_X86_64_NATIVE),$(CC),$(FREEBSD_X86_64_PREFIX)-gcc)
 FREEBSD_AARCH64_CC ?= $(if $(FREEBSD_AARCH64_NATIVE),$(CC),$(FREEBSD_AARCH64_PREFIX)-gcc)
@@ -855,7 +859,7 @@ MINGW32_WINDRES ?= $(if $(MINGW32_NATIVE),windres,$(MINGW32_PREFIX)-windres)
 MINGW64_WINDRES ?= $(if $(MINGW64_NATIVE),windres,$(MINGW64_PREFIX)-windres)
 
 .PHONY: linux_pi4
-.PHONY: linux_i686 linux_x86_64 linux_aarch64
+.PHONY: linux_i686 linux_x86_64 linux_aarch64 linux_riscv64
 .PHONY: macos_aarch64 macos_x86_64
 .PHONY: freebsd_aarch64 freebsd_x86_64
 .PHONY: win_i686 win_x86_64 help
@@ -877,6 +881,12 @@ linux_aarch64:
 	$(MAKE) ARCH=LINUX BITS=64 CPU=arm64 \
 	  CC=$(LINUX_AARCH64_CC) CC_TARGET=$(LINUX_AARCH64_CC) \
 	  PKG_CONFIG=$(LINUX_AARCH64_PKG_CONFIG) all
+
+linux_riscv64:
+	$(call need_tool,$(LINUX_RISCV64_CC),a riscv64 Linux C compiler)
+	$(MAKE) ARCH=LINUX BITS=64 CPU=riscv64 \
+	  CC=$(LINUX_RISCV64_CC) CC_TARGET=$(LINUX_RISCV64_CC) \
+	  PKG_CONFIG=$(LINUX_RISCV64_PKG_CONFIG) all
 
 linux_pi4:
 	$(call need_tool,$(LINUX_AARCH64_CC),an aarch64 Linux C compiler)
@@ -925,6 +935,7 @@ help:
 	@echo '  linux_i686     32-bit x86 Linux'
 	@echo '  linux_x86_64   64-bit x86 Linux'
 	@echo '  linux_aarch64  64-bit ARM Linux'
+	@echo '  linux_riscv64  64-bit RISC-V Linux'
 	@echo '  linux_pi4      the same, tuned for a Raspberry Pi 4 Cortex-A72'
 	@echo '  macos_aarch64  Apple Silicon macOS'
 	@echo '  macos_x86_64   Intel macOS'
@@ -932,7 +943,7 @@ help:
 	@echo '  freebsd_x86_64   64-bit x86 FreeBSD'
 	@echo '  win_i686       32-bit Windows'
 	@echo '  win_x86_64     64-bit Windows'
-	@echo '  portcheck      compile every source for x86-64 and aarch64'
+	@echo '  portcheck      compile every source for x86-64, aarch64, and riscv64'
 	@echo '  test           run the unit tests'
 	@echo '  server         the Go netplay relay in server/'
 	@echo '  server-test    vet and test it'
@@ -1044,12 +1055,13 @@ PORTCHECK_DEFS   := $(filter-out -D__PIPEWIRE__ -D__LIBAO__,$(CFGDEFS))
 PORTCHECK_CFLAGS ?= -std=c11 $(FEATURE_FLAGS) \
                     -O1 -I. $(PORTCHECK_DEFS) $(CFLAGS_SDL) $(CFLAGS_PNG)
 PORTCHECK_ARM_CC ?= aarch64-linux-gnu-gcc
-PORTCHECK_ARCHS  ?= x86-64 aarch64
+PORTCHECK_RISCV_CC ?= riscv64-linux-gnu-gcc
+PORTCHECK_ARCHS  ?= x86-64 aarch64 riscv64
 .PHONY: portcheck
 portcheck: $(HDRS)
 # Remove PSR outputs built with portcheck flags.
 	@rc=0; \
-	for t in "x86-64:$(PORTCHECK_CC):-m64" "aarch64:$(PORTCHECK_ARM_CC):-idirafter/usr/include"; do \
+	for t in "x86-64:$(PORTCHECK_CC):-m64" "aarch64:$(PORTCHECK_ARM_CC):-idirafter/usr/include" "riscv64:$(PORTCHECK_RISCV_CC):-idirafter/usr/include"; do \
 	  name=$${t%%:*}; rest=$${t#*:}; cc=$${rest%%:*}; extra=$${rest#*:}; \
 	  case " $(PORTCHECK_ARCHS) " in *" $$name "*) ;; *) continue;; esac; \
 	  command -v $$cc >/dev/null 2>&1 || { \
