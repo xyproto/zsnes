@@ -1501,7 +1501,7 @@ def main():
 
     if len(sys.argv) - param_pos != 2:
         print(
-            """Config file handler creator by Nach (C) 2005-2007
+            """Config file handler creator written in Python
 
 Usage:
 parsegen [options] <output> <input>
