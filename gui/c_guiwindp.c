@@ -310,64 +310,64 @@ static void GUIDrawTabs(u4 const* const p1, u4* const peax, u4 const ebx) // tab
  * - if p2 has the form a + b, then 2 * b must be added to p4
  * - if p3 has the form a + b, then 2 * b must be added to p5
  */
-static void DrawGUIWinBox(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, u4 const p6)
+static void DrawGUIWinBox(u4 const p1, u4 const x, u4 const y, u4 const p4, u4 const p5, u4 const p6)
 {
-    s4 const eax = GUIwinposx[p1] + p2;
-    s4 const ebx = GUIwinposy[p1] + p3;
-    s4 const ecx = eax + p4 - p2 + 1;
-    u4 const esi = p5 - p3 + 1;
+    s4 const eax = GUIwinposx[p1] + x;
+    s4 const ebx = GUIwinposy[p1] + y;
+    s4 const ecx = eax + p4 - x + 1;
+    u4 const esi = p5 - y + 1;
     GUIRect(eax, ecx, ebx, esi, p6);
 }
 
-static void DrawGUIButton(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, char const* const p6, u4 const p7, u4 const p8, u4 const p9)
+static void DrawGUIButton(u4 const p1, u4 const x, u4 const y, u4 const p4, u4 const p5, char const* const p6, u4 const p7, u4 const p8, u4 const p9)
 {
     u1 const colour = GUIWincoladd == 0 ? 217 : 211;
     bool const held = GUICBHold == p7;
-    DrawGUIWinBox(p1, p2, p3, p4, p3, colour + (held ? -18 : -5));
-    DrawGUIWinBox(p1, p2, p3, p2, p5, colour + (held ? -16 : -8));
-    DrawGUIWinBox(p1, p2 + 1, p3 + 1, p4, p5, colour + (held ? -14 : -11));
-    DrawGUIWinBox(p1, p4 + 1, p3 + 1, p4, p5, colour + (held ? -12 : -14));
-    DrawGUIWinBox(p1, p2, p5, p4 - 1, p5, colour + (held ? -10 : -17));
+    DrawGUIWinBox(p1, x, y, p4, y, colour + (held ? -18 : -5));
+    DrawGUIWinBox(p1, x, y, x, p5, colour + (held ? -16 : -8));
+    DrawGUIWinBox(p1, x + 1, y + 1, p4, p5, colour + (held ? -14 : -11));
+    DrawGUIWinBox(p1, p4 + 1, y + 1, p4, p5, colour + (held ? -12 : -14));
+    DrawGUIWinBox(p1, x, p5, p4 - 1, p5, colour + (held ? -10 : -17));
     if (!held) {
-        GUIOuttextwin2(p1, p2 + 5 + p8, p3 + 4 + p9, p6, colour - 15);
-        GUIOuttextwin2(p1, p2 + 4 + p8, p3 + 3 + p9, p6, colour);
+        GUIOuttextwin2(p1, x + 5 + p8, y + 4 + p9, p6, colour - 15);
+        GUIOuttextwin2(p1, x + 4 + p8, y + 3 + p9, p6, colour);
     } else {
-        GUIOuttextwin2(p1, p2 + 6 + p8, p3 + 5 + p9, p6, colour - 18);
-        GUIOuttextwin2(p1, p2 + 5 + p8, p3 + 4 + p9, p6, colour - 3);
+        GUIOuttextwin2(p1, x + 6 + p8, y + 5 + p9, p6, colour - 18);
+        GUIOuttextwin2(p1, x + 5 + p8, y + 4 + p9, p6, colour - 3);
     }
 }
 
-static void GUIDisplayTextY(u4 const p1, u4 const p2, u4 const p3, char const* const p4) // Yellow Text&Shadow
+static void GUIDisplayTextY(u4 const p1, u4 const x, u4 const y, char const* const p4) // Yellow Text&Shadow
 {
-    GUIOuttextwin2(p1, p2, p3, p4, GUIWincol);
-    GUIOuttextwin2(p1, p2 - 1, p3 - 1, p4, GUIWincoladd == 0 ? 163 : 164);
+    GUIOuttextwin2(p1, x, y, p4, GUIWincol);
+    GUIOuttextwin2(p1, x - 1, y - 1, p4, GUIWincoladd == 0 ? 163 : 164);
 }
 
-static void GUIDisplayText(u4 const p1, u4 const p2, u4 const p3, char const* const p4) // Text&Shadow
+static void GUIDisplayText(u4 const p1, u4 const x, u4 const y, char const* const p4) // Text&Shadow
 {
     u1 const colour = GUIWincoladd == 0 ? 202 : 196;
-    GUIOuttextwin2(p1, p2, p3, p4, colour);
-    GUIOuttextwin2(p1, p2 - 1, p3 - 1, p4, colour + 15);
+    GUIOuttextwin2(p1, x, y, p4, colour);
+    GUIOuttextwin2(p1, x - 1, y - 1, p4, colour + 15);
 }
 
-static void GUIDisplayBBox(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, u4 const p6) // Black Box W/Border
+static void GUIDisplayBBox(u4 const p1, u4 const x, u4 const y, u4 const p4, u4 const p5, u4 const p6) // Black Box W/Border
 {
     GUIWincol = cwindrawn == 0 ? 148 : cwindrawn == 1 ? 148 + 5
                                                       : 148 + 10;
-    DrawGUIWinBox(p1, p2, p3, p4, p5, p6);
-    DrawGUIWinBox(p1, p2, p3 - 3 + 2, p4, p3 - 1, GUIWincol);
-    DrawGUIWinBox(p1, p2 - 1, p3, p2 - 2, p5, GUIWincol + 1);
-    DrawGUIWinBox(p1, p2, p5 + 1, p4, p5 + 1, GUIWincol + 4);
-    DrawGUIWinBox(p1, p4 + 2, p3, p4 + 1, p5, GUIWincol + 3);
+    DrawGUIWinBox(p1, x, y, p4, p5, p6);
+    DrawGUIWinBox(p1, x, y - 3 + 2, p4, y - 1, GUIWincol);
+    DrawGUIWinBox(p1, x - 1, y, x - 2, p5, GUIWincol + 1);
+    DrawGUIWinBox(p1, x, p5 + 1, p4, p5 + 1, GUIWincol + 4);
+    DrawGUIWinBox(p1, p4 + 2, y, p4 + 1, p5, GUIWincol + 3);
 }
 
-static void GUIDisplayTextG(u4 const p1, u4 const p2, u4 const p3, char const* const p4) // Green Text&Shadow
+static void GUIDisplayTextG(u4 const p1, u4 const x, u4 const y, char const* const p4) // Green Text&Shadow
 {
-    GUIOuttextwin2(p1, p2, p3, p4, 223);
-    GUIOuttextwin2(p1, p2 - 1, p3 - 1, p4, GUIWincoladd == 0 ? 221 : 222);
+    GUIOuttextwin2(p1, x, y, p4, 223);
+    GUIOuttextwin2(p1, x - 1, y - 1, p4, GUIWincoladd == 0 ? 221 : 222);
 }
 
-static void GUIOuttextwin2d(u4 const p1, u4 const p2, u4 const p3, char const* const p4, u4 const p5, char** const p6, u4 const p7) // Boxed, green text, limited to 5th param
+static void GUIOuttextwin2d(u4 const p1, u4 const x, u4 const y, char const* const p4, u4 const p5, char** const p6, u4 const p7) // Boxed, green text, limited to 5th param
 {
     char const* ecx = p4; // Move pointer to text into ecx
     while (*ecx != '\0')
@@ -376,41 +376,41 @@ static void GUIOuttextwin2d(u4 const p1, u4 const p2, u4 const p3, char const* c
     if (eax > p5)
         eax = p5; // Restrict to length to display
 
-    GUIDisplayTextG(p1, p2, p3, ecx - eax);
+    GUIDisplayTextG(p1, x, y, ecx - eax);
     if (GUIInputBox == p7 + 1 && p6[p7] == p4) {
         static u1 GUIBlinkCursorLoop = 0;
         if (++GUIBlinkCursorLoop == 60)
             GUIBlinkCursorLoop = 0;
         if (GUIBlinkCursorLoop < 30) {
-            GUIDisplayTextG(p1, eax * 6 /* 6 pixels */ + p2, p3, "_");
+            GUIDisplayTextG(p1, eax * 6 /* 6 pixels */ + x, y, "_");
         }
     }
 }
 
-static void GUIDisplayBBoxS(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, u4 const p6) // Black Box W/Border
+static void GUIDisplayBBoxS(u4 const p1, u4 const x, u4 const y, u4 const p4, u4 const p5, u4 const p6) // Black Box W/Border
 {
     // Minus right side
     GUIWincol = cwindrawn == 0 ? 148 : cwindrawn == 1 ? 148 + 5
                                                       : 148 + 10;
-    DrawGUIWinBox(p1, p2, p3, p4, p5, p6);
-    DrawGUIWinBox(p1, p2, p3 - 3 + 2, p4, p3 - 1, GUIWincol);
-    DrawGUIWinBox(p1, p2 - 1, p3, p2 - 2, p5, GUIWincol + 1);
-    DrawGUIWinBox(p1, p2, p5 + 1, p4, p5 + 1, GUIWincol + 4);
+    DrawGUIWinBox(p1, x, y, p4, p5, p6);
+    DrawGUIWinBox(p1, x, y - 3 + 2, p4, y - 1, GUIWincol);
+    DrawGUIWinBox(p1, x - 1, y, x - 2, p5, GUIWincol + 1);
+    DrawGUIWinBox(p1, x, p5 + 1, p4, p5 + 1, GUIWincol + 4);
 }
 
-static void DrawGUIWinBox2(u4 const p1, u4 const p2, u4 const p3, u4 const p4, u4 const p5, s4 const ebx)
+static void DrawGUIWinBox2(u4 const p1, u4 const x, u4 const y, u4 const p4, u4 const p5, s4 const ebx)
 {
-    s4 const eax = GUIwinposx[p1] + p2;
-    s4 const ecx = GUIwinposx[p1] + p3 + 1;
+    s4 const eax = GUIwinposx[p1] + x;
+    s4 const ecx = GUIwinposx[p1] + y + 1;
     u1 const edx = GUIWincoladd == 0 ? p5 : p5 + 1;
     GUIRect(eax, ecx, ebx + GUIwinposy[p1], p4, edx);
 }
 
-static void GUIDisplayTextu(u4 const p1, u4 const p2, u4 const p3, char const* const p4, u4 const p5) // Text&Shadow With Underline
+static void GUIDisplayTextu(u4 const p1, u4 const x, u4 const y, char const* const p4, u4 const p5) // Text&Shadow With Underline
 {
     u1 const colour = GUIWincoladd == 0 ? 202 : 196;
-    GUIOuttextwin2u(p1, p2, p3, p4, colour, p5);
-    GUIOuttextwin2(p1, p2 - 1, p3 - 1, p4, colour + 15);
+    GUIOuttextwin2u(p1, x, y, p4, colour, p5);
+    GUIOuttextwin2(p1, x - 1, y - 1, p4, colour + 15);
 }
 
 static u1 const GUIIconDataCheckBoxUC[] = {
