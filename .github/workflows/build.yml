@@ -138,7 +138,8 @@ jobs:
       - name: AddressSanitizer
         run: |
           make clean
-          make linux_x86_64 WITH_DEBUG_HOOKS=1 \
+          mkdir -p $HOME/tmp
+          TMPDIR=$HOME/tmp make linux_x86_64 WITH_DEBUG_HOOKS=1 \
             EXTRA_CFLAGS='-fsanitize=address -fno-omit-frame-pointer -g -O1' \
             EXTRA_LDFLAGS='-fsanitize=address'
           ASAN_OPTIONS=detect_leaks=0 ZSNES_SELFTEST=1 ./zsnes -v 0
