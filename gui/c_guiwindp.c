@@ -1784,9 +1784,10 @@ void DisplayNetOptns(void)
     GUIDisplayCheckbox(8, 8, 66, &NetplayUDPConfig, "USE UDP");
     GUIDisplayCheckbox(8, 110, 66, &NetplayRelayConfig, "USE RELAY");
 
-    DrawGUIButton(8, 8, 74, 56, 85, "HOST", 85, 0, 0);
-    DrawGUIButton(8, 66, 74, 114, 85, "JOIN", 86, 0, 0);
-    DrawGUIButton(8, 124, 74, 212, 85, "DISCONNECT", 87, 0, 0);
+    u4 const y = 78;
+    DrawGUIButton(8, 8, y, 56, 85, "HOST", 85, 0, 0);
+    DrawGUIButton(8, 66, y, 114, 85, "JOIN", 86, 0, 0);
+    DrawGUIButton(8, 124, y, 212, 85, "DISCONNECT", 87, 0, 0);
 }
 
 void DisplayGameOptns(void)
