@@ -798,6 +798,17 @@ _CLEAN_SWITCH := $(shell rm -fr $(BUILD_DIR) $(BINARY) zsnes zsnes.exe)
 endif
 endif
 _WRITE_STAMP := $(shell mkdir -p $(BUILD_DIR) && printf '%s' '$(BUILD_TAG)' > $(BUILDSTAMP))
+# A generated header can go stale when a checkout, an interrupted build or a
+# touch leaves its .psr older than a header built earlier: make then judges the
+# header current by mtime though the .psr contents changed. Compare by content
+# and drop the stale header (with its object) so the normal rule rebuilds it.
+# Done here, before any recipe, so it never races the parallel build.
+_PSR_FRESH := $(shell for p in $(PSRS); do \
+  s=$(BUILD_DIR)/$$p.hash; h=`cat $$p $(PSR) 2>/dev/null | cksum`; \
+  [ -f $$s ] && [ "`cat $$s 2>/dev/null`" = "$$h" ] && continue; \
+  mkdir -p `dirname $$s`; \
+  rm -f $(BUILD_DIR)/$${p%.psr}.h $(BUILD_DIR)/$${p%.psr}.o; \
+  printf '%s' "$$h" > $$s; done)
 endif
 
 .SUFFIXES:
