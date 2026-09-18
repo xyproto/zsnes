@@ -3,7 +3,7 @@ set -e
 cd "$(dirname "$0")"
 git ls-files '*.c' '*.h' '*.cpp' \
   | grep -v test/difftest_op.c \
-  | grep -v zloader.c \
+  | grep -v main.c \
   | xargs clang-format -style=file -i
 
 #| grep -v test/ng2_harness.h \
