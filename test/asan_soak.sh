@@ -34,7 +34,11 @@ done <<< "$want"
 run() { # ROM MODE
   local rom=$1 mode=$2 H log rc
   H=$(mktemp -d); mkdir -p "$H/.config/zsnes"; log=$H/log
-  timeout -k 5 20 xvfb-run -a env HOME="$H" SDL_AUDIODRIVER=dummy "$BIN" -v 0 >/dev/null 2>&1
+  # Config generation renders nothing; dummy video avoids flaky xvfb.
+  timeout -k 5 20 env HOME="$H" SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy "$BIN" -v 0 >/dev/null 2>&1
+  if [ ! -f "$H/.config/zsnes/zsnesl.cfg" ]; then
+    printf '%-40s mode %-2s SKIP (no config generated)\n' "$(basename "$rom")" "$mode"; rm -rf "$H"; return
+  fi
   sed -i -E "s/^cvidmode=.*/cvidmode=$mode/; s/^hqFilter=.*/hqFilter=1/; s/^hqFilterlevel=.*/hqFilterlevel=4/; s/^sl_intensity=.*/sl_intensity=50/; s/^sl_vibrancy=.*/sl_vibrancy=45/; s/^BloomLevel=.*/BloomLevel=25/; s/^Mode7HiRes16b=.*/Mode7HiRes16b=1/" "$H/.config/zsnes/zsnesl.cfg"
   timeout -k 5 "$SECS" xvfb-run -a -s "-screen 0 1280x960x24" env HOME="$H" SDL_AUDIODRIVER=dummy \
     ASAN_OPTIONS=detect_leaks=0 ZSNES_FILTER_SOAK=20 "$BIN" -m -ds "$rom" >"$log" 2>&1

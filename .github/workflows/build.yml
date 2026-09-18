@@ -92,6 +92,19 @@ jobs:
           SDL_VIDEODRIVER: dummy
           SDL_AUDIODRIVER: dummy
         run: ZSNES_SELFTEST=1 ./zsnes -v 0
+      - name: Save-state formats (32-bit)
+        # The on-disk formats are word-size independent, so a 32-bit build must
+        # decode the same fixtures to the same machine as the 64-bit one. This
+        # is where a 64-bit-only assumption in a loader (e.g. a host-pointer
+        # width baked into an offset) surfaces.
+        env:
+          SDL_VIDEODRIVER: dummy
+          SDL_AUDIODRIVER: dummy
+        run: |
+          make linux_i686 WITH_DEBUG_HOOKS=1
+          test/state_fixtures.sh ./zsnes
+          make clean
+          make linux_i686
       - name: Verify runtime links
         run: |
           ldd ./zsnes | tee ldd.txt
@@ -112,7 +125,7 @@ jobs:
         run: |
           sudo apt-get $APT_OPTS update
           sudo apt-get $APT_OPTS install -y --no-install-recommends \
-            build-essential make python3 pkg-config git \
+            build-essential make python3 pkg-config git xvfb \
             gcc-aarch64-linux-gnu libc6-dev-arm64-cross \
             libsdl3-dev libgl1-mesa-dev libpng-dev zlib1g-dev \
             libao-dev libpipewire-0.3-dev libncurses-dev
@@ -135,23 +148,25 @@ jobs:
           make clean
           make linux_x86_64 WITH_DEBUGGER=1
           test -x ./zsnes
-      #- name: AddressSanitizer
-      #  run: |
-      #    make linux_x86_64 WITH_DEBUG_HOOKS=1 \
-      #      EXTRA_CFLAGS='-fsanitize=address -fno-omit-frame-pointer -g -O1' \
-      #      EXTRA_LDFLAGS='-fsanitize=address'
-      #    ASAN_OPTIONS=detect_leaks=0 ZSNES_SELFTEST=1 ./zsnes -v 0
-      #    # The selftest emulates nothing. This runs free test ROMs through
-      #    # every filter and video mode, then fuzzes the file loaders.
-      #    test/asan_soak.sh ./zsnes 25
-      #    # Save-state guards for the two things users lean on: that a state
-      #    # saved now reloads to the same machine, and that the older on-disk
-      #    # formats (this build's V144 and the 64-bit 2.3.0/2.3.1 wide format)
-      #    # still decode. Under ASan, so the load path is checked for overruns.
-      #    test/state_fixtures.sh ./zsnes
-      #    test/savecycle.sh ./zsnes test/roms/CPUMSC.sfc \
-      #      test/fixtures/cpumsc.v144.zst test/fixtures/cpumsc.wide.zst
-      #    make clean
+      - name: AddressSanitizer
+        run: |
+          make linux_x86_64 WITH_DEBUG_HOOKS=1 \
+            EXTRA_CFLAGS='-fsanitize=address -fno-omit-frame-pointer -g -O1' \
+            EXTRA_LDFLAGS='-fsanitize=address'
+          ASAN_OPTIONS=detect_leaks=0 ZSNES_SELFTEST=1 ./zsnes -v 0
+          # The selftest emulates nothing. This runs free test ROMs through
+          # every filter and video mode, then fuzzes the file loaders.
+          test/asan_soak.sh ./zsnes 25
+          # Save-state guards for the things users lean on: that a state saved
+          # now reloads to the same machine, and that every on-disk format still
+          # decodes - ZSNES 1.51/1.43 (V143), this build's V144, the 64-bit
+          # 2.3.0/2.3.1 wide format, and the 2.4.0+ V2 envelope. Under ASan, so
+          # the load path is checked for overruns.
+          test/state_fixtures.sh ./zsnes
+          test/savecycle.sh ./zsnes test/roms/CPUMSC.sfc \
+            test/fixtures/cpumsc.v143.zst test/fixtures/cpumsc.v144.zst \
+            test/fixtures/cpumsc.wide.zst test/fixtures/cpumsc.v2.zst
+          make clean
 
       - name: Cross-unit type gate
         run: |

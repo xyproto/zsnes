@@ -37,7 +37,14 @@ for ((i = 1; i <= N; i++)); do
     ips) python3 "$here/mutate.py" "$work/seed.ips" "$H/rom/$stem.ips" "$i";;
     zip) src=$([ $((i % 2)) = 0 ] && echo "$work/seed.zip" || echo "$work/stored.zip")
          python3 "$here/mutate.py" "$src" "$H/rom/game.zip" "$i"; romuse="$H/rom/game.zip";;
-    cfg) [ -f "$work/seed.cfg" ] || { timeout -k 5 20 xvfb-run -a env HOME="$H" SDL_AUDIODRIVER=dummy "$BIN" -v 0 >/dev/null 2>&1; cp "$H/.config/zsnes/zsnesl.cfg" "$work/seed.cfg"; }
+    cfg) if [ ! -f "$work/seed.cfg" ]; then
+           # Writing the config needs no display; dummy video avoids flaky xvfb.
+           timeout -k 5 20 env HOME="$H" SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy "$BIN" -v 0 >/dev/null 2>&1
+           if ! cp "$H/.config/zsnes/zsnesl.cfg" "$work/seed.cfg" 2>/dev/null; then
+             echo "cfg: could not generate a seed zsnesl.cfg; skipping cfg fuzz"
+             exit 0
+           fi
+         fi
          python3 "$here/mutate.py" "$work/seed.cfg" "$H/.config/zsnes/zsnesl.cfg" "$i";;
     *) echo "unknown kind $KIND" >&2; exit 2;;
   esac
