@@ -1,8 +1,6 @@
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
-#ifdef __UNIXSDL__
 #include "unix/sdllink.h"
-#endif
 
 #ifdef __LIBAO__
 #include <ao/ao.h>
