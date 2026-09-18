@@ -64,20 +64,11 @@ u4 Totalbyteloaded;
 #define ZST_151_PPUREG 3019
 #define ZST_151_DSPSAVE 1068
 
-/* 1.51's sndrot block (3049 bytes) mapped into this build's (3181). Recovered
-   field by field from ZSNES 1.51 src/cpu/regs.inc against this build's symbol
-   offsets: the layouts are identical except hdmadata holds 152 data bytes there
-   and 280 host-pointer bytes here, and this build adds a 4-byte h_dot_counter
-   before tempdat. Both ALIGN32 pads (24 then 5) land at the same offset. */
-static const struct {
-    unsigned short from, to, len; /* .from is 1.51's offset, .to is this build's */
-} zst_151_regmap[] = {
-    { 0, 0, 321 }, /* sndrot .. curhdma, incl the 24-byte pad - identical */
-    /* skip 1.51 hdmadata [321,473); this build keeps its own live pointers */
-    { 473, 601, 2103 }, /* the 5-byte pad, hdmatype .. rtoflags */
-    /* skip this build's h_dot_counter [2704,2708); 1.51 has no such field */
-    { 2576, 2708, 443 }, /* tempdat: 1.51 saves 3019 of its 3049-byte block */
-};
+/* 1.51's 3019-byte sndrot block matches this build's register file except at two
+   gaps: hdmadata (152 data bytes there, host pointers here - 280 at 64-bit, 152
+   at 32-bit) and this build's extra h_dot_counter before tempdat. copy_snes_data
+   derives the copy runs from live offsets, so it is right at either width. */
+extern u4 h_dot_counter;
 
 /* Zero means "this build's own layout". */
 static size_t zst_ppureg_run;
@@ -127,17 +118,29 @@ static void copy_snes_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*,
            past it; without this the copy is bounds-checked against that byte. */
         void* volatile block = &sndrot;
         uint8_t* const dst = (uint8_t*)block;
+        /* Gap offsets in this build; HDMA_SAVED_BYTES is 1.51's on-disk hdmadata.
+           hdmadata keeps its own host pointers - a $420C write rebuilds it. */
+        size_t const hd_to = (size_t)((uint8_t*)hdmadata - dst);
+        size_t const hdc_to = (size_t)((uint8_t*)&h_dot_counter - dst);
+        /* .from tracks 1.51's shorter layout as each gap is skipped. */
+        struct {
+            size_t from, to, len;
+        } const run[3] = {
+            { 0, 0, hd_to },
+            { hd_to + HDMA_SAVED_BYTES, hd_to + sizeof(hdmadata),
+                hdc_to - (hd_to + sizeof(hdmadata)) },
+            { hd_to + HDMA_SAVED_BYTES + (hdc_to - (hd_to + sizeof(hdmadata))),
+                hdc_to + sizeof(h_dot_counter), 0 },
+        };
         size_t i;
 
         copy_func(buffer, old, sizeof(old));
-        /* Scatter each run byte by byte. hdmadata (skipped between the runs)
-           keeps this process's host pointers; a $420C write rebuilds it, and
-           nexthdma is cleared on load. */
-        for (i = 0; i < sizeof(zst_151_regmap) / sizeof(*zst_151_regmap); i++) {
+        for (i = 0; i < 3; i++) {
+            size_t const len = i == 2 ? ZST_151_PPUREG - run[2].from : run[i].len;
             size_t j;
 
-            for (j = 0; j < zst_151_regmap[i].len; j++) {
-                dst[zst_151_regmap[i].to + j] = old[zst_151_regmap[i].from + j];
+            for (j = 0; j < len; j++) {
+                dst[run[i].to + j] = old[run[i].from + j];
             }
         }
     } else {
