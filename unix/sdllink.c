@@ -198,6 +198,10 @@ void PlaceWindowOnMonitor(SDL_Window* const win)
     id = sdl_displays[VideoMonitorSelected()];
     pos = (int)SDL_WINDOWPOS_CENTERED_DISPLAY(id);
     SDL_SetWindowPosition(win, pos, pos);
+    /* Text entry (the file browser, netplay fields) reads characters from
+       SDL_EVENT_TEXT_INPUT so the keyboard layout decides them - otherwise a
+       shifted symbol like the Norwegian '/' (shift-7) is unreachable. */
+    SDL_StartTextInput(win);
 }
 SDL_Surface* surface;
 int SurfaceLocking = 0;
@@ -484,6 +488,28 @@ int Main_Proc(void)
                 pressed[key] = 0;
             }
             break;
+
+        case SDL_EVENT_TEXT_INPUT: {
+            /* The characters the layout actually produced. Feed the printable
+               ASCII into the same buffer the menus read; control and navigation
+               keys still come through ProcessKeyBuf. */
+            char const* t = event.text.text;
+
+            for (; t && *t; t++) {
+                unsigned char const c = (unsigned char)*t;
+                unsigned int const next = (CurKeyPos + 1) % 16;
+
+                if (c < 0x20 || c > 0x7E || next == CurKeyReadPos) {
+                    continue;
+                }
+                KeyBuffer[CurKeyPos] = c;
+                CurKeyPos++;
+                if (CurKeyPos == 16) {
+                    CurKeyPos = 0;
+                }
+            }
+            break;
+        }
 
         case SDL_EVENT_MOUSE_MOTION:
             if (FullScreen) {
@@ -1150,6 +1176,15 @@ static void ProcessKeyBuf(int scancode)
         vkeyval = '.';
         accept = 1;
         break;
+    }
+
+    /* Printable characters come from SDL_EVENT_TEXT_INPUT, which honours the
+       keyboard layout; drop them here so they are not queued twice and so a
+       layout's own symbols are not overridden by this US mapping. Control keys
+       (ESC, backspace, tab, return) and the 256+scancode navigation codes pass
+       through. */
+    if (accept && vkeyval >= 0x20 && vkeyval <= 0x7E) {
+        accept = 0;
     }
 
     if (accept) {
