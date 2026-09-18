@@ -24,9 +24,13 @@ fail=0
 home=$(mktemp -d)
 trap 'rm -rf "$home"' EXIT
 
+# Pin the config dir under HOME: the emulator prefers XDG_CONFIG_HOME over
+# HOME/.config, so a runner that exports it would write the state outside $h
+# where the save check below could not find it.
 run() { # HOME extra-env...
   local h=$1; shift
-  env HOME="$h" SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy "$@" \
+  env HOME="$h" XDG_CONFIG_HOME="$h/.config" \
+    SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy "$@" \
     timeout -k 2 120 "$BIN" -v 0 -m -ds "$ROM" 2>&1
 }
 hash_of() { grep -o 'hash=[0-9a-f]*' | head -1; }
