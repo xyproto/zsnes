@@ -927,8 +927,8 @@ static void DisplayGUIVideoClick_notmodestab(s4 const eax, s4 const edx)
                 // Bilinear
                 if (GUIBIFIL[cvidmode] != 0) {
                     if (GUIClickArea(eax, edx, 18 + 1, row[FILT_ROW_TOP] + 3, 18 + 6, row[FILT_ROW_TOP] + 8)
-                        && VideoFilterGet() == VFILTER_NTSC) {
-                        VideoFilterSet(VFILTER_NONE);
+                        && !BilinearFilter && VideoFilterGet() != VFILTER_NONE) {
+                        VideoFilterSet(VFILTER_NONE); // one filter at a time
                     }
                     GUIClickCButtonI(eax, edx, 18, row[FILT_ROW_TOP], &BilinearFilter);
                 } else {

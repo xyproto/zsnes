@@ -72,10 +72,13 @@ static void apply(VideoFilter const f)
     default:
         return;
     }
-    /* The smoothing and the software scanlines draw their own picture, so they
-       cannot be combined with one of these. */
+    /* One filter at a time: the smoothing options and the software scanlines
+       draw their own picture, so enabling one of these turns them off. The
+       retro CRT pass (scanline slider, vibrancy, bloom) runs over the result
+       and is left alone. */
     antienab = 0;
     scanlines = 0;
+    BilinearFilter = 0;
 }
 
 void VideoFilterSet(VideoFilter const f)
