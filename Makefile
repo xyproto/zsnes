@@ -410,9 +410,14 @@ endif
 ifneq ($(filter $(ARCH),FREEBSD OPENBSD NETBSD),)
   LDFLAGS += -rdynamic
 ifneq ($(CROSS_BUILD),yes)
-  LOCALBASE ?= $(if $(filter NETBSD,$(ARCH)),/usr/pkg,/usr/local)
+ifeq ($(ARCH),NETBSD)
+  LOCALBASE ?= /usr/pkg
+  LDFLAGS += -Wl,-rpath,$(LOCALBASE)/lib
+else
+  LOCALBASE ?= /usr/local
+endif
   CFLAGS += -isystem $(LOCALBASE)/include
-  LDFLAGS += -L$(LOCALBASE)/lib $(if $(filter NETBSD,$(ARCH)),-Wl,-rpath,$(LOCALBASE)/lib)
+  LDFLAGS += -L$(LOCALBASE)/lib
 endif
 endif
 ifeq ($(ARCH),DARWIN)
