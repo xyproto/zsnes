@@ -43,6 +43,7 @@ void Clear2xSaIBuffer(void) { }
 /* The configuration the filters read. cfg.h declares them; the emulator's
    generated cfg.o defines them, and this links without it. */
 unsigned char antienab;
+unsigned char BilinearFilter;
 unsigned char NTSCFilter;
 unsigned char NTSCBlend;
 unsigned char NTSCRef;

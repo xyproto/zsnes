@@ -16,7 +16,8 @@
 # the host instead of not at all.
 HOST_OS := $(shell uname -s)
 HOST_CPU := $(shell uname -m 2>/dev/null | tr '[:upper:]' '[:lower:]')
-X86_HOST := $(filter x86_64 amd64 i386 i486 i586 i686,$(HOST_CPU))
+BSD_HOST := $(filter FreeBSD OpenBSD NetBSD DragonFly,$(HOST_OS))
+X86_HOST := $(if $(BSD_HOST),,$(filter x86_64 amd64 i386 i486 i586 i686,$(HOST_CPU)))
 ifeq ($(HOST_OS),Darwin)
 CC      := cc
 BITFLAG :=
@@ -26,6 +27,12 @@ GCSECT  := -Wl,-dead_strip
 # side the tests use - INADDR_LOOPBACK in netplay_test.c among it. Same swap
 # the top-level Makefile makes.
 FEATURE  := -D_DARWIN_C_SOURCE
+else ifneq ($(BSD_HOST),)
+CC      := cc
+BITFLAG :=
+NOPIE   := -no-pie
+GCSECT  := -Wl,--gc-sections
+FEATURE  :=
 else ifneq ($(X86_HOST),)
 CC      := gcc
 BITFLAG := -m32
