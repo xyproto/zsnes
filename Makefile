@@ -49,6 +49,7 @@ endif
 CC_TARGET  ?= $(CC)
 WINDRES ?= windres
 CC_TARGET_TRIPLE := $(shell $(CC_TARGET) -dumpmachine 2>/dev/null)
+CC_IS_CLANG := $(if $(shell printf '' | $(CC_TARGET) -dM -E -x c - 2>/dev/null | grep __clang__),yes,)
 WIN_PORT_AVAILABLE := $(if $(wildcard win/c_winintrf.c),yes,)
 
 ifeq ($(ARCH),FREEBSD)
@@ -154,10 +155,18 @@ WARN_FLAGS ?= -Wall -Wextra -Wno-unused-parameter -Werror=unused-variable \
               -Wshift-overflow=2 -Warray-bounds=2 -Wundef \
               -Wstrict-prototypes -Wold-style-definition -Wwrite-strings \
               -Wjump-misses-init -Wformat=2
+GCC_ONLY_WARN_FLAGS := -Wduplicated-cond -Wduplicated-branches -Wlogical-op \
+                       -Wshift-overflow=2 -Warray-bounds=2 -Wjump-misses-init
+ifeq ($(CC_IS_CLANG),yes)
+WARN_FLAGS := $(filter-out $(GCC_ONLY_WARN_FLAGS),$(WARN_FLAGS))
+endif
 # x86 uses absolute addressing; ARM, RISC-V and Darwin require PIC.
-PIC_FLAGS := $(if $(or $(filter arm64 riscv64,$(CPU)),$(filter DARWIN,$(ARCH))),,-no-pie -fno-pic)
-# XSI exposes setreuid/setregid on Linux and the BSDs.
+PIC_FLAGS := $(if $(or $(filter arm64 riscv64,$(CPU)),$(filter DARWIN,$(ARCH))),,-fno-pic)
+# XSI exposes setreuid/setregid on Linux; the BSDs show everything by default.
 FEATURE_FLAGS := -D_XOPEN_SOURCE=700
+ifneq ($(filter $(ARCH),FREEBSD OPENBSD NETBSD),)
+FEATURE_FLAGS :=
+endif
 ifeq ($(ARCH),DARWIN)
 # Preserve Darwin extensions and silence legacy OpenGL deprecations.
 FEATURE_FLAGS := -D_DARWIN_C_SOURCE -DGL_SILENCE_DEPRECATION
@@ -395,14 +404,20 @@ PYTHON     ?= python3
 DESTDIR ?=
 PREFIX ?= /usr
 
-ifneq ($(filter $(ARCH),LINUX FREEBSD OPENBSD NETBSD),)
-  CFLAGS += -rdynamic
-  LDFLAGS += -ldl
+ifeq ($(ARCH),LINUX)
+  LDFLAGS += -rdynamic -ldl
+endif
+ifneq ($(filter $(ARCH),FREEBSD OPENBSD NETBSD),)
+  LDFLAGS += -rdynamic
+ifneq ($(CROSS_BUILD),yes)
+  LOCALBASE ?= $(if $(filter NETBSD,$(ARCH)),/usr/pkg,/usr/local)
+  CFLAGS += -isystem $(LOCALBASE)/include
+  LDFLAGS += -L$(LOCALBASE)/lib $(if $(filter NETBSD,$(ARCH)),-Wl,-rpath,$(LOCALBASE)/lib)
+endif
 endif
 ifeq ($(ARCH),DARWIN)
 ifneq ($(HOST_OS),DARWIN)
-  CFLAGS += -rdynamic
-  LDFLAGS += -ldl
+  LDFLAGS += -rdynamic -ldl
 endif
 endif
 ifeq ($(ARCH)/$(CPU)/$(BITS),LINUX/x86/32)
@@ -477,7 +492,7 @@ ifeq ($(WITH_PIPEWIRE),yes)
   ifeq ($(PIPEWIRE_AVAILABLE),yes)
     PIPEWIRE_CONFIG ?= $(PKG_CONFIG_ENV) $(PKG_CONFIG) libpipewire-0.3
     ifndef CFLAGS_PIPEWIRE
-      CFLAGS_PIPEWIRE := $(shell $(PIPEWIRE_CONFIG) --cflags)
+      CFLAGS_PIPEWIRE := $(patsubst -I%,-isystem %,$(shell $(PIPEWIRE_CONFIG) --cflags))
     endif
     ifndef LDFLAGS_PIPEWIRE
       LDFLAGS_PIPEWIRE := $(shell $(PIPEWIRE_CONFIG) --libs)

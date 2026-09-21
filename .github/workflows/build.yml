@@ -414,3 +414,20 @@ jobs:
         run: ZSNES_SELFTEST=1 ./zsnes -v 0
       - name: Unit tests
         run: make -C test run
+
+  freebsd:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Build and run on FreeBSD
+        uses: vmactions/freebsd-vm@v1
+        with:
+          release: "14.3"
+          usesh: true
+          prepare: |
+            pkg install -y gmake pkgconf python3 sdl3 libpng libao mesa-libs
+          run: |
+            make
+            test -x ./zsnes
+            SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy ZSNES_SELFTEST=1 ./zsnes -v 0
+            make test
