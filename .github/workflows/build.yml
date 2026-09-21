@@ -427,7 +427,7 @@ jobs:
           prepare: |
             pkg install -y gmake pkgconf python3 sdl3 png libao mesa-libs
           run: |
-            make
+            gmake
             test -x ./zsnes
             SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy ZSNES_SELFTEST=1 ./zsnes -v 0
-            make test
+            gmake test
