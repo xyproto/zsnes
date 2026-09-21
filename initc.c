@@ -195,8 +195,8 @@ void swapBlocks(uint32_t* blocks)
 void deintlv1(void)
 {
     uint32_t blocks[MaxInterleaveBanks];
-    int_fast32_t i;
-    int32_t numblocks = NumofBanks / 2;
+    uint_fast32_t i;
+    uint32_t numblocks = NumofBanks / 2;
 
     if (NumofBanks > MaxInterleaveBanks)
         return;

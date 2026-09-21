@@ -1019,15 +1019,13 @@ void GUISetPal(void)
 
 void convertnum(char* dst, u4 val)
 {
-    char buf[10];
-    char* b = buf;
+    u4 n = 1;
+    for (u4 v = val; v >= 10; v /= 10)
+        n++;
+    dst[n] = '\0';
     do
-        *b++ = '0' + val % 10;
+        dst[--n] = (char)('0' + val % 10);
     while ((val /= 10) != 0);
-    do
-        *dst++ = *--b;
-    while (b != buf);
-    *dst = '\0';
 }
 
 void converthex(char* dst, u4 val, u4 n)
