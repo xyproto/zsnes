@@ -138,7 +138,7 @@ int CheckBatteryPercent(void)
 #include <sys/sysctl.h>
 #include <sys/types.h>
 
-int CheckBattery()
+int CheckBattery(void)
 {
     int state;
     size_t state_len = sizeof(state);
@@ -155,7 +155,7 @@ int CheckBattery()
 }
 
 // Note that I have not yet gotten anyone to test if this function has correct info returned
-int CheckBatteryTime()
+int CheckBatteryTime(void)
 {
     int batt_time;
     size_t batt_time_len = sizeof(batt_time);
@@ -167,7 +167,7 @@ int CheckBatteryTime()
     return (-1);
 }
 
-int CheckBatteryPercent()
+int CheckBatteryPercent(void)
 {
     int life = -1;
     size_t life_len = sizeof(life);
@@ -187,7 +187,7 @@ int CheckBatteryPercent()
 #define APM_BATT_ABSENT APM_BATTERY_ABSENT
 #endif
 
-int CheckBattery()
+int CheckBattery(void)
 {
     int fd = open("/dev/apm", O_RDONLY);
     if (fd != -1) {
@@ -204,7 +204,7 @@ int CheckBattery()
     return (-1);
 }
 
-int CheckBatteryTime()
+int CheckBatteryTime(void)
 {
     int fd = open("/dev/apm", O_RDONLY);
     if (fd != -1) {
@@ -218,7 +218,7 @@ int CheckBatteryTime()
     return (-1);
 }
 
-int CheckBatteryPercent()
+int CheckBatteryPercent(void)
 {
     int fd = open("/dev/apm", O_RDONLY);
     if (fd != -1) {
@@ -315,13 +315,13 @@ static void update_battery_info()
     }
 }
 
-int CheckBattery()
+int CheckBattery(void)
 {
     update_battery_info();
     return (HasBattery);
 }
 
-int CheckBatteryTime()
+int CheckBatteryTime(void)
 {
     update_battery_info();
     if (BatteryLifeTime > -1) {
@@ -330,7 +330,7 @@ int CheckBatteryTime()
     return (-1);
 }
 
-int CheckBatteryPercent()
+int CheckBatteryPercent(void)
 {
     update_battery_info();
     return (BatteryLifePercent);
@@ -338,17 +338,17 @@ int CheckBatteryPercent()
 
 #else // Not Linux, FreeBSD/DragonFlyBSD, NetBSD/OpenBSD, macOS
 
-int CheckBattery()
+int CheckBattery(void)
 {
     return (-1);
 }
 
-int CheckBatteryTime()
+int CheckBatteryTime(void)
 {
     return (-1);
 }
 
-int CheckBatteryPercent()
+int CheckBatteryPercent(void)
 {
     return (-1);
 }

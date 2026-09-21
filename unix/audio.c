@@ -219,7 +219,7 @@ static void SoundWriteSamples_ao(uint32_t samples)
     ao_play(audio_device, (char*)stemp, samples * 2);
 }
 
-void SoundWrite_ao()
+void SoundWrite_ao(void)
 {
     uint32_t samples = 0;
 
@@ -372,7 +372,7 @@ static int SoundInit_ao_driver(const char* driver_name)
     return true;
 }
 
-static int SoundInit_ao()
+static int SoundInit_ao(void)
 {
     return (SoundInit_ao_driver(libAoDriver));
 }
@@ -963,7 +963,7 @@ static void PipeWireProcess(void* userdata)
     pw_stream_queue_buffer(pipewire_stream, b);
 }
 
-void SoundWrite_pipewire()
+void SoundWrite_pipewire(void)
 {
     uint32_t samples = 0;
 
@@ -986,12 +986,12 @@ void SoundWrite_pipewire()
     }
 }
 
-static int SoundInit_pipewire()
+static int SoundInit_pipewire(void)
 {
     uint8_t buffer[1024];
     struct pw_properties* props;
     struct spa_pod_builder b = SPA_POD_BUILDER_INIT(buffer, sizeof(buffer));
-    struct spa_pod* params[1];
+    const struct spa_pod* params[1];
     static struct pw_stream_events stream_events = {
         PW_VERSION_STREAM_EVENTS,
         .state_changed = PipeWireStateChanged,
@@ -1129,8 +1129,7 @@ static int SoundInit_pipewire()
         info.rate = 0;
         params[0] = spa_format_audio_raw_build(&b, SPA_PARAM_EnumFormat, &info);
     }
-    rc = pw_stream_connect(pipewire_stream, PW_DIRECTION_OUTPUT, PW_ID_ANY, flags,
-        (const struct spa_pod**)params, 1);
+    rc = pw_stream_connect(pipewire_stream, PW_DIRECTION_OUTPUT, PW_ID_ANY, flags, params, 1);
     pw_thread_loop_unlock(pipewire_loop);
     if (rc < 0) {
         SoundEnabled = 0;

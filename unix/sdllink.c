@@ -293,12 +293,12 @@ static uint8_t IsActivated = 1;
 
 static int T60HZEnabled = 0;
 u1 T36HZEnabled = 0;
-static float end;
-static float end2;
-static float start;
-static float start2;
-static float update_ticks_pc;
-static float update_ticks_pc2;
+static double end;
+static double end2;
+static double start;
+static double start2;
+static double update_ticks_pc;
+static double update_ticks_pc2;
 
 // Used for semaphore code
 static SDL_Semaphore* sem_frames = NULL;
@@ -1289,7 +1289,7 @@ int startgame(void)
     if (!ranonce) {
         ranonce = true;
 
-        timespec_get(&sem_start, TIME_UTC);
+        clock_gettime(CLOCK_MONOTONIC, &sem_start);
 
         // Start semaphore code so ZSNES multitasks nicely :)
         sem_sleep_rdy();
@@ -1343,7 +1343,7 @@ int startgame(void)
     return TRUE;
 }
 
-static float sem_GetTicks(void);
+static double sem_GetTicks(void);
 
 void Start60HZ(void)
 {
@@ -1735,6 +1735,9 @@ void CheckTimers(void)
     if (T60HZEnabled) {
         end = sem_GetTicks();
 
+        if ((end - start) >= 1000.0) {
+            start = end;
+        }
         while ((end - start) >= update_ticks_pc) {
             Game60hzcall();
             SDL_SignalSemaphore(sem_frames);
@@ -1754,8 +1757,8 @@ void CheckTimers(void)
 
 void sem_sleep(void)
 {
-    end = update_ticks_pc - (sem_GetTicks() - start) - .2f;
-    if (end > 0.f) {
+    end = update_ticks_pc - (sem_GetTicks() - start) - .2;
+    if (end > 0.) {
         SDL_WaitSemaphoreTimeout(sem_frames, (Sint32)end);
     }
 }
@@ -2239,15 +2242,13 @@ void SetMouseY(int Y)
     MouseY = Y;
 }
 
-static float sem_GetTicks(void)
+static double sem_GetTicks(void)
 {
     struct timespec now;
-    float ticks;
 
-    timespec_get(&now, TIME_UTC);
-    ticks = ((float)(now.tv_sec - sem_start.tv_sec)) * 1000.f
-        + ((float)(now.tv_nsec - sem_start.tv_nsec)) * 1e-6f;
-    return (ticks);
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    return ((double)(now.tv_sec - sem_start.tv_sec)) * 1000.
+        + ((double)(now.tv_nsec - sem_start.tv_nsec)) * 1e-6;
 }
 
 void LaunchBrowser(char const* browser, char const* url)

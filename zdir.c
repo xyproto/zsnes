@@ -116,8 +116,6 @@ struct dirent_info* readdir_info(z_DIR* dir)
 #else
 #include <unistd.h>
 
-#include "unix/lib.h"
-
 struct dirent_info* readdir_info(z_DIR* dir)
 {
     static struct dirent_info info;

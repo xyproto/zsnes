@@ -960,9 +960,9 @@ static size_t zst_body_size(enum zst_origin o);
    these keep sizeof() working for the body-length arithmetic below. V143
    described its DSP1 section by a memory layout no compiler guarantees, which
    is why V144 exists; both older formats still load. */
-static const char zst_header_old[] = SL_HDR_V06;
-static const char zst_header_143[] = SL_HDR_V143;
-static const char zst_header_cur[] = SL_HDR_V144;
+#define zst_header_old SL_HDR_V06
+#define zst_header_143 SL_HDR_V143
+#define zst_header_cur SL_HDR_V144
 
 void calculate_state_sizes(void)
 {
