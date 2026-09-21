@@ -24,7 +24,7 @@ extern u1 mosaicon, mosaicsz, mosenng[256], mosszng[256];
 extern u1 BGMS1[], mode7st[256], t16x161[256], t16x162[256];
 extern u1 t16x163[256], t16x164[256];
 extern u1 BG116x16t, BG216x16t, BG316x16t, BG416x16t;
-extern u2 scrnon, cgram[] ASM_ALIGNED(1);
+extern u2 scrnon, cgram[256] ASM_ALIGNED(1);
 extern u2 bg1scrolx[4], bg1scroly[4], bg1objptr[4], bg1ptr[4];
 extern u4 bg1ptrx[4] ASM_ALIGNED(4), bg1ptry[4] ASM_ALIGNED(4);
 extern u2 BG1SXl[256], BG2SXl[256], BG3SXl[256], BG4SXl[256];
