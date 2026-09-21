@@ -1,4 +1,4 @@
-.PHONY: clean debug distclean fmt info test unused portcheck
+.PHONY: clean debug distclean fmt info test unused portcheck asmalign
 
 # ARCH: LINUX, FREEBSD, OPENBSD, NETBSD, DARWIN, WIN
 SUPPORTED_ARCHES := LINUX FREEBSD OPENBSD NETBSD DARWIN WIN
@@ -977,6 +977,7 @@ help:
 	@echo '  win_x86_64     64-bit Windows'
 	@echo '  portcheck      compile every source for x86-64, aarch64, and riscv64'
 	@echo '  test           run the unit tests'
+	@echo '  asmalign       check what C may assume about inline-asm data alignment'
 	@echo '  server         the Go netplay relay in server/'
 	@echo '  server-test    vet and test it'
 	@echo
@@ -1053,6 +1054,9 @@ fmt:
 
 test: $(BINARY)
 	$(MAKE) -C test run
+
+asmalign: $(BINARY)
+	$(PYTHON) tools/asmalign.py $(BUILD_DIR)
 
 # The netplay relay (server/, Go): pairs two clients by room code and forwards
 # their input frames. Not part of `all`.

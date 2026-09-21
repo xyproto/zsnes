@@ -2459,7 +2459,7 @@ extern uint32_t SPC700read, SPC700write;
 extern int32_t FIRTAPVal0[8];
 extern uint32_t xa, xdb, xx, xy;
 extern uint16_t VIRQLoc;
-extern uint8_t spcextraram[64], SPCROM[64];
+extern uint8_t spcextraram[64], SPCROM[64] ASM_ALIGNED(4);
 uint8_t SPCSkipXtraROM, disableeffects = 0;
 // This is saved in states
 uint8_t cycpl = 0; // cycles per scanline

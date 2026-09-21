@@ -8,7 +8,7 @@
 /* clang-format off */
 
 __asm__(
-    ASM_SEC_BSS(".bss")
+    ASM_SEC_BSS_ALIGNED(".bss")
     ASM_GSYM(transpbuf)         /* 576 + 16 + 288*2 */
     ".skip 1168\n"
     ASM_GSYM(prevrgbcol)

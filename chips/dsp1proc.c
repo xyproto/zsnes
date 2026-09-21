@@ -4,6 +4,7 @@
 
 #include "../asmdata.h"
 #include "../cpu/memseam.h"
+#include "../types.h"
 #include "regabi.h"
 
 extern memfn regaccessbankr8, regaccessbankw8, regaccessbankr16, regaccessbankw16;
@@ -174,7 +175,7 @@ void DSPOp0A(void);
    definitions cannot express that under -fdata-sections, hence the inline-asm
    block; the order below is dsp1proc.asm's. */
 __asm__(
-    ASM_SEC_BSS(".bss")
+    ASM_SEC_BSS_ALIGNED(".bss")
     /* Names the whole saved run, so the copy in zstate.c is in bounds of a
        real object rather than of DSP1COp's single byte - same idiom as
        opcd_run and SA1Status_run. */
@@ -187,8 +188,8 @@ __asm__(
 /* 5 command bytes, a pad byte, two 32-byte arrays, DSPDet, DSPFuncUsed. */
 extern uint8_t DSP1_run[6 + 32 + 32 + 1 + 256];
 extern uint8_t DSP1COp, DSP1RLeft, DSP1WLeft, DSP1CPtrW, DSP1CPtrR, DSPDet;
-extern uint8_t DSPFuncUsed[256];
-extern uint16_t DSP1VARS[16], DSP1RET[16];
+extern uint8_t DSPFuncUsed[256] ASM_ALIGNED(1);
+extern uint16_t DSP1VARS[16] ASM_ALIGNED(2), DSP1RET[16] ASM_ALIGNED(2);
 uint32_t dsp1ptr;
 uint8_t dsp1array[4096];
 

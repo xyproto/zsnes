@@ -72,7 +72,7 @@ extern zreg cpalval[256];
 extern zreg CPalPtrng;
 extern u4 startlinet, endlinet, reslbyl;
 extern u1 moscountdown;
-extern u4 mosstart[4];
+extern u4 mosstart[4] ASM_ALIGNED(1);
 extern u2 resolutn;
 extern u1* vidbuffer;
 

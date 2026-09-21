@@ -16,7 +16,7 @@
 #include "copyvwin.h"
 #include "ntsc.h"
 
-extern uint8_t SpecialLine[256], hirestiledat[256], GUIOn, newengen;
+extern uint8_t SpecialLine[256], hirestiledat[256] ASM_ALIGNED(1), GUIOn, newengen;
 
 /* Source image */
 /* width = 288 pixels, height = 223 pixels or more */

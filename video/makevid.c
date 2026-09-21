@@ -19,12 +19,12 @@
     ".skip (" #n ")*" ASM_STR(__SIZEOF_POINTER__) "\n"
 
 __asm__(
-    ASM_SEC_BSS(".bss")
+    ASM_SEC_BSS_ALIGNED(".bss")
     ".balign 4\n"
     BSSB(bgcoloradder, 1)
     BSSB(res512switch, 1)
     ASM_SEC_END
-    ASM_SEC_DATA(".data")
+    ASM_SEC_DATA_ALIGNED(".data")
     ".balign 4\n"
     ASM_GSYM(MosaicYAdder)
     ".short 0,0,0,1,0,2,1,0,0,4,2,2,3,1,0,7\n"

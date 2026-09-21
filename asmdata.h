@@ -49,6 +49,9 @@
 #define ASM_LSYMREF(sym) #sym
 #endif
 
+#define ASM_SEC_DATA_ALIGNED(name) ASM_SEC_DATA(name) ".balign 32\n"
+#define ASM_SEC_BSS_ALIGNED(name) ASM_SEC_BSS(name) ".balign 32\n"
+
 /* Spell a macro's value into the asm text, for sizes that follow the target
    (pointer width, mainly) rather than being literals. */
 #define ASM_STR_(x) #x

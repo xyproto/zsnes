@@ -9,7 +9,7 @@
 /* clang-format off */
 
 __asm__(
-    ASM_SEC_BSS(".bss")
+    ASM_SEC_BSS_ALIGNED(".bss")
     ".balign 4\n"
     ASM_GSYM(mtemp)
     ".skip 4\n"
@@ -125,7 +125,7 @@ __asm__(
    .data rather than .bss because the assembly declared it `dw 0`. */
 
 __asm__(
-    ASM_SEC_DATA(".data")
+    ASM_SEC_DATA_ALIGNED(".data")
     ASM_GSYM(m7starty)
     ".short 0\n"
     ASM_SEC_END);

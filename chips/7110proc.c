@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "../asmdata.h"
+#include "../types.h"
 
 extern void SPC7110initC(void); /* 7110emu.c */
 void SPC7110RTCReset(void); /* Stage 4: seed the Epson RTC from the host clock */
@@ -15,7 +16,7 @@ void SPC7110RTCReset(void); /* Stage 4: seed the Epson RTC from the host clock *
    layout; it sits just after, and the block keeps the dword the file format
    expects. */
 __asm__(
-    ASM_SEC_DATA(".data.spc7110state")
+    ASM_SEC_DATA_ALIGNED(".data.spc7110state")
     /* The section holds dwords at fixed offsets, so it has to start on a
        dword boundary: aarch64 scales the 12-bit immediate of a 32-bit
        load by four, and the linker cannot encode an odd address at all.
@@ -217,7 +218,7 @@ void c_SPC482Ew(uint8_t al)
    the chip-select/mode/seek/read/write serial protocol. Seeded from the host
    clock and advanced by the real seconds between accesses. SPC7110RTC[0..15]
    mirrors the 16 registers for save states and the direct reads. */
-extern uint8_t SPC7110RTC[16];
+extern uint8_t SPC7110RTC[16] ASM_ALIGNED(4);
 extern uint32_t GetTime(void), GetDate(void); /* ztimec.c */
 
 /* RTC register fields (bsnes EpsonRTC layout) */

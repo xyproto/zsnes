@@ -30,7 +30,7 @@ extern uint8_t curblank;
 extern uint8_t GUIRESIZE[];
 extern Uint8 GUIOn2;
 extern uint32_t NGNoTransp; /* a dword where it is defined (video/c_newgfx16data.c) */
-extern uint8_t SpecialLine[256], hirestiledat[256], GUIOn, newengen, cfield;
+extern uint8_t SpecialLine[256], hirestiledat[256] ASM_ALIGNED(1), GUIOn, newengen, cfield;
 
 char CheckOGLMode(void);
 

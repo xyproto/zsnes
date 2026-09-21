@@ -18,7 +18,7 @@
     ".skip (" #n ")*" ASM_STR(__SIZEOF_POINTER__) "\n"
 
 __asm__(
-    ASM_SEC_BSS(".bss")
+    ASM_SEC_BSS_ALIGNED(".bss")
     ".balign 4\n"
     BSSD(bgcmsung, 1)
     BSSD(modeused, 2)

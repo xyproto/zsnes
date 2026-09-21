@@ -10,11 +10,11 @@ _Alignas(32) u1 DSPMem[256];
 
 /* Other state the register handlers touch that no header declares yet: scalars
  * still defined in cpu/dspproc.c and cpu/regs.inc. */
-extern u1 VolumeTableb[256];
+extern u1 VolumeTableb[256] ASM_ALIGNED(4);
 extern u1 KeyOnStA, KeyOnStB;
 extern u1 Voice0Noise, Voice1Noise, Voice2Noise, Voice3Noise;
 extern u1 Voice4Noise, Voice5Noise, Voice6Noise, Voice7Noise;
-extern u4 NoiseSpeeds[32], NoiseInc;
+extern u4 NoiseSpeeds[32] ASM_ALIGNED(1), NoiseInc;
 
 #include "dsp_regs.h"
 

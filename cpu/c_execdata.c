@@ -16,7 +16,7 @@
 /* clang-format off */
 
 __asm__(
-    ASM_SEC_DATA(".data")
+    ASM_SEC_DATA_ALIGNED(".data")
     ASM_GSYM(tempedx)
     ".long 0\n"
     ASM_GSYM(tempesi)
@@ -162,6 +162,6 @@ __asm__(
 /* clang-format on */
 
 __asm__(
-    ASM_SEC_BSS(".bss")
+    ASM_SEC_BSS_ALIGNED(".bss")
     PTRSYM(initaddrl)
     ASM_SEC_END);

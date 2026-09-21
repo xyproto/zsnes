@@ -19,7 +19,7 @@ extern void c_cachesingle4bng(u4 ecx);
 extern u1* vram;
 
 extern u2 bg1objptr[4], bg1ptr[4], bg1scrolx[4], bg1scroly[4];
-extern u4 bg1ptrx[4], bg1ptry[4];
+extern u4 bg1ptrx[4] ASM_ALIGNED(4), bg1ptry[4] ASM_ALIGNED(4);
 extern u2 bg3ptr, bg3scrolx, bg3scroly;
 extern u2 curypos;
 extern u1 bg1ptr_b[10], bg1scrolx_b[10];

@@ -76,7 +76,7 @@ _Static_assert(sizeof(DMAInfo) == 16, "DMAInfo size mismatch");
 
 /* The reservation is 129 raw bytes (cpu/c_regsdata.c) and the $43xx
    handlers index it as such; DMAInfo is a view over the first 128. */
-extern u1 dmadata[129]; // DMA data (written from ports 43xx)
+extern u1 dmadata[129] ASM_ALIGNED(1); // DMA data (written from ports 43xx)
 
 typedef struct HDMAInfo {
     eop* dst_reg[4]; // Destination registers
@@ -87,7 +87,7 @@ typedef struct HDMAInfo {
    for hdmadata in cpu/c_regsdata.c is sized from the same expression. */
 _Static_assert(sizeof(HDMAInfo) == 4 * sizeof(eop*) + 3, "HDMAInfo size mismatch");
 
-extern HDMAInfo hdmadata[8];
+extern HDMAInfo hdmadata[8] ASM_ALIGNED(1);
 
 extern u1 INTEnab; // enables NMI(7)/VIRQ(5)/HIRQ(4)/JOY(0)
 extern u1 MultiTap;
@@ -146,13 +146,13 @@ extern u2 bg1ptrc[4]; // pointer to background1/2/3/4
 extern u2 bg1ptrd[4]; // pointer to background1/2/3/4
 extern u2 bg1scrolx[4]; // background 1/2/3/4 x position
 extern u2 bg1scroly[4]; // background 1/2/3/4 y position
-extern u2 cgram[256]; // CGRAM
+extern u2 cgram[256] ASM_ALIGNED(1); // CGRAM
 extern u2 latchx; // latched x value
 extern u2 latchy; // latched y value
 extern u2 resolutn; // screen resolution
 extern u2 scrnon; // main & sub screen on
-extern u4 bg1ptrx[4]; // pointer to background1/2/3/4
-extern u4 bg1ptry[4]; // pointer to background1/2/3/4
+extern u4 bg1ptrx[4] ASM_ALIGNED(4); // pointer to background1/2/3/4
+extern u4 bg1ptry[4] ASM_ALIGNED(4); // pointer to background1/2/3/4
 extern u1 winl1; // window 1/2 left/right position
 
 #endif

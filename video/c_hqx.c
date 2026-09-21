@@ -89,8 +89,8 @@ static void hq2x_double_16b(void)
  */
 
 extern u1* RGBtoYUVPtr; // ui.c, filled by the video backend
-extern u4 HalfTrans[4]; // low bit of each channel cleared, per pixel format
-extern u1 hirestiledat[256], SpecialLine[256];
+extern u4 HalfTrans[4] ASM_ALIGNED(8); // low bit of each channel cleared, per pixel format
+extern u1 hirestiledat[256] ASM_ALIGNED(1), SpecialLine[256];
 extern u1 GUIOn;
 extern uint8_t GUIOn2;
 

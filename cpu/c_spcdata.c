@@ -30,8 +30,7 @@
 /* clang-format off */
 
 __asm__(
-    ASM_SEC_DATA(".data")
-    ".balign 32\n"
+    ASM_SEC_DATA_ALIGNED(".data")
     /* PHspcsave (0x10140) bytes from here are saved as one run, which reaches
        past SPCRAM into the blocks below it; see zstate.c. spc700.h declares
        SPCRAM as 65536, so copying through that name instead lets
@@ -103,7 +102,7 @@ __asm__(
 /* clang-format on */
 
 __asm__(
-    ASM_SEC_BSS(".bss")
+    ASM_SEC_BSS_ALIGNED(".bss")
     PTRSYM(spcPCRam)
     PTRSYM(spcRamDP)
     ASM_SEC_END);

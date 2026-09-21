@@ -274,7 +274,7 @@ extern u1 bgmode, intrlng[], mosenng[], mosszng[], osm2dis, xtravbuf[];
 extern u1* pesimpng;
 extern u1* vram;
 extern u2 BG3SXl[], BG3SYl[], BGPT3[], BGPT3X[];
-extern u4 cfieldad, mosstart[4], yposng, flipyposng, yposngom, flipyposngom;
+extern u4 cfieldad, mosstart[4] ASM_ALIGNED(1), yposng, flipyposng, yposngom, flipyposngom;
 extern u1* ofsmcptr;
 extern u4 ofsmcptr2, ofsmady, ofsmadx, ofsmtptr, ofsmtptrs;
 extern u4 ofsmmptr, ofsmcyps, ofshvaladd, ofsmval, ofsmvalh, bgtxadd2;

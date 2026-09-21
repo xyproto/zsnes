@@ -135,6 +135,7 @@ jobs:
           make linux_x86_64
           test -x ./zsnes
           ZSNES_SELFTEST=1 ./zsnes -v 0
+          make asmalign
       - name: Portability gate
         run: |
           command -v aarch64-linux-gnu-gcc >/dev/null 2>&1 \

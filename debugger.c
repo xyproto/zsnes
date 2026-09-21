@@ -22,7 +22,7 @@
 
 // All of these should be in headers, people!
 
-extern uint8_t oamram[1024], DSPMem[256];
+extern uint8_t oamram[1024] ASM_ALIGNED(1), DSPMem[256];
 
 extern uint8_t CurrentCPU;
 

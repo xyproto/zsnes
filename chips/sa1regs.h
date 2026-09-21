@@ -102,7 +102,7 @@ extern void RTC2800(void);
 extern void RTC2801w(void);
 extern void dbstop(void);
 
-extern u1 IRAM[2049]; // 2 kbytes of iram
+extern u1 IRAM[2049] ASM_ALIGNED(4); // 2 kbytes of iram
 extern u1 SA1ARC[4];
 extern u1 SA1Control; // Don't execute if b5 or 6 are set
 extern u1 SA1DMAInfo;

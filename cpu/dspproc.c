@@ -27,11 +27,11 @@
 #define BSSB_L(sym, n) ASM_LSYM(sym) ".skip (" #n ")\n"
 
 __asm__(
-    ASM_SEC_DATA(".data")
+    ASM_SEC_DATA_ALIGNED(".data")
     ASM_GSYM(SBHDMA)
     ".byte 0\n"
     ASM_SEC_END
-    ASM_SEC_BSS(".bss")
+    ASM_SEC_BSS_ALIGNED(".bss")
     ".balign 4\n"
     BSSW(DSPInterP, 1024)
     ASM_SEC_END

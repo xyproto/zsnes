@@ -9,7 +9,7 @@
 /* clang-format off */
 
 __asm__(
-    ASM_SEC_DATA(".data")
+    ASM_SEC_DATA_ALIGNED(".data")
     ASM_GSYM(prevbrightdc)
     ".byte 16\n"
     ASM_GSYM(mosstart)          /* was file-local */

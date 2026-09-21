@@ -165,13 +165,13 @@ static void copy_snes_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*,
     }
 }
 
-extern uint8_t oamram[1024], pcgram[512]; /* inside the PPU register file */
+extern uint8_t oamram[1024] ASM_ALIGNED(1), pcgram[512] ASM_ALIGNED(1); /* inside the PPU register file */
 extern uint8_t spcram_run[0x10140]; /* SPCRAM and the blocks saved with it */
 static uint32_t nmiprevaddr_slot[2];
 
 /* Held the two SA-1 DMA host pointers; both are set before every transfer. */
 static uint8_t sa1dmaptr_slot[8];
-extern s2* Voice0BufPtr[8];
+extern s2* Voice0BufPtr[8] ASM_ALIGNED(8);
 extern uint32_t Voice0BufPtrSt[8];
 
 static void copy_spc_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, size_t))
@@ -205,7 +205,7 @@ static void copy_spc_data(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, 
 /* Each of these names the whole run the savestate copies, so the copy stays
    inside one object; the layout is pinned by the ASM_GSYM block that
    defines it. */
-extern uint8_t spc700read_run[40], opcd_run[24], oamaddr_run[56];
+extern uint8_t spc700read_run[40] ASM_ALIGNED(1), opcd_run[24] ASM_ALIGNED(1), oamaddr_run[56];
 extern uint8_t DSP1_run[6 + 32 + 32 + 1 + 256];
 extern uint8_t DSP1COp, DSP1RLeft, DSP1WLeft, DSP1CPtrW, DSP1CPtrR;
 void DSP1_copy_state(uint8_t** buffer, void (*copy_func)(uint8_t**, void*, size_t));
@@ -831,7 +831,7 @@ void PrepareSaveState(void)
 }
 
 extern uintptr_t SA1Stat;
-extern uint8_t IRAM[2049], *SA1Ptr, *SA1RegPCS, *CurBWPtr, *SA1BWPtr, *SNSBWPtr;
+extern uint8_t IRAM[2049] ASM_ALIGNED(4), *SA1Ptr, *SA1RegPCS, *CurBWPtr, *SA1BWPtr, *SNSBWPtr;
 extern uint8_t *SNSPtr, *SNSRegPCS;
 /* The save-state block carries a dword for each SA-1 pointer; the live ones are
    pointer-wide and live outside it (chips/sa1regs.c). */

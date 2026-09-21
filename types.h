@@ -42,6 +42,8 @@ _Static_assert(_Generic((u1)0, unsigned char: 1, default: 0),
 
 typedef void eop(void);
 
+#define ASM_ALIGNED(n) __attribute__((aligned(n)))
+
 /* One slot of the 65816 core's register block: the x86 register file the
    assembly kept, in pushad order. Four slots hold 32-bit registers whose upper
    bits matter; the rest hold host pointers - esi the program counter, ebp the

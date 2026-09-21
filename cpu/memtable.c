@@ -91,11 +91,11 @@ void unpackfunct(void)
 #define bit_test(byte, checkbit) (byte & (1 << checkbit)) ? 1 : 0
 
 extern uint8_t GlobalVL, GlobalVR, EchoVL, EchoVR;
-extern uint32_t EchoRate[16], MaxEcho;
-extern uint32_t EchoFB, NoiseSpeeds[32], dspPAdj, NoiseInc;
+extern uint32_t EchoRate[16] ASM_ALIGNED(4), MaxEcho;
+extern uint32_t EchoFB, NoiseSpeeds[32] ASM_ALIGNED(1), dspPAdj, NoiseInc;
 extern int FIRTAPVal0[8];
 extern uint16_t VolumeConvTable[32768];
-extern uint8_t VolumeTableb[256], MusicVol, Voice0Status[8];
+extern uint8_t VolumeTableb[256] ASM_ALIGNED(4), MusicVol, Voice0Status[8];
 extern uint8_t Voice0Noise;
 extern uint8_t Voice1Noise, Voice2Noise, Voice3Noise, Voice4Noise;
 extern uint8_t Voice5Noise, Voice6Noise, Voice7Noise, bgtilesz;

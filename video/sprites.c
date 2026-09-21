@@ -9,7 +9,7 @@
 #include "makevid.h" /* SpriteInfo */
 
 // ---- shared globals (defined in endmem.asm / the test harness) ----
-extern u1 oamram[1024];
+extern u1 oamram[1024] ASM_ALIGNED(1);
 extern u1 objsize1, objsize2, objhipr, interlval;
 extern u4 objptr, objptrn;
 extern u2 objadds1, objadds2;

@@ -22,7 +22,7 @@
 #define tablead tableadc
 
 
-extern u1 dmadata[129];
+extern u1 dmadata[129] ASM_ALIGNED(1);
 extern u4 xa, xx, xy, xs, xd, xdb, xpb;
 extern u2 xpc;
 extern u1 xe;

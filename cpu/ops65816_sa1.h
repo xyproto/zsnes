@@ -10,7 +10,7 @@
 #ifndef NO_DEBUGGER
 extern u1 debstop4;
 #endif
-extern u1 IRAM[2049];
+extern u1 IRAM[2049] ASM_ALIGNED(4);
 
 /*
  * What the SA-1 does differently: it is always in native mode, it has no IRQ

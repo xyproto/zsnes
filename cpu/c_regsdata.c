@@ -8,7 +8,7 @@
 /* clang-format off */
 
 __asm__(
-    ASM_SEC_DATA(".data")
+    ASM_SEC_DATA_ALIGNED(".data")
     ASM_GSYM(invreg)
     ".short 0\n"
     ASM_GSYM(sndrot)
@@ -440,7 +440,7 @@ __asm__(
     ".long 0\n"
     ASM_SEC_END
 
-    ASM_SEC_BSS(".bss")
+    ASM_SEC_BSS_ALIGNED(".bss")
     ASM_GSYM(MultiTap)
     ".skip 1\n"
     ASM_SEC_END

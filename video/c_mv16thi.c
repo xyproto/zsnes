@@ -23,7 +23,7 @@ zreg THTail; /* 1 = tail-jump to domosaic16b */
 
 extern u1 tileleft16b, scaddtype, coadder16, res512switch;
 extern u2 scrnon, curypos;
-extern u1 hirestiledat[256];
+extern u1 hirestiledat[256] ASM_ALIGNED(1);
 extern u1 transpbuf[];
 extern u1 xtravbuf[576];
 extern u1 *vcache2b, *vcache4b, *vcache8b;
