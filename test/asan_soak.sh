@@ -34,13 +34,20 @@ done <<< "$want"
 run() { # ROM MODE
   local rom=$1 mode=$2 H log rc
   H=$(mktemp -d); mkdir -p "$H/.config/zsnes"; log=$H/log
-  # Config generation renders nothing; dummy video avoids flaky xvfb.
-  timeout -k 5 20 env HOME="$H" SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy "$BIN" -v 0 >/dev/null 2>&1
+  # The config is only written on a clean exit (atexit -> GUISaveVars), so
+  # generate it by running the ROM for two frames and letting ZSNES_STATE_HASH
+  # exit cleanly. A bare "-v 0" never exits under timeout (no ROM to stop, no
+  # SIGTERM handler), so it left no config and every mode below was skipped.
+  # XDG_CONFIG_HOME is pinned so a runner that exports it cannot divert the
+  # config away from where this checks, seds and the soak run then reads it.
+  timeout -k 5 20 env HOME="$H" XDG_CONFIG_HOME="$H/.config" \
+    SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy ASAN_OPTIONS=detect_leaks=0 \
+    ZSNES_STATE_HASH=2 "$BIN" -m -ds "$rom" >/dev/null 2>&1
   if [ ! -f "$H/.config/zsnes/zsnesl.cfg" ]; then
     printf '%-40s mode %-2s SKIP (no config generated)\n' "$(basename "$rom")" "$mode"; rm -rf "$H"; return
   fi
   sed -i -E "s/^cvidmode=.*/cvidmode=$mode/; s/^hqFilter=.*/hqFilter=1/; s/^hqFilterlevel=.*/hqFilterlevel=4/; s/^sl_intensity=.*/sl_intensity=50/; s/^sl_vibrancy=.*/sl_vibrancy=45/; s/^BloomLevel=.*/BloomLevel=25/; s/^Mode7HiRes16b=.*/Mode7HiRes16b=1/" "$H/.config/zsnes/zsnesl.cfg"
-  timeout -k 5 "$SECS" xvfb-run -a -s "-screen 0 1280x960x24" env HOME="$H" SDL_AUDIODRIVER=dummy \
+  timeout -k 5 "$SECS" xvfb-run -a -s "-screen 0 1280x960x24" env HOME="$H" XDG_CONFIG_HOME="$H/.config" SDL_AUDIODRIVER=dummy \
     ASAN_OPTIONS=detect_leaks=0 ZSNES_FILTER_SOAK=20 "$BIN" -m -ds "$rom" >"$log" 2>&1
   if grep -q 'ERROR: AddressSanitizer\|runtime error:' "$log"; then
     printf '%-40s mode %-2s FAIL\n' "$(basename "$rom")" "$mode"; grep -m1 -A6 'ERROR: AddressSanitizer' "$log"; fail=1

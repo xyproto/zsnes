@@ -38,8 +38,13 @@ for ((i = 1; i <= N; i++)); do
     zip) src=$([ $((i % 2)) = 0 ] && echo "$work/seed.zip" || echo "$work/stored.zip")
          python3 "$here/mutate.py" "$src" "$H/rom/game.zip" "$i"; romuse="$H/rom/game.zip";;
     cfg) if [ ! -f "$work/seed.cfg" ]; then
-           # Writing the config needs no display; dummy video avoids flaky xvfb.
-           timeout -k 5 20 env HOME="$H" SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy "$BIN" -v 0 >/dev/null 2>&1
+           # The config is written only on a clean exit; run the ROM two frames
+           # and let ZSNES_STATE_HASH exit cleanly so atexit writes it (a bare
+           # "-v 0" never exits under timeout). XDG_CONFIG_HOME is pinned so a
+           # runner that exports it cannot divert the config.
+           timeout -k 5 20 env HOME="$H" XDG_CONFIG_HOME="$H/.config" \
+             SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy ASAN_OPTIONS=detect_leaks=0 \
+             ZSNES_STATE_HASH=2 "$BIN" -m -ds "$ROM" >/dev/null 2>&1
            if ! cp "$H/.config/zsnes/zsnesl.cfg" "$work/seed.cfg" 2>/dev/null; then
              echo "cfg: could not generate a seed zsnesl.cfg; skipping cfg fuzz"
              exit 0
