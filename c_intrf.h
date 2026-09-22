@@ -146,4 +146,8 @@ extern u4 const NumInputDevices;
 // GUI Description codes for each corresponding key pressed value
 extern char const ScanCodeListing[];
 
+/* Catch SIGINT/SIGTERM and exit cleanly, so Ctrl-C (or a `timeout` that ends a
+   headless run) still runs the atexit cleanup that saves the config. */
+void InstallQuitSignalHandlers(void);
+
 #endif

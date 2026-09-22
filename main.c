@@ -934,6 +934,10 @@ int main(int const argc, char** const argv)
 #endif
 
     if (init_paths(*argv)) {
+#ifdef __UNIXSDL__
+        /* Before any SDL video init, so the SDL_HINT it sets is read in time. */
+        InstallQuitSignalHandlers();
+#endif
 #ifdef __LIBAO__
         ao_initialize();
         atexit(ao_shutdown);

@@ -3,6 +3,7 @@
 #include "lib.h"
 #include "sw_draw.h"
 
+#include <signal.h>
 #include <stdbool.h>
 #include <time.h>
 
@@ -395,10 +396,40 @@ void SetHiresOpt(unsigned int ResX, unsigned int ResY)
 static unsigned int sdl_keysym_to_pc_scancode(int sym);
 static void ProcessKeyBuf(int scancode);
 
+/* Set by SIGINT/SIGTERM; Main_Proc sees it next frame and leaves through
+   zexit(), so the atexit cleanup runs and the config is saved. Exiting from the
+   handler itself would run free()/fwrite() there, which is not async-signal
+   safe, so it only raises this flag. */
+static volatile sig_atomic_t quit_signalled = 0;
+
+static void on_quit_signal(int sig)
+{
+    (void)sig;
+    quit_signalled = 1;
+}
+
+void InstallQuitSignalHandlers(void)
+{
+    struct sigaction sa;
+
+    /* Own these instead of SDL, whose handler posts SDL_EVENT_QUIT only once
+       its video subsystem is up - not during a headless config write. */
+    SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");
+    memset(&sa, 0, sizeof sa);
+    sa.sa_handler = on_quit_signal;
+    sigemptyset(&sa.sa_mask);
+    sigaction(SIGINT, &sa, NULL);
+    sigaction(SIGTERM, &sa, NULL);
+}
+
 int Main_Proc(void)
 {
     SDL_Event event;
     unsigned int key;
+
+    if (quit_signalled) {
+        zexit();
+    }
 
 #ifdef QT_DEBUGGER
     if (debugger_quit) {
