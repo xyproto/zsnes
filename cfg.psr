@@ -494,6 +494,12 @@ AutoIncSaveSlot db 0
 AutoIncSaveSlotBlock db 0
 
 @
+@ Bind game keys by physical position instead of the character the layout
+@ produces (0 = layout keys, the old behaviour; 1 = physical keys). Defaults to
+@ 0 so existing key configs are unchanged; a fresh install is stamped 1.
+InputPhysicalKeys db 0
+
+@
 @ Auto State Save/Load (0 = NO, 1 = Yes) - uses a special state
 @ Enable this if you wish a special state to be saved on a visit to the GUI.
 @ This state will automatically be loaded when you load a game.

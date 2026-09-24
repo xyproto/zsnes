@@ -15,7 +15,9 @@ static void GUIoutputchar(u1* dst, u1 const glyph, u1 const colour)
 {
     // XXX better variable names
     // Font Setup (Menus)
-    u1 const* edi = newfont == 0 ? GUIFontData[glyph] : GUIFontData1[glyph];
+    /* The loadable font holds 141 glyphs; the Nordic letters live past that in
+       the built-in font, so fall back to it for them. */
+    u1 const* edi = (newfont == 0 || glyph >= 141) ? GUIFontData[glyph] : GUIFontData1[glyph];
     u4 cl = 5;
     do {
         u4 ah = *edi;
@@ -31,11 +33,11 @@ static void GUIoutputchar(u1* dst, u1 const glyph, u1 const colour)
 
 char const* GUIOutputString(u1* dst, char const* text, u1 const colour)
 {
-    for (;; dst += 6, ++text) {
-        u1 const c = *text;
-        if (c == '\0')
+    for (;; dst += 6) {
+        u4 const cp = utf8_next(&text);
+        if (cp == 0)
             return text;
-        GUIoutputchar(dst, ASCII2Font[c], colour);
+        GUIoutputchar(dst, glyph_for_codepoint(cp), colour);
     }
 }
 
@@ -126,7 +128,9 @@ void GUIDrawShadow2(u1* buf, u4 const w, u4 h)
 static void GUIoutputcharwin(u1* dst, u1 const glyph, u1 const colour)
 {
     // Font Setup (Windows)
-    u1 const* edi = newfont == 0 ? GUIFontData[glyph] : GUIFontData1[glyph];
+    /* The loadable font holds 141 glyphs; the Nordic letters live past that in
+       the built-in font, so fall back to it for them. */
+    u1 const* edi = (newfont == 0 || glyph >= 141) ? GUIFontData[glyph] : GUIFontData1[glyph];
     u4 y = 5;
     do {
         if (vidbuffer <= dst && dst <= vidbuffer + 224 * 288 - 5) {

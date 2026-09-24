@@ -44,6 +44,11 @@ extern u1 mouseydir;
 extern u1 prevbright; // previous brightness
 extern u1 ssautosw;
 extern u1 const ASCII2Font[256];
+
+/* UTF-8 text helpers (video/procvid.c): decode a codepoint and pick its glyph,
+   with a fallback box for codepoints the pixel font does not carry. */
+u4 utf8_next(char const** p);
+u1 glyph_for_codepoint(u4 cp);
 extern u2 mousebuttons;
 extern u2 mousexloc;
 extern u2 mousexpos;

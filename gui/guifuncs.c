@@ -479,11 +479,18 @@ void GUIRestoreVars(void)
 {
     int i;
     FILE* cfg_fp;
+    /* A first run has no config file yet. Stamp new installs to physical key
+       positions; an existing config keeps its stored (layout-key) bindings. */
+    bool const fresh_install = access_dir(ZCfgPath, ZCfgFile, F_OK) != 0;
 
     psr_cfg_run(read_cfg_vars, ZCfgPath, ZCfgFile);
     psr_cfg_run(read_md_vars, ZCfgPath, "zmovie.cfg");
     psr_cfg_run(read_input_vars, ZCfgPath, "zinput.cfg");
     ClampKeyBindings();
+
+    if (fresh_install) {
+        InputPhysicalKeys = 1;
+    }
 
     CheckValueBounds(&pl1contrl, 0, 1, 1, UB);
     CheckValueBounds(&pl2contrl, 0, 1, 0, UB);

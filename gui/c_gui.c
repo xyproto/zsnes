@@ -196,7 +196,17 @@ u1 const GUIFontData[][5] = {
     { 0xF8, 0x88, 0x08, 0x10, 0x60 }, // shw wa 0x89
     { 0x80, 0x48, 0x08, 0x10, 0xE0 }, // shw n 0x8A
     { 0xA0, 0xA0, 0x00, 0x00, 0x00 }, // shw voiced 0x8B
-    { 0x40, 0xA0, 0x40, 0x00, 0x00 } // shw halfvoiced 0x8C
+    { 0x40, 0xA0, 0x40, 0x00, 0x00 }, // shw halfvoiced 0x8C
+    /* Nordic letters, so a filename or name with them shows and edits. The font
+       is caps-only, so the lower-case forms share these. Indices past the 141
+       the loadable font (GUIFontData1) holds, so GUIoutputchar falls back to
+       this built-in font for them (see gui/guitools.c). */
+    { 0x70, 0x98, 0xA8, 0xC8, 0x70 }, // O-slash (0xD8/0xF8) 0x8D
+    { 0x78, 0xA0, 0xF0, 0xA0, 0xB8 }, // AE     (0xC6/0xE6) 0x8E
+    { 0x20, 0x70, 0x88, 0xF8, 0x88 }, // A-ring  (0xC5/0xE5) 0x8F
+    /* Fallback box for a UTF-8 codepoint the font has no glyph for; see
+       glyph_for_codepoint in video/procvid.c. */
+    { 0xF8, 0x88, 0x88, 0x88, 0xF8 } // unsupported 0x90
 };
 
 u1 GUIFontData1[][5];
@@ -206,7 +216,9 @@ u1 GUIFontData1[][5];
 static u4 GUIwinposxo[] = { 0, 6, 65, 33, 42, 5, 34, 6, 64, 8, 5, 33, 56, 64, 56, 5, 3, 28, 48, 6, 28, 53 };
 static u4 GUIwinposyo[] = { 0, 20, 70, 20, 20, 20, 20, 20, 30, 30, 20, 20, 60, 30, 60, 20, 20, 60, 60, 20, 30, 20 };
 u4 GUIwinsizex[] = { 0, 244, 126, 205, 180, 245, 188, 244, 128, 240, 245, 220, 144, 128, 144, 246, 250, 200, 160, 244, 200, 150 };
-u4 GUIwinsizey[] = { 0, 190, 68, 192, 190, 190, 188, 191, 40, 170, 150, 190, 42, 40, 42, 190, 190, 120, 100, 190, 168, 180 };
+/* Window 3 (input) is a row taller than stock (192 -> 204) to fit the extra
+   "PHYSICAL KEYS" checkbox at y=190; see gui/c_guiwindp.c. */
+u4 GUIwinsizey[] = { 0, 190, 68, 204, 190, 190, 188, 191, 40, 170, 150, 190, 42, 40, 42, 190, 190, 120, 100, 190, 168, 180 };
 u1 GUIwinptr;
 
 static u4 SantaNextT = 36 * 15;

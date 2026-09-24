@@ -882,6 +882,9 @@ void DisplayGUIInput(void)
     GUIDisplayCheckboxu(3, 105, 160, &SNESRumble, "P1 Rumble", 3);
     GUIDisplayCheckboxu(3, 105, 170, &Turbo30hz, "TURBO AT 30HZ", 0);
     GUIDisplayCheckboxu(3, 5, 180, &pl12s34, "USE PL3/4 AS PL1/2", 0);
+#ifdef __UNIXSDL__
+    GUIDisplayCheckboxu(3, 5, 190, &InputPhysicalKeys, "PHYSICAL KEYS", 0);
+#endif
 
     DrawGUIButton(3, 123, 34, 153, 45, "SET", 14, 0, 0); // Buttons
     DrawGUIButton(3, 123, 50, 177, 61, "SET KEYS", 40, 0, 0);

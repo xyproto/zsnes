@@ -638,12 +638,34 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 accept = true;
                 break;
             }
+            /* Printable characters come from WM_CHAR, which honours the
+               keyboard layout; the mapping above assumes US-QWERTY, so drop its
+               printable results and keep only the control keys (Esc, backspace,
+               tab, enter) and the 256+ navigation codes. */
+            if (accept && vkeyval >= 0x20 && vkeyval <= 0x7E) {
+                accept = false;
+            }
             if (accept) {
                 KeyBuffer[CurKeyPos] = vkeyval;
                 CurKeyPos++;
                 if (CurKeyPos == 16) {
                     CurKeyPos = 0;
                 }
+            }
+        }
+        break;
+    case WM_CHAR:
+        /* The character the layout actually produced, so a non-US layout types
+           the right symbol. Keep printable ASCII and Latin-1 (Norwegian
+           oe/ae/aa included). wParam is the ANSI code-page byte, which on a
+           Western install is CP1252 - the same values the GUI font's Latin-1
+           glyphs use. */
+        if (((wParam >= 0x20 && wParam <= 0x7E) || (wParam >= 0xA0 && wParam <= 0xFF))
+            && !((CurKeyPos + 1 == CurKeyReadPos) || ((CurKeyPos + 1 == 16) && (CurKeyReadPos == 0)))) {
+            KeyBuffer[CurKeyPos] = (int)wParam;
+            CurKeyPos++;
+            if (CurKeyPos == 16) {
+                CurKeyPos = 0;
             }
         }
         break;

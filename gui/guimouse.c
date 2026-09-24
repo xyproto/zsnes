@@ -821,6 +821,9 @@ static void DisplayGUIInputClick_skipscrol(s4 const eax, s4 const edx)
     GUIClickCButton(eax, edx, 5, 170, &AllowUDLR);
     GUIClickCButton(eax, edx, 105, 170, &Turbo30hz);
     GUIClickCButtonM(eax, edx, 5, 180, &pl12s34);
+#ifdef __UNIXSDL__
+    GUIClickCButton(eax, edx, 5, 190, &InputPhysicalKeys);
+#endif
 }
 
 static void DisplayGUIInputClick(s4 const eax, s4 const edx)
