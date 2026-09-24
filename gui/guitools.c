@@ -153,11 +153,11 @@ static void GUIoutputcharwin(u1* dst, u1 const glyph, u1 const colour)
 static void GUIOutputStringwin(s4 x, u1* const dst, char const* text, u1 const colour)
 {
     for (;; x += 6) {
-        u1 const c = *text++;
-        if (c == '\0')
+        u4 const cp = utf8_next(&text);
+        if (cp == 0)
             break;
         if (-8 <= x && x <= 255)
-            GUIoutputcharwin(dst + x, ASCII2Font[c], colour);
+            GUIoutputcharwin(dst + x, glyph_for_codepoint(cp), colour);
     }
 }
 
@@ -175,13 +175,19 @@ static int hexdigit(char const c)
 
 static void GUIOutputStringwinl(s4 x, u1* const dst, char const* text, u1 const colour)
 {
-    u4 n = cloadmaxlen;
-    do {
-        u1 c = *text++;
+    /* First undo any %HH escapes into a byte buffer, then render up to
+       cloadmaxlen codepoints of it. A multi-byte UTF-8 codepoint may span
+       several escapes, so the un-escaping and the decoding cannot share a pass.
+       cloadmaxlen is at most 39, so the first row of glyphs is well inside buf. */
+    char buf[256];
+    u4 bi = 0;
+
+    while (bi < sizeof buf - 1) {
+        u1 c = (u1)*text++;
+
         if (c == '%') {
-            /* %HH is one escaped byte. The low digit is only looked at once
-               the high one checks out, so a '%' ending the string cannot read
-               past it. Anything else leaves the '%' as itself. */
+            /* The low digit is only read once the high one checks out, so a '%'
+               ending the string cannot read past it. */
             int const hi = hexdigit(text[0]);
             int const lo = hi < 0 ? -1 : hexdigit(text[1]);
 
@@ -192,10 +198,23 @@ static void GUIOutputStringwinl(s4 x, u1* const dst, char const* text, u1 const 
         }
         if (c == '\0')
             break;
-        if (-8 <= x && x <= 255)
-            GUIoutputcharwin(dst + x, ASCII2Font[c], colour);
-        x += 6;
-    } while (--n != 0);
+        buf[bi++] = (char)c;
+    }
+    buf[bi] = '\0';
+
+    {
+        char const* p = buf;
+        u4 n = cloadmaxlen;
+
+        for (; n != 0; n--, x += 6) {
+            u4 const cp = utf8_next(&p);
+
+            if (cp == 0)
+                break;
+            if (-8 <= x && x <= 255)
+                GUIoutputcharwin(dst + x, glyph_for_codepoint(cp), colour);
+        }
+    }
 }
 
 void GUIOuttextwin2(u4 const win_id, u4 x, u4 y, char const* const text, u1 const colour)

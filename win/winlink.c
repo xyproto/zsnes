@@ -654,21 +654,33 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
-    case WM_CHAR:
-        /* The character the layout actually produced, so a non-US layout types
-           the right symbol. Keep printable ASCII and Latin-1 (Norwegian
-           oe/ae/aa included). wParam is the ANSI code-page byte, which on a
-           Western install is CP1252 - the same values the GUI font's Latin-1
-           glyphs use. */
-        if (((wParam >= 0x20 && wParam <= 0x7E) || (wParam >= 0xA0 && wParam <= 0xFF))
-            && !((CurKeyPos + 1 == CurKeyReadPos) || ((CurKeyPos + 1 == 16) && (CurKeyReadPos == 0)))) {
-            KeyBuffer[CurKeyPos] = (int)wParam;
+    case WM_CHAR: {
+        /* The character the layout produced, so a non-US layout types the right
+           symbol. The menus store text as UTF-8: ASCII goes in as one byte and a
+           Latin-1 byte (wParam is the ANSI code page, CP1252 on a Western
+           install) becomes its two UTF-8 bytes. */
+        unsigned char utf8[2];
+        int n = 0;
+        int i;
+
+        if (wParam >= 0x20 && wParam <= 0x7E) {
+            utf8[n++] = (unsigned char)wParam;
+        } else if (wParam >= 0xA0 && wParam <= 0xFF) {
+            utf8[n++] = (unsigned char)(0xC0 | (wParam >> 6));
+            utf8[n++] = (unsigned char)(0x80 | (wParam & 0x3F));
+        }
+        for (i = 0; i < n; i++) {
+            if ((CurKeyPos + 1 == CurKeyReadPos) || ((CurKeyPos + 1 == 16) && (CurKeyReadPos == 0))) {
+                break;
+            }
+            KeyBuffer[CurKeyPos] = utf8[i];
             CurKeyPos++;
             if (CurKeyPos == 16) {
                 CurKeyPos = 0;
             }
         }
         break;
+    }
     case WM_KEYUP:
         // sent when user releases a key
         if (wParam == 16) {

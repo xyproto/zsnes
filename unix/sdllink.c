@@ -522,26 +522,23 @@ int Main_Proc(void)
             break;
 
         case SDL_EVENT_TEXT_INPUT: {
-            /* The characters the layout actually produced, as UTF-8. Decode it
-               and feed the printable ASCII and Latin-1 range (Norwegian
-               oe/ae/aa included) into the buffer the menus read; the Latin-1
-               codepoints are the byte values the GUI font maps. Codepoints past
-               Latin-1 have no glyph and are dropped. Control and navigation keys
-               still come through ProcessKeyBuf. */
+            /* The characters the layout produced, already UTF-8. The menus store
+               and render text as UTF-8, so push the bytes straight through -
+               ASCII as one byte, an accented letter as its two. TEXT_INPUT only
+               carries printable text, so there is nothing to filter; control and
+               navigation keys still come through ProcessKeyBuf. */
             char const* t = event.text.text;
-            size_t len = t ? SDL_strlen(t) : 0;
 
-            while (len) {
-                Uint32 const cp = SDL_StepUTF8(&t, &len);
+            for (; t && *t; t++) {
                 unsigned int const next = (CurKeyPos + 1) % 16;
 
-                if (((cp >= 0x20 && cp <= 0x7E) || (cp >= 0xA0 && cp <= 0xFF))
-                    && next != CurKeyReadPos) {
-                    KeyBuffer[CurKeyPos] = (int)cp;
-                    CurKeyPos++;
-                    if (CurKeyPos == 16) {
-                        CurKeyPos = 0;
-                    }
+                if (next == CurKeyReadPos) {
+                    break;
+                }
+                KeyBuffer[CurKeyPos] = (unsigned char)*t;
+                CurKeyPos++;
+                if (CurKeyPos == 16) {
+                    CurKeyPos = 0;
                 }
             }
             break;
