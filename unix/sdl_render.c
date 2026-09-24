@@ -99,6 +99,11 @@ static void sr_apply_settings(void)
     sr_settings_applied = 1;
 }
 
+int sr_vsync_on(void)
+{
+    return sr_renderer && sr_vsync == 1;
+}
+
 /* The second field sits 75036 pixels on; the line geometry is in copyvwin.h. */
 #define SR_FIELD2 (75036 * 2)
 

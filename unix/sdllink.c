@@ -8,6 +8,7 @@
 #include <time.h>
 
 #include "../c_intrf.h"
+#include "../c_vcache.h"
 #include "../cpu/execute.h"
 #include "../gui/c_gui.h"
 #include "../gui/gui.h"
@@ -219,6 +220,7 @@ int sr_start(int width, int height, int req_depth, int FullScreen);
 void sr_end(void);
 void sr_clearwin(void);
 void sr_drawwin(void);
+int sr_vsync_on(void);
 
 static int UseLegacyGL(void)
 {
@@ -2006,6 +2008,38 @@ void CheckTimers(void)
             start += update_ticks_pc;
         }
     }
+}
+
+/* Pace on the blocking present when the display runs at the emulated rate;
+   the timer drifts against vblank and drops or repeats frames. */
+static int VsyncPaced(void)
+{
+    SDL_DisplayMode const* m;
+    double rate;
+
+    if (!T60HZEnabled || SloMo || UseLegacyGL() || !sr_vsync_on()) {
+        return 0;
+    }
+    m = SDL_GetCurrentDisplayMode(SDL_GetDisplayForWindow(sdl_window));
+    if (!m || m->refresh_rate <= 0.f) {
+        return 0;
+    }
+    rate = 1000.0 / update_ticks_pc;
+    return m->refresh_rate > rate * 0.99 && m->refresh_rate < rate * 1.01;
+}
+
+/* Early (vsync not blocking) or late (behind) frames stay on the timer. */
+int VsyncPacedFrame(void)
+{
+    double const now = sem_GetTicks();
+    double const elapsed = now - start;
+
+    if (!VsyncPaced() || elapsed < update_ticks_pc * 0.75 || elapsed > update_ticks_pc * 1.5) {
+        return 0;
+    }
+    Game60hzcall();
+    start = now;
+    return 1;
 }
 
 void sem_sleep(void)

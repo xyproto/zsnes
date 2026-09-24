@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 void sem_sleep(void);
+int VsyncPacedFrame(void);
 
 /* Monitors, as SDL lists them this run. MonitorID names one by a short ID
    taken from its name, which survives the renumbering SDL does each run. */

@@ -382,6 +382,8 @@ void StartSound(void)
 
 void Check60hz(void)
 {
+    if (VsyncPacedFrame())
+        return;
     CheckTimers();
     sem_sleep();
 }
