@@ -57,6 +57,8 @@ static atomic_uint pw_samples_waiting = 0;
 static atomic_int pw_stream_streaming = 0; /* set by state_changed */
 static atomic_int pw_format_ready = 0; /* set by param_changed */
 static atomic_int pw_drained = 0; /* set by drained event */
+/* Play silence until the ring is back at target after running dry. */
+static atomic_int pw_priming = 1;
 
 static uint8_t* pw_ring = NULL;
 static uint32_t pw_ring_size = 0; /* guarded by pw_ring_mutex */
@@ -87,6 +89,7 @@ static uint32_t pw_max_ring_ms = 2000;
    every one of those hiccups a permanent 125ms of extra lag that the rate
    control then took half a minute to not quite drain. */
 static uint32_t pw_target_ms = 40;
+#define PW_TARGET_MAX_MS 120U
 static atomic_uint pw_target_frames = 0;
 #endif
 
@@ -924,11 +927,28 @@ static void PipeWireProcess(void* userdata)
         && !GUIOn2 && !GUIOn && !EMUPause && !RawDumpInProgress && !T36HZEnabled && soundon;
     atomic_fetch_add_explicit(&pw_stat_cycles, 1, memory_order_relaxed);
 
-    if (!render_audio) {
+    if (render_audio && pw_priming) {
+        uint32_t fill;
+        pthread_mutex_lock(&pw_ring_mutex);
+        fill = pw_ring_fill_locked();
+        pthread_mutex_unlock(&pw_ring_mutex);
+        if (fill >= pw_target_frames * stride) {
+            pw_priming = 0;
+        }
+    }
+
+    if (!render_audio || pw_priming) {
         memset(out, 0, bytes);
     } else {
         got = pw_ring_read(out, bytes);
         if (got < bytes) {
+            /* The producer is burstier than the target covers: hold more. */
+            if (pw_observed_quantum_frames
+                && pw_target_frames < (pw_rate_hz * PW_TARGET_MAX_MS) / 1000U
+                && pw_target_frames + pw_observed_quantum_frames <= (pw_ring_size / stride) / 3U) {
+                pw_target_frames += pw_observed_quantum_frames;
+            }
+            pw_priming = 1;
             atomic_fetch_add_explicit(&pw_stat_underruns, 1, memory_order_relaxed);
             atomic_fetch_add_explicit(&pw_stat_silent_pads, bytes - got, memory_order_relaxed);
             /* On persistent underrun, grow the ring (capped by max_frames). */
@@ -971,19 +991,19 @@ void SoundWrite_pipewire(void)
         return;
     }
 
-    if (!pthread_mutex_trylock(&pw_audio_mutex)) {
-        if (!pw_samples_waiting && sample_control.lo) {
-            samples = (unsigned int)((sample_control.balance / sample_control.lo) << StereoSound);
-            sample_control.balance %= sample_control.lo;
-            sample_control.balance += sample_control.hi;
+    /* Accumulate: a frame the producer has not picked up yet must not be lost. */
+    pthread_mutex_lock(&pw_audio_mutex);
+    if (sample_control.lo) {
+        samples = (unsigned int)((sample_control.balance / sample_control.lo) << StereoSound);
+        sample_control.balance %= sample_control.lo;
+        sample_control.balance += sample_control.hi;
 
-            pw_samples_waiting = samples;
-            pthread_cond_broadcast(&pw_audio_wait);
+        if (pw_samples_waiting < ((RATE / 5U) << StereoSound)) {
+            pw_samples_waiting += samples;
         }
-        pthread_mutex_unlock(&pw_audio_mutex);
-    } else {
         pthread_cond_broadcast(&pw_audio_wait);
     }
+    pthread_mutex_unlock(&pw_audio_mutex);
 }
 
 static int SoundInit_pipewire(void)
@@ -1035,6 +1055,7 @@ static int SoundInit_pipewire(void)
     pw_format_ready = 0;
     pw_stream_streaming = 0;
     pw_drained = 0;
+    pw_priming = 1;
     pw_out_rate = 0;
     pw_rate_hz = 0;
     pw_observed_quantum_frames = 0;
