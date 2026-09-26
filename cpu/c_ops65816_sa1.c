@@ -9,15 +9,15 @@
 #include <stdint.h>
 
 #include "../endmem.h"
-#include "../types.h"
-#include "c_memory.h"
-#include "memtable.h"
-#include "memory.h"
-#include "execute.h"
 #include "../gblvars.h"
 #include "../initc.h"
+#include "../types.h"
 #include "../ui.h"
 #include "c_irq.h"
+#include "c_memory.h"
+#include "execute.h"
+#include "memory.h"
+#include "memtable.h"
 
 #define OP(n) c_SA1##n
 

@@ -8,7 +8,7 @@
 #endif
 #include "../gblvars.h"
 
-//Start of execute.asm goodness
+// Start of execute.asm goodness
 extern uint16_t t1cc; // not sure about this one
 extern uint32_t nextframe; // framecounter for frameskipping
 

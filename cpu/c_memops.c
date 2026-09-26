@@ -7,9 +7,9 @@
 #include "../asmdata.h"
 
 #include "../chips/regabi.h" /* REGABI_ENTRY/REGABI_SYM for the trampolines */
-#include "../types.h"
 #include "../chips/sa1proc.h" /* SA1Status */
 #include "../chips/sa1regs.h" /* IRAM, SA1RAMArea, SA1_in_cc1_dma */
+#include "../types.h"
 #include "../ui.h" /* regptra, regptwa, sfxramdata, romdata */
 
 extern u1 wramdataa[65536], ram7fa[65536]; /* ui.c */
@@ -60,16 +60,15 @@ uintptr_t MemSeamDI;
 
 #include "mem_ops.h"
 
-
 /* The memtable and Bank0dat entry points.  cpu/memory.asm used to own these
    names and thunk into the c_ bodies above; the tables now hold the bodies
    themselves, under the seam convention in cpu/memseam.h.  The c_ prefix
    stays on the bodies because test/difftest_memops.c drives them alongside
    the pre-port assembly oracle, which still exports the public names. */
-#define MEM_BANK(name)  \
-    void name(void)     \
-    {                   \
-        c_##name();     \
+#define MEM_BANK(name) \
+    void name(void)    \
+    {                  \
+        c_##name();    \
     }
 
 /* Register & memory access banks (00-3F / 80-BF) */

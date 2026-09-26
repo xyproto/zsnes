@@ -6,9 +6,9 @@
  * saved frame was taken with. Hence the register file is handed over as a
  * block and written in place, the same seam SA1Swap uses.
  */
+#include "c_rewind.h"
 #include "../types.h"
 #include "c_memory.h" /* UpdateDPage */
-#include "c_rewind.h"
 #include "execute.h" /* pressed */
 
 extern u1 SPCRAM[];

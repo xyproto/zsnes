@@ -80,36 +80,36 @@ static inline void mem_bank_write16(memfn* const fn, uint32_t const addr, uint16
    REGABI_BANK_* trampolines in chips/regabi.h, which are still needed for the
    I/O register tables that cpu/table.asm indexes but no longer for anything
    the memtable holds. */
-#define MEMBANK_READ8(name)               \
-    uint8_t c_##name(uint32_t);           \
-    void name(void)                       \
-    {                                     \
-        mem_set_al(c_##name(MemSeamC));   \
-    }                                     \
+#define MEMBANK_READ8(name)             \
+    uint8_t c_##name(uint32_t);         \
+    void name(void)                     \
+    {                                   \
+        mem_set_al(c_##name(MemSeamC)); \
+    }                                   \
     uint8_t c_##name(uint32_t)
 
-#define MEMBANK_READ16(name)              \
-    uint16_t c_##name(uint32_t);          \
-    void name(void)                       \
-    {                                     \
-        mem_set_ax(c_##name(MemSeamC));   \
-    }                                     \
+#define MEMBANK_READ16(name)            \
+    uint16_t c_##name(uint32_t);        \
+    void name(void)                     \
+    {                                   \
+        mem_set_ax(c_##name(MemSeamC)); \
+    }                                   \
     uint16_t c_##name(uint32_t)
 
-#define MEMBANK_WRITE8(name)                          \
-    void c_##name(uint32_t, uint8_t);                 \
-    void name(void)                                   \
-    {                                                 \
-        c_##name(MemSeamC, (uint8_t)MemSeamA);        \
-    }                                                 \
+#define MEMBANK_WRITE8(name)                   \
+    void c_##name(uint32_t, uint8_t);          \
+    void name(void)                            \
+    {                                          \
+        c_##name(MemSeamC, (uint8_t)MemSeamA); \
+    }                                          \
     void c_##name(uint32_t, uint8_t)
 
-#define MEMBANK_WRITE16(name)                         \
-    void c_##name(uint32_t, uint16_t);                \
-    void name(void)                                   \
-    {                                                 \
-        c_##name(MemSeamC, (uint16_t)MemSeamA);       \
-    }                                                 \
+#define MEMBANK_WRITE16(name)                   \
+    void c_##name(uint32_t, uint16_t);          \
+    void name(void)                             \
+    {                                           \
+        c_##name(MemSeamC, (uint16_t)MemSeamA); \
+    }                                           \
     void c_##name(uint32_t, uint16_t)
 
 #endif

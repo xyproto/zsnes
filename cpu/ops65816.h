@@ -87,35 +87,35 @@ static inline void reload_table(zreg* const r)
  * Transfers. Every one is `mov a<w>,[src]` / `mov [dst],a<w>` / flags, so the
  * pair of macros below is the whole family; only TCS, TXS and XBA differ.
  */
-#define TRANSFER8(name, src, dst)          \
-    void name(zreg* const r)                 \
-    {                                      \
-        AL(r, GET8(src));                  \
-        SET8(dst, GET8(r[R_EAX]));         \
-        setnz8(GET8(r[R_EAX]));            \
+#define TRANSFER8(name, src, dst)  \
+    void name(zreg* const r)       \
+    {                              \
+        AL(r, GET8(src));          \
+        SET8(dst, GET8(r[R_EAX])); \
+        setnz8(GET8(r[R_EAX]));    \
     }
-#define TRANSFER16(name, src, dst)         \
-    void name(zreg* const r)                 \
-    {                                      \
-        AX(r, GET16(src));                 \
-        SET16(dst, GET16(r[R_EAX]));       \
-        setnz16(r, GET16(r[R_EAX]));       \
+#define TRANSFER16(name, src, dst)   \
+    void name(zreg* const r)         \
+    {                                \
+        AX(r, GET16(src));           \
+        SET16(dst, GET16(r[R_EAX])); \
+        setnz16(r, GET16(r[R_EAX])); \
     }
 
 /* Increments and decrements of X and Y work in place, then reload al/ax. */
-#define INCDEC8(name, reg, op)             \
-    void name(zreg* const r)                 \
-    {                                      \
-        SET8(reg, GET8(reg) op 1);         \
-        AL(r, GET8(reg));                  \
-        setnz8(GET8(r[R_EAX]));            \
+#define INCDEC8(name, reg, op)     \
+    void name(zreg* const r)       \
+    {                              \
+        SET8(reg, GET8(reg) op 1); \
+        AL(r, GET8(reg));          \
+        setnz8(GET8(r[R_EAX]));    \
     }
-#define INCDEC16(name, reg, op)            \
-    void name(zreg* const r)                 \
-    {                                      \
-        SET16(reg, GET16(reg) op 1);       \
-        AX(r, GET16(reg));                 \
-        setnz16(r, GET16(r[R_EAX]));       \
+#define INCDEC16(name, reg, op)      \
+    void name(zreg* const r)         \
+    {                                \
+        SET16(reg, GET16(reg) op 1); \
+        AX(r, GET16(reg));           \
+        setnz16(r, GET16(r[R_EAX])); \
     }
 
 /*
@@ -124,17 +124,17 @@ static inline void reload_table(zreg* const r)
  * Conditions read the split flags (flags65816.h), tested the way round the
  * assembly tests them.
  */
-#define BRANCH(name, taken)                                \
-    void name(zreg* const r)                                 \
-    {                                                      \
-        if (taken) {                                       \
-            s4 const rel = *(s1 const*)(uintptr_t)r[R_ESI]; \
-            r[R_EAX] = (u4)rel;                            \
-            /* Sign-extend to the slot width: a backward branch relies on the \
+#define BRANCH(name, taken)                                                       \
+    void name(zreg* const r)                                                      \
+    {                                                                             \
+        if (taken) {                                                              \
+            s4 const rel = *(s1 const*)(uintptr_t)r[R_ESI];                       \
+            r[R_EAX] = (u4)rel;                                                   \
+            /* Sign-extend to the slot width: a backward branch relies on the     \
                add wrapping, which a (u4) cast only does when zreg is 32 bits. */ \
-            r[R_ESI] += (zreg)rel;                         \
-        }                                                  \
-        r[R_ESI]++;                                        \
+            r[R_ESI] += (zreg)rel;                                                \
+        }                                                                         \
+        r[R_ESI]++;                                                               \
     }
 
 BRANCH(OP(COp80), 1) /* BRA r */
@@ -255,21 +255,21 @@ void OP(COpEB)(zreg* const r) /* XBA i */
 
 /* INC A and DEC A go through the accumulator "addressing mode", which is just
    a load and a store of A at the current width. */
-#define INCDECA8(name, op)                 \
-    void name(zreg* const r)                 \
-    {                                      \
-        AL(r, GET8(xa));                   \
-        AL(r, GET8(r[R_EAX]) op 1);        \
-        setnz8(GET8(r[R_EAX]));            \
-        SET8(xa, GET8(r[R_EAX]));          \
+#define INCDECA8(name, op)          \
+    void name(zreg* const r)        \
+    {                               \
+        AL(r, GET8(xa));            \
+        AL(r, GET8(r[R_EAX]) op 1); \
+        setnz8(GET8(r[R_EAX]));     \
+        SET8(xa, GET8(r[R_EAX]));   \
     }
-#define INCDECA16(name, op)                \
-    void name(zreg* const r)                 \
-    {                                      \
-        AX(r, GET16(xa));                  \
-        AX(r, GET16(r[R_EAX]) op 1);       \
-        setnz16(r, GET16(r[R_EAX]));       \
-        SET16(xa, GET16(r[R_EAX]));        \
+#define INCDECA16(name, op)          \
+    void name(zreg* const r)         \
+    {                                \
+        AX(r, GET16(xa));            \
+        AX(r, GET16(r[R_EAX]) op 1); \
+        setnz16(r, GET16(r[R_EAX])); \
+        SET16(xa, GET16(r[R_EAX]));  \
     }
 
 INCDECA8(OP(COp1Am8), +) /* INC A */
@@ -395,20 +395,20 @@ static inline u1 pop8(zreg* const r)
     return GET8(r[R_EAX]);
 }
 
-#define PUSH8(name, src)                   \
-    void name(zreg* const r)                 \
-    {                                      \
-        SET16(r[R_ECX], GET16(xs));        \
-        push8(r, GET8(src));               \
-        SET16(xs, GET16(r[R_ECX]));        \
+#define PUSH8(name, src)            \
+    void name(zreg* const r)        \
+    {                               \
+        SET16(r[R_ECX], GET16(xs)); \
+        push8(r, GET8(src));        \
+        SET16(xs, GET16(r[R_ECX])); \
     }
-#define PUSH16(name, src)                  \
-    void name(zreg* const r)                 \
-    {                                      \
-        SET16(r[R_ECX], GET16(xs));        \
-        push8(r, (u1)((src) >> 8));        \
-        push8(r, GET8(src));               \
-        SET16(xs, GET16(r[R_ECX]));        \
+#define PUSH16(name, src)           \
+    void name(zreg* const r)        \
+    {                               \
+        SET16(r[R_ECX], GET16(xs)); \
+        push8(r, (u1)((src) >> 8)); \
+        push8(r, GET8(src));        \
+        SET16(xs, GET16(r[R_ECX])); \
     }
 
 #ifndef OPS_OWN_COp48m8
@@ -441,31 +441,31 @@ void OP(COp08)(zreg* const r) /* PHP s */
 }
 #endif
 
-#define POP8(name, dst)                    \
-    void name(zreg* const r)                 \
-    {                                      \
-        u1 v;                              \
-        SET16(r[R_ECX], GET16(xs));        \
-        v = pop8(r);                       \
-        SET16(xs, GET16(r[R_ECX]));        \
-        SET8(dst, v);                      \
-        setnz8(v);                         \
+#define POP8(name, dst)             \
+    void name(zreg* const r)        \
+    {                               \
+        u1 v;                       \
+        SET16(r[R_ECX], GET16(xs)); \
+        v = pop8(r);                \
+        SET16(xs, GET16(r[R_ECX])); \
+        SET8(dst, v);               \
+        setnz8(v);                  \
     }
 
 /* The 16-bit pull reassembles ax from the high byte still in al and the low
    byte re-read out of the register it just wrote, not from a local. */
-#define POP16(name, dst)                                     \
-    void name(zreg* const r)                                   \
-    {                                                        \
-        u1 hi;                                               \
-        SET16(r[R_ECX], GET16(xs));                          \
-        SET8(dst, pop8(r));                                  \
-        SET16(xs, GET16(r[R_ECX]));                          \
-        hi = pop8(r);                                        \
-        (dst) = ((dst) & 0xFFFF00FFu) | (u4)hi << 8;         \
-        SET16(xs, GET16(r[R_ECX]));                          \
-        AX(r, (u2)((u2)hi << 8 | GET8(dst)));                \
-        setnz16(r, GET16(r[R_EAX]));                         \
+#define POP16(name, dst)                             \
+    void name(zreg* const r)                         \
+    {                                                \
+        u1 hi;                                       \
+        SET16(r[R_ECX], GET16(xs));                  \
+        SET8(dst, pop8(r));                          \
+        SET16(xs, GET16(r[R_ECX]));                  \
+        hi = pop8(r);                                \
+        (dst) = ((dst) & 0xFFFF00FFu) | (u4)hi << 8; \
+        SET16(xs, GET16(r[R_ECX]));                  \
+        AX(r, (u2)((u2)hi << 8 | GET8(dst)));        \
+        setnz16(r, GET16(r[R_EAX]));                 \
     }
 
 #ifndef OPS_OWN_COp68m8
@@ -671,14 +671,14 @@ static void a_I_16(zreg* const r)
 }
 
 /* a, a,x, a,y - absolute in the data bank. */
-#define ABS(name, tab, idx)                                     \
-    static void name(zreg* const r)                               \
-    {                                                           \
-        SET16(r[R_ECX], rd16(r[R_ESI]));       \
-        SET8(r[R_EBX], GET8(xdb));                              \
-        r[R_ESI] += 2;                                          \
-        idx;                                                    \
-        tab(r);                                                 \
+#define ABS(name, tab, idx)              \
+    static void name(zreg* const r)      \
+    {                                    \
+        SET16(r[R_ECX], rd16(r[R_ESI])); \
+        SET8(r[R_EBX], GET8(xdb));       \
+        r[R_ESI] += 2;                   \
+        idx;                             \
+        tab(r);                          \
     }
 ABS(a_a_8, TABR8, (void)0)
 ABS(a_a_16, TABR16, (void)0)
@@ -694,14 +694,14 @@ ABS(a_aCy_8w, TABW8, idx_bank(r, GET16(xy)))
 ABS(a_aCy_16w, TABW16, idx_bank(r, GET16(xy)))
 
 /* al, al,x - absolute long, bank from the third operand byte. */
-#define ABSL(name, tab, idx)                                    \
-    static void name(zreg* const r)                               \
-    {                                                           \
-        SET16(r[R_ECX], rd16(r[R_ESI]));       \
-        SET8(r[R_EBX], *(u1 const*)(uintptr_t)(r[R_ESI] + 2));  \
-        r[R_ESI] += 3;                                          \
-        idx;                                                    \
-        tab(r);                                                 \
+#define ABSL(name, tab, idx)                                   \
+    static void name(zreg* const r)                            \
+    {                                                          \
+        SET16(r[R_ECX], rd16(r[R_ESI]));                       \
+        SET8(r[R_EBX], *(u1 const*)(uintptr_t)(r[R_ESI] + 2)); \
+        r[R_ESI] += 3;                                         \
+        idx;                                                   \
+        tab(r);                                                \
     }
 ABSL(a_al_8, TABR8, (void)0)
 ABSL(a_al_16, TABR16, (void)0)
@@ -737,10 +737,10 @@ static void a_d_16w(zreg* const r)
 /* d,x and d,y wrap inside the bank rather than the page, so they go the long
    way round instead of through the direct-page pointer. */
 #define DPIDX(name, idx)                                          \
-    static void name(zreg* const r)                                 \
+    static void name(zreg* const r)                               \
     {                                                             \
         r[R_ECX] = xd;                                            \
-        SET8(r[R_EBX], *(u1 const*)r[R_ESI]);          \
+        SET8(r[R_EBX], *(u1 const*)r[R_ESI]);                     \
         SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(r[R_EBX]))); \
         r[R_ESI]++;                                               \
         SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(idx)));      \
@@ -826,7 +826,7 @@ static void a_dCs_16w(zreg* const r)
  * exactly the families below that take no `save` flag.
  */
 #define DIND(name, tab, idx, save)        \
-    static void name(zreg* const r)         \
+    static void name(zreg* const r)       \
     {                                     \
         u2 const keep = GET16(r[R_EAX]);  \
         (void)keep;                       \
@@ -850,12 +850,12 @@ DIND(a_BdBCy_16w, TABW16, idx_bank(r, GET16(xy)), 1)
 
 /* (d,x) - the direct page is indexed before the pointer is read. */
 #define DINDX(name, tab, save)                                    \
-    static void name(zreg* const r)                                 \
+    static void name(zreg* const r)                               \
     {                                                             \
         u2 const keep = GET16(r[R_EAX]);                          \
         (void)keep;                                               \
         r[R_ECX] = xd;                                            \
-        SET8(r[R_EBX], *(u1 const*)r[R_ESI]);          \
+        SET8(r[R_EBX], *(u1 const*)r[R_ESI]);                     \
         SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(r[R_EBX]))); \
         r[R_ESI]++;                                               \
         SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(xx)));       \
@@ -873,7 +873,7 @@ DINDX(a_BdCxB_16w, TABW16, 1)
 
 /* (d,s),y - stack relative, then indirect, then indexed. */
 #define SIND(name, tab, save)             \
-    static void name(zreg* const r)         \
+    static void name(zreg* const r)       \
     {                                     \
         u2 const keep = GET16(r[R_EAX]);  \
         (void)keep;                       \
@@ -892,19 +892,19 @@ SIND(a_BdCsBCy_8w, TABW8, 1)
 SIND(a_BdCsBCy_16w, TABW16, 1)
 
 /* [d] and [d],y - long indirect, bank from the pointer itself. */
-#define LIND(name, tab, idx, save)                                \
-    static void name(zreg* const r)                                 \
-    {                                                             \
-        u2 const keep = GET16(r[R_EAX]);                          \
-        (void)keep;                                               \
-        SET8(r[R_EBX], *(u1 const*)r[R_ESI]);          \
-        r[R_ECX] = xd;                                            \
-        r[R_ESI]++;                                               \
-        long_indirect(r);                                         \
-        idx;                                                      \
-        if (save)                                                 \
-            SET16(r[R_EAX], keep);                                \
-        tab(r);                                                   \
+#define LIND(name, tab, idx, save)            \
+    static void name(zreg* const r)           \
+    {                                         \
+        u2 const keep = GET16(r[R_EAX]);      \
+        (void)keep;                           \
+        SET8(r[R_EBX], *(u1 const*)r[R_ESI]); \
+        r[R_ECX] = xd;                        \
+        r[R_ESI]++;                           \
+        long_indirect(r);                     \
+        idx;                                  \
+        if (save)                             \
+            SET16(r[R_EAX], keep);            \
+        tab(r);                               \
     }
 LIND(a_LdL_8, TABR8, (void)0, 0)
 LIND(a_LdL_16, TABR16, (void)0, 0)
@@ -912,19 +912,19 @@ LIND(a_LdL_8w, TABW8, (void)0, 1)
 LIND(a_LdL_16w, TABW16, (void)0, 1)
 
 /* The ,y form reads its operand before the direct page, not after. */
-#define LINDY(name, tab, save)                                    \
-    static void name(zreg* const r)                                 \
-    {                                                             \
-        u2 const keep = GET16(r[R_EAX]);                          \
-        (void)keep;                                               \
-        r[R_ECX] = xd;                                            \
-        SET8(r[R_EBX], *(u1 const*)r[R_ESI]);          \
-        r[R_ESI]++;                                               \
-        long_indirect(r);                                         \
-        idx_bank(r, GET16(xy));                                   \
-        if (save)                                                 \
-            SET16(r[R_EAX], keep);                                \
-        tab(r);                                                   \
+#define LINDY(name, tab, save)                \
+    static void name(zreg* const r)           \
+    {                                         \
+        u2 const keep = GET16(r[R_EAX]);      \
+        (void)keep;                           \
+        r[R_ECX] = xd;                        \
+        SET8(r[R_EBX], *(u1 const*)r[R_ESI]); \
+        r[R_ESI]++;                           \
+        long_indirect(r);                     \
+        idx_bank(r, GET16(xy));               \
+        if (save)                             \
+            SET16(r[R_EAX], keep);            \
+        tab(r);                               \
     }
 LINDY(a_LdLCy_8, TABR8, 0)
 LINDY(a_LdLCy_16, TABR16, 0)
@@ -935,20 +935,20 @@ LINDY(a_LdLCy_16w, TABW16, 1)
  * LDA over every addressing mode. The 8-bit form writes flagnz directly rather
  * than going through setnz8 - same result, and it is what the assembly does.
  */
-#define LDA8(name, mode)               \
-    void name(zreg* const r)             \
-    {                                  \
-        mode(r);                       \
-        flagnz = 0;                    \
-        SET8(xa, GET8(r[R_EAX]));      \
+#define LDA8(name, mode)                  \
+    void name(zreg* const r)              \
+    {                                     \
+        mode(r);                          \
+        flagnz = 0;                       \
+        SET8(xa, GET8(r[R_EAX]));         \
         flagnz = (u4)GET8(r[R_EAX]) << 8; \
     }
-#define LDA16(name, mode)              \
-    void name(zreg* const r)             \
-    {                                  \
-        mode(r);                       \
-        SET16(xa, GET16(r[R_EAX]));    \
-        setnz16(r, GET16(r[R_EAX]));   \
+#define LDA16(name, mode)            \
+    void name(zreg* const r)         \
+    {                                \
+        mode(r);                     \
+        SET16(xa, GET16(r[R_EAX]));  \
+        setnz16(r, GET16(r[R_EAX])); \
     }
 
 LDA8(OP(COpA9m8), a_I_8) /* LDA # */
@@ -1094,7 +1094,7 @@ static void o_BIT16(zreg* const r)
 
 /* An opcode is an addressing mode followed by an operation. */
 #define OPMODE(name, mode, op) \
-    void name(zreg* const r)     \
+    void name(zreg* const r)   \
     {                          \
         mode(r);               \
         op(r);                 \
@@ -1278,7 +1278,6 @@ OPMODE(OP(COp1Dm16), a_aCx_16, o_ORA16)
 OPMODE(OP(COp1Fm8), a_alCx_8, o_ORA8)
 OPMODE(OP(COp1Fm16), a_alCx_16, o_ORA16)
 
-
 /*
  * Stores run the other way round: the operation loads al/ax and the addressing
  * mode writes it. The 16-bit forms load all of eax, and 16-bit STZ clears all
@@ -1295,7 +1294,7 @@ static void o_STZ16(zreg* const r) { r[R_EAX] = 0; }
 
 /* A store is an operation followed by an addressing mode, not the reverse. */
 #define STMODE(name, op, mode) \
-    void name(zreg* const r)     \
+    void name(zreg* const r)   \
     {                          \
         op(r);                 \
         mode(r);               \
@@ -1357,7 +1356,6 @@ STMODE(OP(COp9Cm16), o_STZ16, a_a_16w)
 STMODE(OP(COp9Em8), o_STZ8, a_aCx_8w)
 STMODE(OP(COp9Em16), o_STZ16, a_aCx_16w)
 
-
 /*
  * Read-modify-write. The read half leaves esi alone - all `brni` means -
  * because the write half re-reads the operand bytes and advances. Only four
@@ -1370,13 +1368,13 @@ static void a_A_16ni(zreg* const r) { AX(r, GET16(xa)); }
 static void a_A_8w(zreg* const r) { SET8(xa, GET8(r[R_EAX])); }
 static void a_A_16w(zreg* const r) { SET16(xa, GET16(r[R_EAX])); }
 
-#define ABSNI(name, tab, idx)                             \
-    static void name(zreg* const r)                         \
-    {                                                     \
+#define ABSNI(name, tab, idx)            \
+    static void name(zreg* const r)      \
+    {                                    \
         SET16(r[R_ECX], rd16(r[R_ESI])); \
-        SET8(r[R_EBX], GET8(xdb));                        \
-        idx;                                              \
-        tab(r);                                           \
+        SET8(r[R_EBX], GET8(xdb));       \
+        idx;                             \
+        tab(r);                          \
     }
 ABSNI(a_a_8ni, TABR8, (void)0)
 ABSNI(a_a_16ni, TABR16, (void)0)
@@ -1397,10 +1395,10 @@ static void a_d_16ni(zreg* const r)
 }
 
 #define DPIDXNI(name, fn)                                         \
-    static void name(zreg* const r)                                 \
+    static void name(zreg* const r)                               \
     {                                                             \
         r[R_ECX] = xd;                                            \
-        SET8(r[R_EBX], *(u1 const*)r[R_ESI]);          \
+        SET8(r[R_EBX], *(u1 const*)r[R_ESI]);                     \
         SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(r[R_EBX]))); \
         SET16(r[R_ECX], (u2)(GET16(r[R_ECX]) + GET16(xx)));       \
         bank0_call(r, fn);                                        \
@@ -1545,7 +1543,7 @@ static void o_TRB16(zreg* const r)
 /* Read without advancing, operate, then write - the write re-reads the operand
    and moves esi on. */
 #define RMW(name, mode_ni, op, mode_w) \
-    void name(zreg* const r)             \
+    void name(zreg* const r)           \
     {                                  \
         mode_ni(r);                    \
         op(r);                         \
@@ -2257,7 +2255,7 @@ static inline void brk_cop(zreg* const r, u2 const vec, u2 const vec8, u4 const 
     SET8(r[R_EBX], GET8(xpb));
     AX(r, xpc);
     r[R_EAX] = (zreg)(uintptr_t)((r[R_EAX] & 0x8000u) ? snesmmap[BANK(r)]
-                                                    : snesmap2[BANK(r)]);
+                                                      : snesmap2[BANK(r)]);
     r[R_EBX] = r[R_ESI] - r[R_EAX];
     xpc = GET16(r[R_EBX]);
 
@@ -2265,11 +2263,11 @@ static inline void brk_cop(zreg* const r, u2 const vec, u2 const vec8, u4 const 
     r[R_EBX] = 0;
     SET16(r[R_EBX], GET16(xs));
     sp = GET16(r[R_EBX]);
-#define PUSHRAM(v)                                    \
-    do {                                              \
-        SET8(r[R_ECX], (v));                          \
-        ram[sp] = GET8(r[R_ECX]);                     \
-        sp = (u2)(((sp - 1) & stackand) | stackor);   \
+#define PUSHRAM(v)                                  \
+    do {                                            \
+        SET8(r[R_ECX], (v));                        \
+        ram[sp] = GET8(r[R_ECX]);                   \
+        sp = (u2)(((sp - 1) & stackand) | stackor); \
     } while (0)
     if (!emul)
         PUSHRAM(GET8(xpb));
@@ -2394,38 +2392,38 @@ void OP(COp58)(zreg* const r) /* CLI i */
  * so that pointer's upper three bytes reach the handler's result; the 65816
  * itself does not. Hence macros here rather than in either instantiation.
  */
-#define WRAM_PUSH8(name, src)                    \
-    void OP(name)(zreg* const r)                  \
-    {                                           \
-        r[R_EAX] = (zreg)(uintptr_t)wramdata;     \
-        SET16(r[R_ECX], GET16(xs));             \
-        push8(r, GET8(src));                    \
-        SET16(xs, GET16(r[R_ECX]));             \
+#define WRAM_PUSH8(name, src)                 \
+    void OP(name)(zreg* const r)              \
+    {                                         \
+        r[R_EAX] = (zreg)(uintptr_t)wramdata; \
+        SET16(r[R_ECX], GET16(xs));           \
+        push8(r, GET8(src));                  \
+        SET16(xs, GET16(r[R_ECX]));           \
     }
-#define WRAM_POP8(name, dst)                     \
-    void OP(name)(zreg* const r)                  \
-    {                                           \
-        u1 v;                                   \
-        r[R_EAX] = (zreg)(uintptr_t)wramdata;     \
-        SET16(r[R_ECX], GET16(xs));             \
-        v = pop8(r);                            \
-        SET16(xs, GET16(r[R_ECX]));             \
-        SET8(dst, v);                           \
-        setnz8(v);                              \
+#define WRAM_POP8(name, dst)                  \
+    void OP(name)(zreg* const r)              \
+    {                                         \
+        u1 v;                                 \
+        r[R_EAX] = (zreg)(uintptr_t)wramdata; \
+        SET16(r[R_ECX], GET16(xs));           \
+        v = pop8(r);                          \
+        SET16(xs, GET16(r[R_ECX]));           \
+        SET8(dst, v);                         \
+        setnz8(v);                            \
     }
 #define WRAM_POP16(name, dst)                        \
-    void OP(name)(zreg* const r)                      \
-    {                                               \
-        u1 hi;                                      \
-        r[R_EAX] = (zreg)(uintptr_t)wramdata;         \
-        SET16(r[R_ECX], GET16(xs));                 \
-        SET8(dst, pop8(r));                         \
-        SET16(xs, GET16(r[R_ECX]));                 \
-        hi = pop8(r);                               \
+    void OP(name)(zreg* const r)                     \
+    {                                                \
+        u1 hi;                                       \
+        r[R_EAX] = (zreg)(uintptr_t)wramdata;        \
+        SET16(r[R_ECX], GET16(xs));                  \
+        SET8(dst, pop8(r));                          \
+        SET16(xs, GET16(r[R_ECX]));                  \
+        hi = pop8(r);                                \
         (dst) = ((dst) & 0xFFFF00FFu) | (u4)hi << 8; \
-        SET16(xs, GET16(r[R_ECX]));                 \
-        AX(r, (u2)((u2)hi << 8 | GET8(dst)));       \
-        setnz16(r, GET16(r[R_EAX]));                \
+        SET16(xs, GET16(r[R_ECX]));                  \
+        AX(r, (u2)((u2)hi << 8 | GET8(dst)));        \
+        setnz16(r, GET16(r[R_EAX]));                 \
     }
 
 #endif /* OPS65816_H */

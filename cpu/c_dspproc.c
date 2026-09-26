@@ -1,12 +1,12 @@
-#include <string.h>
 #include "../unaligned.h"
+#include <string.h>
 
 #include "../c_init.h"
-#include "cfg.h"
 #include "../endmem.h"
 #include "../gblvars.h"
 #include "../init.h"
 #include "../initc.h"
+#include "cfg.h"
 #ifndef lengthof
 #define lengthof(x) (sizeof(x) / sizeof *(x))
 #endif
@@ -423,7 +423,7 @@ void VoiceStart(u4 const voice)
             if (edx < ebx) {
                 // ebx = total sustain time
                 /* Traverse through al entries in edx time, then through 64 - al entries
-				 * in ebx - edx time. */
+                 * in ebx - edx time. */
                 u1 const al = AdsrSustLevLoc[DSPMem[16 * voice + 6] >> 5];
                 u4 const eax = edx / al;
                 AdsrBlocksLeft[voice] = al;
@@ -1009,10 +1009,14 @@ void MixEcho2(void)
 static s4 brr_filter0(u1 const hdr)
 {
     switch ((hdr >> 2) & 0x03) {
-    case 1:  return 240;
-    case 2:  return 488;
-    case 3:  return 460;
-    default: return 0;
+    case 1:
+        return 240;
+    case 2:
+        return 488;
+    case 3:
+        return 460;
+    default:
+        return 0;
     }
 }
 
@@ -1039,8 +1043,10 @@ static s2 brr_next_sample(u1 const nibble, u1 const bshift, s4 const filter0)
         out += p0 + ((-(13 * p0)) >> 7) - (p1 >> 1) + (((p1 >> 1) + p1) >> 4);
     }
 
-    if (out < -32768) out = -32768;
-    if (out > 32767) out = 32767;
+    if (out < -32768)
+        out = -32768;
+    if (out > 32767)
+        out = 32767;
 
     prev1 = (u4)p0;
     out = (s2)((u4)out << 1); // double and truncate to 16 bits
@@ -1184,8 +1190,8 @@ void BRRDecode(u4 const voice, u1* esi, s2* edi)
     }
 }
 
-extern u1 NoiseData[];   // defined in ui.c
-extern u4 NoiseInc;      // defined in cpu/dspproc.c
+extern u1 NoiseData[]; // defined in ui.c
+extern u4 NoiseInc; // defined in cpu/dspproc.c
 extern u4 NoisePointer;
 extern u1 PModBuffer[];
 
@@ -1260,7 +1266,7 @@ static void ProcessVoiceStuff(u4 const p1)
 
     u4 esi = 0;
 
-SkipProcess2 : {
+SkipProcess2: {
     u1 const al = VolumeTableD[DSPMem[16 * p1 + 0]];
     u1 const bl = VolumeTableD[DSPMem[16 * p1 + 1]];
     Voice0VolumeRe[p1] = al;

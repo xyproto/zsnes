@@ -265,7 +265,7 @@ void OP(COp02)(zreg* const r) /* COP s */
     SET8(r[R_EBX], GET8(xpb));
     AX(r, xpc);
     r[R_EAX] = (zreg)(uintptr_t)((r[R_EAX] & 0x8000u) ? snesmmap[r[R_EBX] & 0xFFu]
-                                                    : snesmap2[r[R_EBX] & 0xFFu]);
+                                                      : snesmap2[r[R_EBX] & 0xFFu]);
     r[R_EBX] = r[R_ESI] - r[R_EAX];
     xpc = GET16(r[R_EBX]);
 

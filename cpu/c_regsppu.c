@@ -290,8 +290,8 @@ u1 c_reg213Dr(void) { return counter_latch(latchy, &latchyr); }
  * Same ABI the other way: al carries the value. Where the target is wider than
  * a byte the assembly stores only its low byte, so the rest has to survive.
  */
-#define REG_WRITE_BYTE(reg, target)                                           \
-    REGABI_REG_WRITE8(reg);                                                   \
+#define REG_WRITE_BYTE(reg, target) \
+    REGABI_REG_WRITE8(reg);         \
     void c_##reg(u1 const al) { target = al; }
 
 REG_WRITE_BYTE(reg2126w, winl1) /* window 1 left */
@@ -343,12 +343,12 @@ static u2 scroll_x(u2 const cur, u1 const al)
     return (u2)(ebx >> 13);
 }
 
-#define REG_SCROLL_X(reg, target)                                             \
-    REGABI_REG_WRITE8(reg);                                                   \
+#define REG_SCROLL_X(reg, target) \
+    REGABI_REG_WRITE8(reg);       \
     void c_##reg(u1 const al) { target = scroll_x(target, al); }
 
-#define REG_SCROLL_Y(reg, target)                                             \
-    REGABI_REG_WRITE8(reg);                                                   \
+#define REG_SCROLL_Y(reg, target) \
+    REGABI_REG_WRITE8(reg);       \
     void c_##reg(u1 const al) { target = scroll_y(al); }
 
 REGABI_REG_WRITE8(reg210Dw); /* BG1 horizontal, mirrored for mode 7 */
@@ -574,7 +574,7 @@ void c_reg2106w(u1 const al)
    size bits say which of them are offset, and ptrx/ptry are the same offsets
    as plain distances. */
 static void bg_tilemap(u1 const al, u2* const p, u4* const px, u4* const py,
-                       u1* const scsize)
+    u1* const scsize)
 {
     u2 const base = (u2)((u2)(u1)(al >> 2) << 11);
     u1 const sz = (u1)(al & 0x03u);
@@ -607,19 +607,19 @@ static void bg_tilemap(u1 const al, u2* const p, u4* const px, u4* const py,
 
 /* bgNptr, bgNptrb, bgNptrc and bgNptrd are one per-BG group but are stored
    interleaved across the BGs, so the quadrants have to be gathered by hand. */
-#define REG_BG_TILEMAP(reg, n)                                                \
-    REGABI_REG_WRITE8(reg);                                                   \
-    void c_##reg(u1 const al)                                                 \
-    {                                                                         \
-        u2 p[4] = { bg1ptr[(n) - 1], bg1ptrb[(n) - 1], bg1ptrc[(n) - 1],      \
-            bg1ptrd[(n) - 1] };                                               \
-                                                                              \
-        bg_tilemap(al, p, &bg1ptrx[(n) - 1], &bg1ptry[(n) - 1],               \
-            &bg##n##scsize);                                                  \
-        bg1ptr[(n) - 1] = p[0];                                               \
-        bg1ptrb[(n) - 1] = p[1];                                              \
-        bg1ptrc[(n) - 1] = p[2];                                              \
-        bg1ptrd[(n) - 1] = p[3];                                              \
+#define REG_BG_TILEMAP(reg, n)                                           \
+    REGABI_REG_WRITE8(reg);                                              \
+    void c_##reg(u1 const al)                                            \
+    {                                                                    \
+        u2 p[4] = { bg1ptr[(n) - 1], bg1ptrb[(n) - 1], bg1ptrc[(n) - 1], \
+            bg1ptrd[(n) - 1] };                                          \
+                                                                         \
+        bg_tilemap(al, p, &bg1ptrx[(n) - 1], &bg1ptry[(n) - 1],          \
+            &bg##n##scsize);                                             \
+        bg1ptr[(n) - 1] = p[0];                                          \
+        bg1ptrb[(n) - 1] = p[1];                                         \
+        bg1ptrc[(n) - 1] = p[2];                                         \
+        bg1ptrd[(n) - 1] = p[3];                                         \
     }
 
 REG_BG_TILEMAP(reg2107w, 1)
@@ -660,12 +660,12 @@ void c_reg2122w(u1 const al)
 
 /* One nibble per layer. The asm branches on bits 1 and 3, but both arms are
    the same - the `or bl,02h` they guarded is commented out. */
-#define REG_WIN_SEL(reg, lo, hi)                                               \
-    REGABI_REG_WRITE8(reg);                                                    \
-    void c_##reg(u1 const al)                                                  \
-    {                                                                          \
-        lo = (u1)(al & 0x0Fu);                                                 \
-        hi = (u1)(al >> 4);                                                    \
+#define REG_WIN_SEL(reg, lo, hi) \
+    REGABI_REG_WRITE8(reg);      \
+    void c_##reg(u1 const al)    \
+    {                            \
+        lo = (u1)(al & 0x0Fu);   \
+        hi = (u1)(al >> 4);      \
     }
 
 REG_WIN_SEL(reg2123w, winbg1en, winbg2en)
@@ -819,7 +819,13 @@ static void vram_write(u4 const off, u4 const lohi, u1 const al)
     vram_dirty(off);
 }
 
-#define REG_VRAM_DATA(reg, offexpr, lohi, bump)                                   REGABI_REG_WRITE8(reg);                                                       void c_##reg(u1 const al)                                                     {                                                                                 vram_write((offexpr), (lohi), al);                                            bump                                                                      }
+#define REG_VRAM_DATA(reg, offexpr, lohi, bump) \
+    REGABI_REG_WRITE8(reg);                     \
+    void c_##reg(u1 const al)                   \
+    {                                           \
+        vram_write((offexpr), (lohi), al);      \
+        bump                                    \
+    }
 
 REG_VRAM_DATA(reg2118, vramaddr, 0, )
 REG_VRAM_DATA(reg2118inc, vramaddr, 0, vram_bump();)
@@ -1136,8 +1142,8 @@ static u4 dma_index(u4 const addr)
     return (u2)(addr - 0x4300u);
 }
 
-#define REG_DMA_STORE(reg)                                                    \
-    REGABI_BANK_WRITE8(reg);                                                  \
+#define REG_DMA_STORE(reg)   \
+    REGABI_BANK_WRITE8(reg); \
     void c_##reg(u4 const addr, u1 const al) { dmadata[dma_index(addr)] = al; }
 
 REG_DMA_STORE(reg43x2w) /* source address, low */

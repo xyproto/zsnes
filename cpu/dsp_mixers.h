@@ -30,23 +30,23 @@ static inline void mix_ProcessPMod(u4 ebp, u4 esi, s2* edi, x86reg edx, x86reg e
 {
     x86reg eax;
     ecx.b[0] = ((u1*)&Voice0EnvInc[ebp])[2]; /* mov cl,[Voice0EnvInc+ebp*4+2] */
-    eax.w = ld16u((u1*)edi + edx.e * 2);      /* mov ax,[edi+edx*2] */
-    {                                          /* imul cx -> dx:ax = ax * cx */
+    eax.w = ld16u((u1*)edi + edx.e * 2); /* mov ax,[edi+edx*2] */
+    { /* imul cx -> dx:ax = ax * cx */
         s4 p = (s2)eax.w * (s2)ecx.w;
         eax.w = (u2)p;
         edx.w = (u2)(p >> 16);
     }
-    eax.w >>= 7;                          /* shr ax,7 */
+    eax.w >>= 7; /* shr ax,7 */
     edx.b[0] = (u1)(edx.b[0] + edx.b[0]); /* add dl,dl */
-    eax.b[1] |= edx.b[0];                  /* or ah,dl */
-    PModBuffer[esi] = eax.b[1];            /* mov [PModBuffer+esi],ah */
+    eax.b[1] |= edx.b[0]; /* or ah,dl */
+    PModBuffer[esi] = eax.b[1]; /* mov [PModBuffer+esi],ah */
 }
 
 /* Volume lookup: index VolumeConvTable by (envinc<<8 | volbyte). */
 static inline u2 mix_vconv(u4 voice, u1 volbyte)
 {
     x86reg idx;
-    idx.e = volbyte;                          /* movzx eax,volbyte */
+    idx.e = volbyte; /* movzx eax,volbyte */
     idx.b[1] = ((u1*)&Voice0EnvInc[voice])[2]; /* mov ah,[Voice0EnvInc+voice*4+2] */
     return ld16u((u1*)VolumeConvTable + idx.e * 2);
 }
@@ -95,45 +95,45 @@ static inline s2 mix_sample_interp(u4 voice, u4 esi, s2* edi, x86reg edx)
 /* CalculatePMod ebp: the pitch-modulated increment for the next sample. */
 static inline u4 mix_CalculatePMod(u4 voice, u4 esi)
 {
-    u1 m = (u1)(PModBuffer[esi] + 0x80);                       /* movzx + add al,80h */
+    u1 m = (u1)(PModBuffer[esi] + 0x80); /* movzx + add al,80h */
     unsigned long long p = (unsigned long long)m * Voice0Freq[voice]; /* mul ebx */
-    return (u4)(p >> 7);                                       /* shr eax,7 | shl edx,25 */
+    return (u4)(p >> 7); /* shr eax,7 | shl edx,25 */
 }
 
 /* Common prologue: load the sample position and the first channel's volconv,
  * then fetch the sample. */
-#define MIX_FETCH(voice, esi, edi, volbyte, sample, ecx)                     \
-    u4 esi = *pesi;                                                          \
-    x86reg edx;                                                             \
-    edx.e = ld32u((u1*)BRRPlace0 + (voice) * 8 + 3);                        \
-    x86reg ecx;                                                             \
-    ecx.e = 0;                                                              \
-    ecx.w = mix_vconv((voice), (volbyte));                                   \
+#define MIX_FETCH(voice, esi, edi, volbyte, sample, ecx) \
+    u4 esi = *pesi;                                      \
+    x86reg edx;                                          \
+    edx.e = ld32u((u1*)BRRPlace0 + (voice) * 8 + 3);     \
+    x86reg ecx;                                          \
+    ecx.e = 0;                                           \
+    ecx.w = mix_vconv((voice), (volbyte));               \
     s2 sample = mix_sample((voice), esi, edi, edx, ecx)
 
 /* Non-pitch-mod tail: advance esi and step BRRPlace0 by the frequency. */
-#define MIX_TAIL(voice, esi)                                                 \
-    esi += 2;                                                               \
-    st32u((u1*)BRRPlace0 + (voice) * 8, ld32u((u1*)BRRPlace0 + (voice) * 8) + (*pebx));                           \
+#define MIX_TAIL(voice, esi)                                                            \
+    esi += 2;                                                                           \
+    st32u((u1*)BRRPlace0 + (voice) * 8, ld32u((u1*)BRRPlace0 + (voice) * 8) + (*pebx)); \
     *pesi = esi
 
 /* Frequency-reload tail: variants that clobbered ebx to hold the sample reload
  * Voice0Freq for the BRRPlace0 step (mov ebx,[Voice0Freq+ebp*4]) and leave it
  * in *pebx. */
-#define MIX_TAIL_FREQ(voice, esi)                                            \
-    esi += 2;                                                               \
-    *pebx = Voice0Freq[voice];                                              \
-    st32u((u1*)BRRPlace0 + (voice) * 8, ld32u((u1*)BRRPlace0 + (voice) * 8) + (*pebx));                           \
+#define MIX_TAIL_FREQ(voice, esi)                                                       \
+    esi += 2;                                                                           \
+    *pebx = Voice0Freq[voice];                                                          \
+    st32u((u1*)BRRPlace0 + (voice) * 8, ld32u((u1*)BRRPlace0 + (voice) * 8) + (*pebx)); \
     *pesi = esi
 
 /* Pitch-mod tail: advance esi, recompute the increment, step BRRPlace0. */
-#define MIX_TAIL_PM(voice, esi)                                              \
-    esi += 2;                                                               \
-    {                                                                       \
-        u4 nb = mix_CalculatePMod((voice), esi);                            \
-        st32u((u1*)BRRPlace0 + (voice) * 8, ld32u((u1*)BRRPlace0 + (voice) * 8) + (nb));                         \
-        *pebx = nb;                                                         \
-    }                                                                       \
+#define MIX_TAIL_PM(voice, esi)                                                          \
+    esi += 2;                                                                            \
+    {                                                                                    \
+        u4 nb = mix_CalculatePMod((voice), esi);                                         \
+        st32u((u1*)BRRPlace0 + (voice) * 8, ld32u((u1*)BRRPlace0 + (voice) * 8) + (nb)); \
+        *pebx = nb;                                                                      \
+    }                                                                                    \
     *pesi = esi
 
 static inline void w_NonEchoMono(u4 voice, u4* const pesi, u4* const pebx, s2* edi)

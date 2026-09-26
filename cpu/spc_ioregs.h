@@ -20,8 +20,14 @@ static inline void spc_write_reg(u4 reg, u1 al)
 
     case 0xF1: /* control: clear input ports, page in IPL ROM, enable timers */
         if (disablespcclr != 1) {
-            if (al & 0x10) { SPCRAM[0xF4] = 0; SPCRAM[0xF5] = 0; }
-            if (al & 0x20) { SPCRAM[0xF6] = 0; SPCRAM[0xF7] = 0; }
+            if (al & 0x10) {
+                SPCRAM[0xF4] = 0;
+                SPCRAM[0xF5] = 0;
+            }
+            if (al & 0x20) {
+                SPCRAM[0xF6] = 0;
+                SPCRAM[0xF7] = 0;
+            }
         }
         if (SPCSkipXtraROM != 1) {
             const u1* src = (al & 0x80) ? SPCROM : spcextraram;
@@ -42,27 +48,46 @@ static inline void spc_write_reg(u4 reg, u1 al)
         SPCRAM[0xF3] = al;
         break;
 
-    case 0xF4: reg1read = al; spc700read++; break;
-    case 0xF5: reg2read = al; spc700read++; break;
-    case 0xF6: reg3read = al; spc700read++; break;
-    case 0xF7: reg4read = al; spc700read++; break;
+    case 0xF4:
+        reg1read = al;
+        spc700read++;
+        break;
+    case 0xF5:
+        reg2read = al;
+        spc700read++;
+        break;
+    case 0xF6:
+        reg3read = al;
+        spc700read++;
+        break;
+    case 0xF7:
+        reg4read = al;
+        spc700read++;
+        break;
 
-    case 0xF8: SPCRAM[0xF8] = al; break;
-    case 0xF9: SPCRAM[0xF9] = al; break;
+    case 0xF8:
+        SPCRAM[0xF8] = al;
+        break;
+    case 0xF9:
+        SPCRAM[0xF9] = al;
+        break;
 
     case 0xFA: /* timer targets; latch into the counter only when it is idle */
         timincr0 = al;
-        if (timinl0 == 0) timinl0 = al;
+        if (timinl0 == 0)
+            timinl0 = al;
         SPCRAM[0xFA] = al;
         break;
     case 0xFB:
         timincr1 = al;
-        if (timinl1 == 0) timinl1 = al;
+        if (timinl1 == 0)
+            timinl1 = al;
         SPCRAM[0xFB] = al;
         break;
     case 0xFC:
         timincr2 = al;
-        if (timinl2 == 0) timinl2 = al;
+        if (timinl2 == 0)
+            timinl2 = al;
         SPCRAM[0xFC] = al;
         break;
 

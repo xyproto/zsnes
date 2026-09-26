@@ -3,10 +3,10 @@
    and exposes what the SPC core's WriteByte/ReadByte call. */
 #include <stdbool.h>
 
-#include "../types.h"
-#include "c_dsp.h" /* DSPWriteReg */
 #include "../endmem.h" /* tableadc */
 #include "../gblvars.h" /* cycpbl, curexecstate, timer2upd */
+#include "../types.h"
+#include "c_dsp.h" /* DSPWriteReg */
 #include "spc700.h" /* spcRamDP */
 
 /* SPCRAM is 0xFFC0 bytes of RAM immediately followed, in cpu/spc700.asm's data
@@ -20,7 +20,6 @@ extern u4 spc700read;
 extern u1 timeron, timincr0, timincr1, timincr2, timinl0, timinl1, timinl2;
 extern u1 spcnumread;
 extern u1 timrcall;
-
 
 #include "spc_ioregs.h"
 void SPCWriteReg(u4 reg, u1 val)
@@ -40,9 +39,11 @@ u1 SPCReadReg(u4 reg)
  * back to the table selected by its current flags. */
 static void reenablespc(u4 const edx, zreg* const pedi)
 {
-    if (cycpbl < 0x1000000) return;
+    if (cycpbl < 0x1000000)
+        return;
     cycpbl = 0;
-    if (curexecstate & 0x02) return;
+    if (curexecstate & 0x02)
+        return;
     curexecstate |= 0x02;
     *pedi = (zreg)(uintptr_t)tableadc[(u1)edx];
 }
@@ -77,7 +78,8 @@ void UpdateTimer(u4 const edx, zreg* const pedi)
         }
         if (timeron & 4) {
             for (u4 i = 0; i != 4; ++i) {
-                if (--timinl2 != 0) continue;
+                if (--timinl2 != 0)
+                    continue;
                 SPCRAM[0xFF]++;
                 timinl2 = timincr2;
                 if (SPCRAM[0xFF] == 1) {
@@ -86,7 +88,8 @@ void UpdateTimer(u4 const edx, zreg* const pedi)
                 }
             }
         }
-        if (++timer2upd != 60) break;
+        if (++timer2upd != 60)
+            break;
         timer2upd = 0;
     }
 }

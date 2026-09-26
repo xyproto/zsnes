@@ -27,7 +27,8 @@ static inline void spc_write(u1* const p, u1 const al)
     }
     if (a >= 0xFFC0) {
         spcextraram[a - 0xFFC0] = al;
-        if (SPCRAM[0xF1] & 0x80) return; /* IPL ROM paged in: RAM stays hidden */
+        if (SPCRAM[0xF1] & 0x80)
+            return; /* IPL ROM paged in: RAM stays hidden */
     }
     *p = al;
 }
@@ -61,13 +62,15 @@ static inline u1* spc_clr1(u1* const pc, u1 const mask)
 /* BBS / BBC dp.bit,rel - branch on a direct-page bit. */
 static inline u1* spc_bbs(u1* const pc, u1 const mask)
 {
-    if (spc_read(spc_dp(pc)) & mask) return pc + 2 + (s1)pc[1];
+    if (spc_read(spc_dp(pc)) & mask)
+        return pc + 2 + (s1)pc[1];
     return pc + 2;
 }
 
 static inline u1* spc_bbc(u1* const pc, u1 const mask)
 {
-    if (!(spc_read(spc_dp(pc)) & mask)) return pc + 2 + (s1)pc[1];
+    if (!(spc_read(spc_dp(pc)) & mask))
+        return pc + 2 + (s1)pc[1];
     return pc + 2;
 }
 
@@ -119,14 +122,14 @@ static inline u1* spc_branch(u1* const pc, bool const taken)
 }
 
 u1* SpcOp10(u1* const pc) { return spc_branch(pc, !(spcNZ & 0x80)); } /* BPL */
-u1* SpcOp30(u1* const pc) { return spc_branch(pc, spcNZ & 0x80); }    /* BMI */
-u1* SpcOp50(u1* const pc) { return spc_branch(pc, !(spcP & 0x40)); }  /* BVC */
-u1* SpcOp70(u1* const pc) { return spc_branch(pc, spcP & 0x40); }     /* BVS */
-u1* SpcOp90(u1* const pc) { return spc_branch(pc, !(spcP & 0x01)); }  /* BCC */
-u1* SpcOpB0(u1* const pc) { return spc_branch(pc, spcP & 0x01); }     /* BCS */
-u1* SpcOpD0(u1* const pc) { return spc_branch(pc, spcNZ != 0); }      /* BNE */
-u1* SpcOpF0(u1* const pc) { return spc_branch(pc, spcNZ == 0); }      /* BEQ */
-u1* SpcOp2F(u1* const pc) { return spc_branch(pc, true); }            /* BRA */
+u1* SpcOp30(u1* const pc) { return spc_branch(pc, spcNZ & 0x80); } /* BMI */
+u1* SpcOp50(u1* const pc) { return spc_branch(pc, !(spcP & 0x40)); } /* BVC */
+u1* SpcOp70(u1* const pc) { return spc_branch(pc, spcP & 0x40); } /* BVS */
+u1* SpcOp90(u1* const pc) { return spc_branch(pc, !(spcP & 0x01)); } /* BCC */
+u1* SpcOpB0(u1* const pc) { return spc_branch(pc, spcP & 0x01); } /* BCS */
+u1* SpcOpD0(u1* const pc) { return spc_branch(pc, spcNZ != 0); } /* BNE */
+u1* SpcOpF0(u1* const pc) { return spc_branch(pc, spcNZ == 0); } /* BEQ */
+u1* SpcOp2F(u1* const pc) { return spc_branch(pc, true); } /* BRA */
 
 /* The stack lives in page 1; only the low byte of spcS moves, and pushes go
  * straight to RAM rather than through the I/O-trapping write path. */
@@ -228,19 +231,20 @@ static inline void spc_mov_a(u1 const m) { spcNZ = spcA = m; }
 static inline void spc_cmp_a(u1 const m)
 {
     u1 const r = (u1)(spcA - m);
-    spcNZ = r & 0x80 ? 0x80 : r == 0 ? 0 : 1;
+    spcNZ = r & 0x80 ? 0x80 : r == 0 ? 0
+                                     : 1;
     if (spcA >= m)
         spcP |= 0x01;
     else
         spcP &= 0xFE;
 }
 
-#define SPC_ALU(hex, mode, op)                    \
-    u1* SpcOp##hex(u1* const pc)                  \
-    {                                             \
-        spcaddr const a = mode(pc);               \
-        op(a.val);                                \
-        return a.pc;                              \
+#define SPC_ALU(hex, mode, op)      \
+    u1* SpcOp##hex(u1* const pc)    \
+    {                               \
+        spcaddr const a = mode(pc); \
+        op(a.val);                  \
+        return a.pc;                \
     }
 
 SPC_ALU(04, spc_a_dp, spc_or_a)
@@ -296,15 +300,53 @@ SPC_ALU(E8, spc_a_imm, spc_mov_a)
 #undef SPC_ALU
 
 /* Flag setters. CLRP/SETP also move the direct-page base. */
-u1* SpcOp20(u1* const pc) { spcP &= 0xDF; spcRamDP = SPCRAM; return pc; }        /* CLRP */
-u1* SpcOp40(u1* const pc) { spcP = (spcP & 0xFB) | 0x20; spcRamDP = SPCRAM + 0x100; return pc; } /* SETP */
-u1* SpcOp60(u1* const pc) { spcP &= 0xFE; return pc; }                           /* CLRC */
-u1* SpcOp80(u1* const pc) { spcP |= 0x01; return pc; }                           /* SETC */
-u1* SpcOpA0(u1* const pc) { spcP |= 0x04; return pc; }                           /* EI   */
-u1* SpcOpC0(u1* const pc) { spcP &= 0xFB; return pc; }                           /* DI   */
-u1* SpcOpE0(u1* const pc) { spcP &= 0xB7; return pc; }                           /* CLRV */
-u1* SpcOpED(u1* const pc) { spcP ^= 0x01; return pc; }                           /* NOTC */
-u1* SpcOpBD(u1* const pc) { spcS = (spcS & 0xFFFFFF00) | spcX; return pc; }        /* MOV SP,X */
+u1* SpcOp20(u1* const pc)
+{
+    spcP &= 0xDF;
+    spcRamDP = SPCRAM;
+    return pc;
+} /* CLRP */
+u1* SpcOp40(u1* const pc)
+{
+    spcP = (spcP & 0xFB) | 0x20;
+    spcRamDP = SPCRAM + 0x100;
+    return pc;
+} /* SETP */
+u1* SpcOp60(u1* const pc)
+{
+    spcP &= 0xFE;
+    return pc;
+} /* CLRC */
+u1* SpcOp80(u1* const pc)
+{
+    spcP |= 0x01;
+    return pc;
+} /* SETC */
+u1* SpcOpA0(u1* const pc)
+{
+    spcP |= 0x04;
+    return pc;
+} /* EI   */
+u1* SpcOpC0(u1* const pc)
+{
+    spcP &= 0xFB;
+    return pc;
+} /* DI   */
+u1* SpcOpE0(u1* const pc)
+{
+    spcP &= 0xB7;
+    return pc;
+} /* CLRV */
+u1* SpcOpED(u1* const pc)
+{
+    spcP ^= 0x01;
+    return pc;
+} /* NOTC */
+u1* SpcOpBD(u1* const pc)
+{
+    spcS = (spcS & 0xFFFFFF00) | spcX;
+    return pc;
+} /* MOV SP,X */
 
 /* --- 8-bit arithmetic ------------------------------------------------------
  * The asm took N/Z/V/C/H from x86 `adc`/`sbb` + `lahf`, so each is rebuilt
@@ -312,17 +354,21 @@ u1* SpcOpBD(u1* const pc) { spcS = (spcS & 0xFFFFFF00) | spcX; return pc; }     
  * is inverted - it means "no borrow". */
 static inline void spc_setnz(u1 const r)
 {
-    spcNZ = r & 0x80 ? 0x80 : r == 0 ? 0 : 1;
+    spcNZ = r & 0x80 ? 0x80 : r == 0 ? 0
+                                     : 1;
 }
 
 static inline void spc_setflags_nvhzc(u1 const r, bool const v, bool const h, bool const c)
 {
     spc_setnz(r);
     u1 p = spcP & 0xBF;
-    if (v) p |= 0x40;
+    if (v)
+        p |= 0x40;
     p &= 0xF6;
-    if (c) p |= 0x01;
-    if (h) p |= 0x08;
+    if (c)
+        p |= 0x01;
+    if (h)
+        p |= 0x08;
     spcP = p;
 }
 
@@ -359,12 +405,12 @@ static inline void spc_cmp(u1 const x, u1 const y)
 static inline void spc_adc_a(u1 const m) { spcA = spc_adc(spcA, m); }
 static inline void spc_sbc_a(u1 const m) { spcA = spc_sbc(spcA, m); }
 
-#define SPC_ALU2(hex, mode, op)      \
-    u1* SpcOp##hex(u1* const pc)     \
-    {                                \
-        spcaddr const a = mode(pc);  \
-        op(a.val);                   \
-        return a.pc;                 \
+#define SPC_ALU2(hex, mode, op)     \
+    u1* SpcOp##hex(u1* const pc)    \
+    {                               \
+        spcaddr const a = mode(pc); \
+        op(a.val);                  \
+        return a.pc;                \
     }
 
 SPC_ALU2(84, spc_a_dp, spc_adc_a)
@@ -393,35 +439,35 @@ SPC_ALU2(A8, spc_a_imm, spc_sbc_a)
  * dp,#imm and dp(dest),dp(src): the destination is read, combined, written
  * back. `(X),(Y)` is the same with the pointers coming from X and Y.
  */
-#define SPC_RMW(hex, get, comb)                     \
-    u1* SpcOp##hex(u1* const pc)                    \
-    {                                               \
-        get;                                        \
-        u1 const r = comb;                          \
-        spc_write(dst, r);                          \
-        return npc;                                 \
+#define SPC_RMW(hex, get, comb)  \
+    u1* SpcOp##hex(u1* const pc) \
+    {                            \
+        get;                     \
+        u1 const r = comb;       \
+        spc_write(dst, r);       \
+        return npc;              \
     }
 
 /* dp,#imm - note the assembly takes the dp operand from pc[1], the immediate
  * from pc[0]. */
-#define SPC_GET_DP_IMM                     \
-    u1* const dst = spcRamDP + pc[1];      \
-    u1 const src = pc[0];                  \
-    u1 const dv = spc_read(dst);           \
+#define SPC_GET_DP_IMM                \
+    u1* const dst = spcRamDP + pc[1]; \
+    u1 const src = pc[0];             \
+    u1 const dv = spc_read(dst);      \
     u1* const npc = pc + 2
 
 /* dp(dest),dp(src) */
-#define SPC_GET_DP_DP                      \
-    u1* const dst = spcRamDP + pc[1];      \
-    u1 const dv = spc_read(dst);           \
+#define SPC_GET_DP_DP                          \
+    u1* const dst = spcRamDP + pc[1];          \
+    u1 const dv = spc_read(dst);               \
     u1 const src = spc_read(spcRamDP + pc[0]); \
     u1* const npc = pc + 2
 
 /* (X),(Y) - the (Y) operand is read first, as in the assembly. */
-#define SPC_GET_X_Y                              \
-    u1 const src = spc_read(spcRamDP + spcY);    \
-    u1* const dst = spcRamDP + spcX;             \
-    u1 const dv = spc_read(dst);                 \
+#define SPC_GET_X_Y                           \
+    u1 const src = spc_read(spcRamDP + spcY); \
+    u1* const dst = spcRamDP + spcX;          \
+    u1 const dv = spc_read(dst);              \
     u1* const npc = pc
 
 SPC_RMW(18, SPC_GET_DP_IMM, (spcNZ = dv | src))
@@ -443,9 +489,24 @@ SPC_RMW(99, SPC_GET_X_Y, spc_adc(dv, src))
 SPC_RMW(B9, SPC_GET_X_Y, spc_sbc(dv, src))
 
 /* The CMP variants compare without writing back. */
-u1* SpcOp78(u1* const pc) { SPC_GET_DP_IMM; spc_cmp(dv, src); return npc; }
-u1* SpcOp69(u1* const pc) { SPC_GET_DP_DP;  spc_cmp(dv, src); return npc; }
-u1* SpcOp79(u1* const pc) { SPC_GET_X_Y;    spc_cmp(dv, src); return npc; }
+u1* SpcOp78(u1* const pc)
+{
+    SPC_GET_DP_IMM;
+    spc_cmp(dv, src);
+    return npc;
+}
+u1* SpcOp69(u1* const pc)
+{
+    SPC_GET_DP_DP;
+    spc_cmp(dv, src);
+    return npc;
+}
+u1* SpcOp79(u1* const pc)
+{
+    SPC_GET_X_Y;
+    spc_cmp(dv, src);
+    return npc;
+}
 
 #undef SPC_RMW
 
@@ -457,18 +518,66 @@ u1* SpcOpFA(u1* const pc)
 }
 
 /* --- stores (no flags) ----------------------------------------------------- */
-u1* SpcOpC4(u1* const pc) { spc_write(spcRamDP + *pc, spcA); return pc + 1; }
-u1* SpcOpD4(u1* const pc) { spc_write(spcRamDP + (u1)(*pc + spcX), spcA); return pc + 1; }
-u1* SpcOpC5(u1* const pc) { spc_write(SPCRAM + (pc[0] | (u2)pc[1] << 8), spcA); return pc + 2; }
-u1* SpcOpD5(u1* const pc) { spc_write(SPCRAM + (u2)((pc[0] | (u2)pc[1] << 8) + spcX), spcA); return pc + 2; }
-u1* SpcOpD6(u1* const pc) { spc_write(SPCRAM + (u2)((pc[0] | (u2)pc[1] << 8) + spcY), spcA); return pc + 2; }
-u1* SpcOpC6(u1* const pc) { spc_write(spcRamDP + spcX, spcA); return pc; }
-u1* SpcOpD8(u1* const pc) { spc_write(spcRamDP + *pc, spcX); return pc + 1; }
-u1* SpcOpD9(u1* const pc) { spc_write(spcRamDP + (u1)(*pc + spcY), spcX); return pc + 1; }
-u1* SpcOpC9(u1* const pc) { spc_write(SPCRAM + (pc[0] | (u2)pc[1] << 8), spcX); return pc + 2; }
-u1* SpcOpCB(u1* const pc) { spc_write(spcRamDP + *pc, spcY); return pc + 1; }
-u1* SpcOpDB(u1* const pc) { spc_write(spcRamDP + (u1)(*pc + spcX), spcY); return pc + 1; }
-u1* SpcOpCC(u1* const pc) { spc_write(SPCRAM + (pc[0] | (u2)pc[1] << 8), spcY); return pc + 2; }
+u1* SpcOpC4(u1* const pc)
+{
+    spc_write(spcRamDP + *pc, spcA);
+    return pc + 1;
+}
+u1* SpcOpD4(u1* const pc)
+{
+    spc_write(spcRamDP + (u1)(*pc + spcX), spcA);
+    return pc + 1;
+}
+u1* SpcOpC5(u1* const pc)
+{
+    spc_write(SPCRAM + (pc[0] | (u2)pc[1] << 8), spcA);
+    return pc + 2;
+}
+u1* SpcOpD5(u1* const pc)
+{
+    spc_write(SPCRAM + (u2)((pc[0] | (u2)pc[1] << 8) + spcX), spcA);
+    return pc + 2;
+}
+u1* SpcOpD6(u1* const pc)
+{
+    spc_write(SPCRAM + (u2)((pc[0] | (u2)pc[1] << 8) + spcY), spcA);
+    return pc + 2;
+}
+u1* SpcOpC6(u1* const pc)
+{
+    spc_write(spcRamDP + spcX, spcA);
+    return pc;
+}
+u1* SpcOpD8(u1* const pc)
+{
+    spc_write(spcRamDP + *pc, spcX);
+    return pc + 1;
+}
+u1* SpcOpD9(u1* const pc)
+{
+    spc_write(spcRamDP + (u1)(*pc + spcY), spcX);
+    return pc + 1;
+}
+u1* SpcOpC9(u1* const pc)
+{
+    spc_write(SPCRAM + (pc[0] | (u2)pc[1] << 8), spcX);
+    return pc + 2;
+}
+u1* SpcOpCB(u1* const pc)
+{
+    spc_write(spcRamDP + *pc, spcY);
+    return pc + 1;
+}
+u1* SpcOpDB(u1* const pc)
+{
+    spc_write(spcRamDP + (u1)(*pc + spcX), spcY);
+    return pc + 1;
+}
+u1* SpcOpCC(u1* const pc)
+{
+    spc_write(SPCRAM + (pc[0] | (u2)pc[1] << 8), spcY);
+    return pc + 2;
+}
 
 u1* SpcOpC7(u1* const pc) /* MOV [dp+X],A */
 {
@@ -484,15 +593,47 @@ u1* SpcOpD7(u1* const pc) /* MOV [dp]+Y,A */
 }
 
 /* --- loads into X / Y ------------------------------------------------------ */
-u1* SpcOpF8(u1* const pc) { spcNZ = spcX = spc_read(spcRamDP + *pc); return pc + 1; }
-u1* SpcOpF9(u1* const pc) { spcNZ = spcX = spc_read(spcRamDP + (u1)(*pc + spcY)); return pc + 1; }
-u1* SpcOpE9(u1* const pc) { spcNZ = spcX = spc_read(SPCRAM + (pc[0] | (u2)pc[1] << 8)); return pc + 2; }
-u1* SpcOpEB(u1* const pc) { spcNZ = spcY = spc_read(spcRamDP + *pc); return pc + 1; }
-u1* SpcOpFB(u1* const pc) { spcNZ = spcY = spc_read(spcRamDP + (u1)(*pc + spcX)); return pc + 1; }
-u1* SpcOpEC(u1* const pc) { spcNZ = spcY = spc_read(SPCRAM + (pc[0] | (u2)pc[1] << 8)); return pc + 2; }
+u1* SpcOpF8(u1* const pc)
+{
+    spcNZ = spcX = spc_read(spcRamDP + *pc);
+    return pc + 1;
+}
+u1* SpcOpF9(u1* const pc)
+{
+    spcNZ = spcX = spc_read(spcRamDP + (u1)(*pc + spcY));
+    return pc + 1;
+}
+u1* SpcOpE9(u1* const pc)
+{
+    spcNZ = spcX = spc_read(SPCRAM + (pc[0] | (u2)pc[1] << 8));
+    return pc + 2;
+}
+u1* SpcOpEB(u1* const pc)
+{
+    spcNZ = spcY = spc_read(spcRamDP + *pc);
+    return pc + 1;
+}
+u1* SpcOpFB(u1* const pc)
+{
+    spcNZ = spcY = spc_read(spcRamDP + (u1)(*pc + spcX));
+    return pc + 1;
+}
+u1* SpcOpEC(u1* const pc)
+{
+    spcNZ = spcY = spc_read(SPCRAM + (pc[0] | (u2)pc[1] << 8));
+    return pc + 2;
+}
 
-u1* SpcOpDD(u1* const pc) { spcNZ = spcA = spcY; return pc; } /* MOV A,Y */
-u1* SpcOpFD(u1* const pc) { spcNZ = spcY = spcA; return pc; } /* MOV Y,A */
+u1* SpcOpDD(u1* const pc)
+{
+    spcNZ = spcA = spcY;
+    return pc;
+} /* MOV A,Y */
+u1* SpcOpFD(u1* const pc)
+{
+    spcNZ = spcY = spcA;
+    return pc;
+} /* MOV Y,A */
 
 u1* SpcOpAF(u1* const pc) /* MOV (X)+,A */
 {
@@ -513,51 +654,135 @@ u1* SpcOpBF(u1* const pc) /* MOV A,(X)+ */
 u1* SpcOpFE(u1* const pc) { return spc_branch(pc, --spcY != 0); }
 
 /* XCN - swap the nibbles of A. */
-u1* SpcOp9F(u1* const pc) { spcNZ = spcA = (u1)(spcA >> 4 | spcA << 4); return pc; }
+u1* SpcOp9F(u1* const pc)
+{
+    spcNZ = spcA = (u1)(spcA >> 4 | spcA << 4);
+    return pc;
+}
 
 /* SLEEP / STOP - park the PC on the opcode itself. */
 u1* SpcOpEF(u1* const pc) { return pc - 1; }
-u1* SpcOpFF(u1* const pc) { spc700read++; return pc - 1; }
-u1* SpcOp0F(u1* const pc) { spc700read++; return pc - 1; }
+u1* SpcOpFF(u1* const pc)
+{
+    spc700read++;
+    return pc - 1;
+}
+u1* SpcOp0F(u1* const pc)
+{
+    spc700read++;
+    return pc - 1;
+}
 
 /* --- register moves, INC/DEC ----------------------------------------------- */
-u1* SpcOp5D(u1* const pc) { spcNZ = spcX = spcA; return pc; }             /* MOV X,A */
-u1* SpcOp7D(u1* const pc) { spcNZ = spcA = spcX; return pc; }             /* MOV A,X */
-u1* SpcOp9D(u1* const pc) { spcNZ = spcX = (u1)spcS; return pc; }         /* MOV X,SP */
-u1* SpcOp8D(u1* const pc) { spcNZ = spcY = *pc; return pc + 1; }          /* MOV Y,#i */
-u1* SpcOpCD(u1* const pc) { spcNZ = spcX = *pc; return pc + 1; }          /* MOV X,#i */
-u1* SpcOp9C(u1* const pc) { spcNZ = --spcA; return pc; }                  /* DEC A */
-u1* SpcOpBC(u1* const pc) { spcNZ = ++spcA; return pc; }                  /* INC A */
-u1* SpcOpDC(u1* const pc) { spcNZ = --spcY; return pc; }                  /* DEC Y */
-u1* SpcOpFC(u1* const pc) { spcNZ = ++spcY; return pc; }                  /* INC Y */
-u1* SpcOp1D(u1* const pc) { spcNZ = --spcX; return pc; }                  /* DEC X */
-u1* SpcOp3D(u1* const pc) { spcNZ = ++spcX; return pc; }                  /* INC X */
+u1* SpcOp5D(u1* const pc)
+{
+    spcNZ = spcX = spcA;
+    return pc;
+} /* MOV X,A */
+u1* SpcOp7D(u1* const pc)
+{
+    spcNZ = spcA = spcX;
+    return pc;
+} /* MOV A,X */
+u1* SpcOp9D(u1* const pc)
+{
+    spcNZ = spcX = (u1)spcS;
+    return pc;
+} /* MOV X,SP */
+u1* SpcOp8D(u1* const pc)
+{
+    spcNZ = spcY = *pc;
+    return pc + 1;
+} /* MOV Y,#i */
+u1* SpcOpCD(u1* const pc)
+{
+    spcNZ = spcX = *pc;
+    return pc + 1;
+} /* MOV X,#i */
+u1* SpcOp9C(u1* const pc)
+{
+    spcNZ = --spcA;
+    return pc;
+} /* DEC A */
+u1* SpcOpBC(u1* const pc)
+{
+    spcNZ = ++spcA;
+    return pc;
+} /* INC A */
+u1* SpcOpDC(u1* const pc)
+{
+    spcNZ = --spcY;
+    return pc;
+} /* DEC Y */
+u1* SpcOpFC(u1* const pc)
+{
+    spcNZ = ++spcY;
+    return pc;
+} /* INC Y */
+u1* SpcOp1D(u1* const pc)
+{
+    spcNZ = --spcX;
+    return pc;
+} /* DEC X */
+u1* SpcOp3D(u1* const pc)
+{
+    spcNZ = ++spcX;
+    return pc;
+} /* INC X */
 
 /* MOV dp,#imm - like the other dp,#imm forms the dp operand is the second byte. */
-u1* SpcOp8F(u1* const pc) { spc_write(spcRamDP + pc[1], pc[0]); return pc + 2; }
+u1* SpcOp8F(u1* const pc)
+{
+    spc_write(spcRamDP + pc[1], pc[0]);
+    return pc + 2;
+}
 
 /* --- CMP X / CMP Y --------------------------------------------------------- */
-u1* SpcOpC8(u1* const pc) { spc_cmp(spcX, *pc); return pc + 1; }
-u1* SpcOpAD(u1* const pc) { spc_cmp(spcY, *pc); return pc + 1; }
-u1* SpcOp3E(u1* const pc) { spc_cmp(spcX, spc_read(spcRamDP + *pc)); return pc + 1; }
-u1* SpcOp7E(u1* const pc) { spc_cmp(spcY, spc_read(spcRamDP + *pc)); return pc + 1; }
-u1* SpcOp1E(u1* const pc) { spc_cmp(spcX, spc_read(SPCRAM + (pc[0] | (u2)pc[1] << 8))); return pc + 2; }
-u1* SpcOp5E(u1* const pc) { spc_cmp(spcY, spc_read(SPCRAM + (pc[0] | (u2)pc[1] << 8))); return pc + 2; }
+u1* SpcOpC8(u1* const pc)
+{
+    spc_cmp(spcX, *pc);
+    return pc + 1;
+}
+u1* SpcOpAD(u1* const pc)
+{
+    spc_cmp(spcY, *pc);
+    return pc + 1;
+}
+u1* SpcOp3E(u1* const pc)
+{
+    spc_cmp(spcX, spc_read(spcRamDP + *pc));
+    return pc + 1;
+}
+u1* SpcOp7E(u1* const pc)
+{
+    spc_cmp(spcY, spc_read(spcRamDP + *pc));
+    return pc + 1;
+}
+u1* SpcOp1E(u1* const pc)
+{
+    spc_cmp(spcX, spc_read(SPCRAM + (pc[0] | (u2)pc[1] << 8)));
+    return pc + 2;
+}
+u1* SpcOp5E(u1* const pc)
+{
+    spc_cmp(spcY, spc_read(SPCRAM + (pc[0] | (u2)pc[1] << 8)));
+    return pc + 2;
+}
 
 /* --- read-modify-write on memory ------------------------------------------- */
-#define SPC_MEM_RMW(hex, addr, adv, expr)      \
-    u1* SpcOp##hex(u1* const pc)               \
-    {                                          \
-        u1* const m = addr;                    \
-        u1 al = spc_read(m);                   \
-        expr;                                  \
-        spc_write(m, al);                      \
-        return pc + adv;                       \
+#define SPC_MEM_RMW(hex, addr, adv, expr) \
+    u1* SpcOp##hex(u1* const pc)          \
+    {                                     \
+        u1* const m = addr;               \
+        u1 al = spc_read(m);              \
+        expr;                             \
+        spc_write(m, al);                 \
+        return pc + adv;                  \
     }
 
-#define SPC_DP    (spcRamDP + *pc)
-#define SPC_DP_X  (spcRamDP + (u1)(*pc + spcX))
-#define SPC_ABS   (SPCRAM + (pc[0] | (u2)pc[1] << 8))
+#define SPC_DP (spcRamDP + *pc)
+#define SPC_DP_X (spcRamDP + (u1)(*pc + spcX))
+#define SPC_ABS (SPCRAM + (pc[0] | (u2)pc[1] << 8))
 
 /* INC/DEC set N/Z from the result only. */
 SPC_MEM_RMW(8B, SPC_DP, 1, spcNZ = --al)
@@ -590,8 +815,16 @@ SPC_MEM_RMW(5B, SPC_DP_X, 1, al = spc_lsr(al))
 SPC_MEM_RMW(0C, SPC_ABS, 2, al = spc_asl(al))
 SPC_MEM_RMW(4C, SPC_ABS, 2, al = spc_lsr(al))
 
-u1* SpcOp1C(u1* const pc) { spcA = spc_asl(spcA); return pc; } /* ASL A */
-u1* SpcOp5C(u1* const pc) { spcA = spc_lsr(spcA); return pc; } /* LSR A */
+u1* SpcOp1C(u1* const pc)
+{
+    spcA = spc_asl(spcA);
+    return pc;
+} /* ASL A */
+u1* SpcOp5C(u1* const pc)
+{
+    spcA = spc_lsr(spcA);
+    return pc;
+} /* LSR A */
 
 /* TSET1 / TCLR1 - N/Z come from A AND mem, and the stored value differs.
  * Note the assembly's TCLR1 adds the *direct page* base to a 16-bit operand;
@@ -608,12 +841,36 @@ static inline u1 spc_pop(void)
     return SPCRAM[spcS];
 }
 
-u1* SpcOp2D(u1* const pc) { spc_push(spcA); return pc; } /* PUSH A */
-u1* SpcOp4D(u1* const pc) { spc_push(spcX); return pc; } /* PUSH X */
-u1* SpcOp6D(u1* const pc) { spc_push(spcY); return pc; } /* PUSH Y */
-u1* SpcOpAE(u1* const pc) { spcA = spc_pop(); return pc; } /* POP A - no flags */
-u1* SpcOpCE(u1* const pc) { spcX = spc_pop(); return pc; } /* POP X */
-u1* SpcOpEE(u1* const pc) { spcY = spc_pop(); return pc; } /* POP Y */
+u1* SpcOp2D(u1* const pc)
+{
+    spc_push(spcA);
+    return pc;
+} /* PUSH A */
+u1* SpcOp4D(u1* const pc)
+{
+    spc_push(spcX);
+    return pc;
+} /* PUSH X */
+u1* SpcOp6D(u1* const pc)
+{
+    spc_push(spcY);
+    return pc;
+} /* PUSH Y */
+u1* SpcOpAE(u1* const pc)
+{
+    spcA = spc_pop();
+    return pc;
+} /* POP A - no flags */
+u1* SpcOpCE(u1* const pc)
+{
+    spcX = spc_pop();
+    return pc;
+} /* POP X */
+u1* SpcOpEE(u1* const pc)
+{
+    spcY = spc_pop();
+    return pc;
+} /* POP Y */
 
 /* PUSH P - rebuild the real N and Z bits from spcNZ first. */
 u1* SpcOp0D(u1* const pc)
@@ -687,7 +944,8 @@ u1* SpcOpCF(u1* const pc)
     u2 const r = (u2)((u2)spcY * spcA);
     spcA = (u1)r;
     spcY = (u1)(r >> 8);
-    spcNZ = r & 0x8000 ? 0x80 : r == 0 ? 0 : 1;
+    spcNZ = r & 0x8000 ? 0x80 : r == 0 ? 0
+                                       : 1;
     return pc;
 }
 
@@ -697,7 +955,8 @@ u1* SpcOpCF(u1* const pc)
  * 16-bit result. */
 static inline void spc_setnz16(u2 const r)
 {
-    spcNZ = r & 0x8000 ? 0x80 : r == 0 ? 0 : 1;
+    spcNZ = r & 0x8000 ? 0x80 : r == 0 ? 0
+                                       : 1;
 }
 
 static inline u2 spc_readw(u1* const lo)
@@ -748,10 +1007,13 @@ u1* SpcOp7A(u1* const pc) /* ADDW YA,dp */
     spcY = (u1)(r >> 8);
     spc_setnz16(r);
     u1 p = spcP & 0xBF;
-    if ((~(ya ^ m) & (ya ^ r) & 0x8000) != 0) p |= 0x40;
+    if ((~(ya ^ m) & (ya ^ r) & 0x8000) != 0)
+        p |= 0x40;
     p &= 0xF6;
-    if (sum > 0xFFFF) p |= 0x01;
-    if ((((ya & 0x000F) + (m & 0x000F)) & 0x10) != 0) p |= 0x08; /* x86 AF: bit 3 */
+    if (sum > 0xFFFF)
+        p |= 0x01;
+    if ((((ya & 0x000F) + (m & 0x000F)) & 0x10) != 0)
+        p |= 0x08; /* x86 AF: bit 3 */
     spcP = p;
     return pc + 1;
 }
@@ -766,10 +1028,13 @@ u1* SpcOp9A(u1* const pc) /* SUBW YA,dp */
     spcY = (u1)(r >> 8);
     spc_setnz16(r);
     u1 p = spcP & 0xBF;
-    if (((ya ^ m) & (ya ^ r) & 0x8000) != 0) p |= 0x40;
+    if (((ya ^ m) & (ya ^ r) & 0x8000) != 0)
+        p |= 0x40;
     p &= 0xF6;
-    if (diff <= 0xFFFF) p |= 0x01; /* the asm's cmc: C means "no borrow" */
-    if ((((u4)(ya & 0x000F) - (m & 0x000F)) & 0x10) != 0) p |= 0x08; /* x86 AF: bit 3 */
+    if (diff <= 0xFFFF)
+        p |= 0x01; /* the asm's cmc: C means "no borrow" */
+    if ((((u4)(ya & 0x000F) - (m & 0x000F)) & 0x10) != 0)
+        p |= 0x08; /* x86 AF: bit 3 */
     spcP = p;
     return pc + 1;
 }
@@ -823,12 +1088,36 @@ static inline u1 spc_getbit(u1 const* const pc)
     return (u1)(spc_read(m.addr) >> m.bit & 1);
 }
 
-u1* SpcOp0A(u1* const pc) { spcP |= spc_getbit(pc); return pc + 2; }              /* OR1  C,m.b  */
-u1* SpcOp2A(u1* const pc) { spcP |= spc_getbit(pc) ^ 1; return pc + 2; }          /* OR1  C,/m.b */
-u1* SpcOp4A(u1* const pc) { spcP &= spc_getbit(pc) | 0xFE; return pc + 2; }       /* AND1 C,m.b  */
-u1* SpcOp6A(u1* const pc) { spcP &= (spc_getbit(pc) | 0xFE) ^ 1; return pc + 2; } /* AND1 C,/m.b */
-u1* SpcOp8A(u1* const pc) { spcP ^= spc_getbit(pc); return pc + 2; }              /* EOR1 C,m.b  */
-u1* SpcOpAA(u1* const pc) { spcP = (spcP & 0xFE) | spc_getbit(pc); return pc + 2; } /* MOV1 C,m.b  */
+u1* SpcOp0A(u1* const pc)
+{
+    spcP |= spc_getbit(pc);
+    return pc + 2;
+} /* OR1  C,m.b  */
+u1* SpcOp2A(u1* const pc)
+{
+    spcP |= spc_getbit(pc) ^ 1;
+    return pc + 2;
+} /* OR1  C,/m.b */
+u1* SpcOp4A(u1* const pc)
+{
+    spcP &= spc_getbit(pc) | 0xFE;
+    return pc + 2;
+} /* AND1 C,m.b  */
+u1* SpcOp6A(u1* const pc)
+{
+    spcP &= (spc_getbit(pc) | 0xFE) ^ 1;
+    return pc + 2;
+} /* AND1 C,/m.b */
+u1* SpcOp8A(u1* const pc)
+{
+    spcP ^= spc_getbit(pc);
+    return pc + 2;
+} /* EOR1 C,m.b  */
+u1* SpcOpAA(u1* const pc)
+{
+    spcP = (spcP & 0xFE) | spc_getbit(pc);
+    return pc + 2;
+} /* MOV1 C,m.b  */
 
 u1* SpcOpCA(u1* const pc) /* MOV1 m.b,C */
 {
@@ -863,12 +1152,12 @@ static inline u1 spc_ror(u1 const v)
     return r;
 }
 
-#define SPC_ROT(hex, addr, adv, fn)                     \
-    u1* SpcOp##hex(u1* const pc)                        \
-    {                                                   \
-        u1* const m = addr;                             \
-        spc_write(m, fn(spc_read(m)));                  \
-        return pc + adv;                                \
+#define SPC_ROT(hex, addr, adv, fn)    \
+    u1* SpcOp##hex(u1* const pc)       \
+    {                                  \
+        u1* const m = addr;            \
+        spc_write(m, fn(spc_read(m))); \
+        return pc + adv;               \
     }
 
 SPC_ROT(2B, SPC_DP, 1, spc_rol)
@@ -880,8 +1169,16 @@ SPC_ROT(6C, SPC_ABS, 2, spc_ror)
 
 #undef SPC_ROT
 
-u1* SpcOp3C(u1* const pc) { spcA = spc_rol(spcA); return pc; } /* ROL A */
-u1* SpcOp7C(u1* const pc) { spcA = spc_ror(spcA); return pc; } /* ROR A */
+u1* SpcOp3C(u1* const pc)
+{
+    spcA = spc_rol(spcA);
+    return pc;
+} /* ROL A */
+u1* SpcOp7C(u1* const pc)
+{
+    spcA = spc_ror(spcA);
+    return pc;
+} /* ROR A */
 
 /* DIV YA,X. */
 u1* SpcOp9E(u1* const pc)
@@ -943,8 +1240,16 @@ static inline void spc_decadj(bool const sub)
     spcP = c ? spcP | 0x01 : spcP & 0xFE;
 }
 
-u1* SpcOpBE(u1* const pc) { spc_decadj(true); return pc; }  /* DAS */
-u1* SpcOpDF(u1* const pc) { spc_decadj(false); return pc; } /* DAA */
+u1* SpcOpBE(u1* const pc)
+{
+    spc_decadj(true);
+    return pc;
+} /* DAS */
+u1* SpcOpDF(u1* const pc)
+{
+    spc_decadj(false);
+    return pc;
+} /* DAA */
 
 /* Invalid opcodes park the PC on the opcode, like SLEEP. */
 u1* SpcOpInvalid(u1* const pc) { return pc - 1; }

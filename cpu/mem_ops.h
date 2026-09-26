@@ -37,14 +37,14 @@ static inline void mem_add_cx_bx(void)
    register write can start a DMA that runs through these same handlers, and
    the nested access would otherwise clobber the outer address. The assembly
    kept it in ecx, which the callee preserved. */
-#define MEM_REG_DISPATCH(name, table)                     \
-    static void name(void)                                \
-    {                                                     \
-        uintptr_t const b = MemSeamB, c = MemSeamC;              \
-                                                          \
-        (table)[MemSeamC - 0x2000]();                     \
-        MemSeamC = c;                                     \
-        MemSeamB = b;                                     \
+#define MEM_REG_DISPATCH(name, table)               \
+    static void name(void)                          \
+    {                                               \
+        uintptr_t const b = MemSeamB, c = MemSeamC; \
+                                                    \
+        (table)[MemSeamC - 0x2000]();               \
+        MemSeamC = c;                               \
+        MemSeamB = b;                               \
     }
 
 MEM_REG_DISPATCH(MemRegRead, regptra)
@@ -515,57 +515,57 @@ static inline u4 mem_st_addr(u4 const base)
     return (MemSeamC + MemSeamB) & ramsizeand;
 }
 
-#define MEM_ST_READ8(name, base, buf)                                        \
-    void name(void)                                                          \
-    {                                                                        \
-        if (mem_st_is_rom()) {                                               \
-            c_memaccessbankr8();                                             \
-            return;                                                          \
-        }                                                                    \
-        mem_set_al((buf)[mem_st_addr(base)]);                                \
-        MemSeamB = 0;                                                        \
+#define MEM_ST_READ8(name, base, buf)         \
+    void name(void)                           \
+    {                                         \
+        if (mem_st_is_rom()) {                \
+            c_memaccessbankr8();              \
+            return;                           \
+        }                                     \
+        mem_set_al((buf)[mem_st_addr(base)]); \
+        MemSeamB = 0;                         \
     }
 
-#define MEM_ST_READ16(name, base, buf)                                       \
-    void name(void)                                                          \
-    {                                                                        \
-        u4 a;                                                                \
-                                                                             \
-        if (mem_st_is_rom()) {                                               \
-            c_memaccessbankr16();                                            \
-            return;                                                          \
-        }                                                                    \
-        a = mem_st_addr(base);                                               \
-        mem_set_ax((u2)((buf)[a] | ((buf)[(a + 1) & ramsizeand] << 8)));      \
-        MemSeamB = 0;                                                        \
+#define MEM_ST_READ16(name, base, buf)                                   \
+    void name(void)                                                      \
+    {                                                                    \
+        u4 a;                                                            \
+                                                                         \
+        if (mem_st_is_rom()) {                                           \
+            c_memaccessbankr16();                                        \
+            return;                                                      \
+        }                                                                \
+        a = mem_st_addr(base);                                           \
+        mem_set_ax((u2)((buf)[a] | ((buf)[(a + 1) & ramsizeand] << 8))); \
+        MemSeamB = 0;                                                    \
     }
 
-#define MEM_ST_WRITE8(name, base, buf)                                       \
-    void name(void)                                                          \
-    {                                                                        \
-        if (mem_st_is_rom()) {                                               \
-            c_memaccessbankw8();                                             \
-            return;                                                          \
-        }                                                                    \
-        (buf)[mem_st_addr(base)] = (u1)(MemSeamA & 0xFFu);                   \
-        sramb4save = 5 * 60;                                                 \
-        MemSeamB = 0;                                                        \
+#define MEM_ST_WRITE8(name, base, buf)                     \
+    void name(void)                                        \
+    {                                                      \
+        if (mem_st_is_rom()) {                             \
+            c_memaccessbankw8();                           \
+            return;                                        \
+        }                                                  \
+        (buf)[mem_st_addr(base)] = (u1)(MemSeamA & 0xFFu); \
+        sramb4save = 5 * 60;                               \
+        MemSeamB = 0;                                      \
     }
 
-#define MEM_ST_WRITE16(name, base, buf)                                      \
-    void name(void)                                                          \
-    {                                                                        \
-        u4 a;                                                                \
-                                                                             \
-        if (mem_st_is_rom()) {                                               \
-            c_memaccessbankw16();                                            \
-            return;                                                          \
-        }                                                                    \
-        a = mem_st_addr(base);                                               \
-        (buf)[a] = (u1)(MemSeamA & 0xFFu);                                   \
-        (buf)[(a + 1) & ramsizeand] = (u1)((MemSeamA >> 8) & 0xFFu);         \
-        sramb4save = 5 * 60;                                                 \
-        MemSeamB = 0;                                                        \
+#define MEM_ST_WRITE16(name, base, buf)                              \
+    void name(void)                                                  \
+    {                                                                \
+        u4 a;                                                        \
+                                                                     \
+        if (mem_st_is_rom()) {                                       \
+            c_memaccessbankw16();                                    \
+            return;                                                  \
+        }                                                            \
+        a = mem_st_addr(base);                                       \
+        (buf)[a] = (u1)(MemSeamA & 0xFFu);                           \
+        (buf)[(a + 1) & ramsizeand] = (u1)((MemSeamA >> 8) & 0xFFu); \
+        sramb4save = 5 * 60;                                         \
+        MemSeamB = 0;                                                \
     }
 
 MEM_ST_READ8(c_stsramr8, 0x60, sram)
@@ -1203,7 +1203,7 @@ void c_SA1RAMaccessbankw8b(void)
     u1* const p = mem_bm_byte();
     u1 const field = (u1)(((MemSeamA & mask) << sh) & 0xFFu);
 
-    *p = (u1)((*p & (u1)~(u1)(mask << sh)) | field);
+    *p = (u1)((*p & (u1) ~(u1)(mask << sh)) | field);
     mem_set_al(field);
     MemSeamB = 0;
 }
@@ -1266,7 +1266,7 @@ static inline u1 mem_bw_put(u4 const off, u1 const val)
     u4 const idx = mem_bw_index(off);
     u1 const field = (u1)(((val & mask) << sh) & 0xFFu);
 
-    SA1BWPtr[idx] = (u1)((SA1BWPtr[idx] & (u1)~(u1)(mask << sh)) | field);
+    SA1BWPtr[idx] = (u1)((SA1BWPtr[idx] & (u1) ~(u1)(mask << sh)) | field);
     return field;
 }
 
@@ -1804,8 +1804,7 @@ void c_memaccessbankr8sdd1(void)
         /* The offset stays 32-bit, as the assembly has it: a bank log byte
            of 0Fh puts the result far outside the ROM allocation. The base is
            a host pointer, so only the offset wraps. */
-        p = (uintptr_t)romdata + (u4)(((u4)mem_sdd1_banklog() << 20)
-            + ((Sdd1Bank & 0x0Fu) << 16) + (MemSeamC & 0xFFFFu));
+        p = (uintptr_t)romdata + (u4)(((u4)mem_sdd1_banklog() << 20) + ((Sdd1Bank & 0x0Fu) << 16) + (MemSeamC & 0xFFFFu));
         SDD1_init((u1*)(uintptr_t)p);
     }
     if (Sdd1Bank == MemSeamB && Sdd1Addr == MemSeamC) {

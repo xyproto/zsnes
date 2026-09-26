@@ -1,10 +1,8 @@
 #include <string.h>
 
-#include "../types.h"
 #include "../c_init.h"
 #include "../c_intrf.h"
 #include "../c_vcache.h"
-#include "cfg.h"
 #include "../chips/fxemu2.h"
 #include "../chips/fxtable.h"
 #include "../chips/sa1regs.h"
@@ -17,12 +15,15 @@
 #include "../gui/menu.h"
 #include "../init.h"
 #include "../initc.h"
+#include "../types.h"
+#include "cfg.h"
 #ifndef lengthof
 #define lengthof(x) (sizeof(x) / sizeof *(x))
 #endif
 #ifndef endof
 #define endof(x) ((x) + lengthof(x))
 #endif
+#include "../net/netplay.h"
 #include "../ui.h"
 #include "../vcache.h"
 #include "../video/c_mode716.h"
@@ -39,7 +40,6 @@
 #include "memtable.h"
 #include "regs.h"
 #include "regsw.h"
-#include "../net/netplay.h"
 #include "spc700.h"
 #include "table.h"
 

@@ -17,6 +17,7 @@
 #include "../gui/gui.h"
 #include "../gui/menu.h"
 #include "../initc.h"
+#include "../net/netplay.h"
 #include "../ui.h"
 #include "../video/newgfx.h"
 #include "../video/procvid.h"
@@ -29,7 +30,6 @@
 #include "c_irq.h"
 #include "c_rewind.h"
 #include "execute.h"
-#include "../net/netplay.h"
 #include "memtable.h"
 #include "table.h"
 
@@ -202,9 +202,13 @@ void scanline_pc_log(zreg const* const r)
 #define n scanline_pc_n
     if (!fp) {
         char const* e = getenv("SCANLINE_PC_LOG");
-        if (!(e && *e == '1')) { n++; return; }
+        if (!(e && *e == '1')) {
+            n++;
+            return;
+        }
         fp = fopen("/tmp/zsnes_scan.txt", "wb");
-        if (!fp) return;
+        if (!fp)
+            return;
     }
     {
         extern u1 SPCRAM[];

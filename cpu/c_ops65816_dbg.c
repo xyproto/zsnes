@@ -6,21 +6,20 @@
 #include <stdint.h>
 
 #include "../endmem.h"
-#include "../types.h"
-#include "c_memory.h"
-#include "memtable.h"
-#include "memory.h"
-#include "execute.h"
 #include "../gblvars.h"
 #include "../initc.h"
+#include "../types.h"
 #include "../ui.h"
 #include "c_irq.h"
+#include "c_memory.h"
+#include "execute.h"
+#include "memory.h"
+#include "memtable.h"
 
 #define OP(n) c_dbg##n
 
 /* Only the opcode table differs; the register file is the 65816's own. */
 #define tablead tableadc
-
 
 extern u1 dmadata[129] ASM_ALIGNED(1);
 extern u4 xa, xx, xy, xs, xd, xdb, xpb;
