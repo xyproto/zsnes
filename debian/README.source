@@ -10,28 +10,50 @@ co-installable with the historical `zsnes` package.
 
 The package therefore does not declare `Provides`, `Replaces`, `Breaks`, or
 `Conflicts` against `zsnes`. It installs the executable as `/usr/bin/zsnes2`,
-uses `zsnes2`-specific desktop, AppStream, icon, and manual-page names, and
-builds with `ZCONF="zsnes2"`. The latter prevents ZSNES 2 from adopting the
-legacy `~/.zsnes` directory and gives it its own XDG configuration directory,
-`$XDG_CONFIG_HOME/zsnes2` (normally `~/.config/zsnes2`).
+uses zsnes2-specific desktop, AppStream, icon, and manual-page names, and
+builds with `ZCONF="zsnes2"`.
+
+This prevents ZSNES 2 from adopting the legacy `~/.zsnes` directory and gives
+it its own XDG configuration directory, `$XDG_CONFIG_HOME/zsnes2` (normally
+`~/.config/zsnes2`).
 
 Architecture
 ------------
 
-Upstream ZSNES 2.2.3 intentionally builds the Linux target as 32-bit x86
-(`-m32`). The remaining assembly implementation is 32-bit x86 code, so the
-binary package is correctly declared as Architecture: i386.
+Upstream ZSNES 2.3.4 completed the migration of the former 32-bit x86 assembly
+implementation to C11 and now supports multiple CPU architectures.
 
-Do not relabel the package as amd64 merely because an amd64 system can run the
-resulting ELF32 executable. amd64 users should install the i386 package through
-Debian multiarch instead; this lets dpkg and apt resolve the matching 32-bit
-runtime libraries correctly.
+The Debian package currently follows the Linux architectures explicitly
+supported by upstream:
+
+- amd64
+- i386
+- arm64
+- riscv64
+
+32-bit ARM (`armhf`) is deliberately not enabled by this packaging revision.
+Upstream does not currently provide a 32-bit ARM Makefile target. armhf should
+only be enabled together with a tested upstream build configuration for that
+architecture.
+
+Hardening and PIE
+-----------------
+
+The package follows upstream's architecture-specific position-independence
+policy.
+
+On amd64 and i386, upstream uses absolute addressing and explicitly links
+non-PIE. Debian PIE hardening is therefore disabled on those architectures,
+while the remaining Debian hardening features stay enabled.
+
+On arm64 and riscv64, upstream requires position-independent code and does not
+disable PIE. These architectures therefore retain the full Debian hardening
+configuration, including PIE.
 
 SDL3 and audio
 --------------
 
-Debian unstable provides `libsdl3-dev`, which is declared directly in
-Build-Depends. No external repository is required to build the Debian package.
+The package declares SDL3 directly in Build-Depends.
 
 The package disables upstream's optional PipeWire and libao autodetection at
 build time and uses SDL3 as the deterministic audio backend. This avoids build
@@ -41,5 +63,5 @@ to be installed in the build environment.
 Rendering
 ---------
 
-OpenGL support remains enabled, but the SDL software renderer is also built.
-A discrete GPU is therefore not a package requirement.
+OpenGL support remains enabled, while the SDL software renderer is also
+available. A discrete GPU is therefore not a package requirement.

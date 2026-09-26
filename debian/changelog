@@ -1,3 +1,17 @@
+zsnes2 (2.3.4-1) unstable; urgency=medium
+
+  * New upstream release 2.3.4.
+  * Enable upstream-supported amd64, i386, arm64 and riscv64 builds.
+  * Remove the obsolete NASM build dependency after upstream completed
+    the C11 port.
+  * Update installation paths and architecture-aware autopkgtests for
+    the new upstream tree.
+  * Match upstream PIE policy: keep x86 builds non-PIE while retaining
+    PIE on arm64 and riscv64.
+  * Add amd64 multilib build dependencies for upstream's 32-bit x86 tests.
+
+ -- Reaper <JohnGrimmReaper@disroot.org>  Sat, 26 Sep 2026 21:10:17 +0000
+
 zsnes2 (2.2.3-1) unstable; urgency=medium
 
   * Initial Debian release.

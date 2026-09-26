@@ -21,7 +21,7 @@ Files: mmlib/linux.c
 Copyright: 2003-2007 Ryan C. Gordon and others
 License: Zlib
 
-Files: mmlib/osx.c
+Files: mmlib/macos.c
 Copyright: 2002 Apple Computer, Inc.
            2003-2007 Ryan C. Gordon and others
 License: Zlib and Apple-HID-Utilities
@@ -44,11 +44,6 @@ Files: win/vc_head/inttypes.h
        win/vc_head/stdint.h
 Copyright: 2006 Alexander Chemeris
 License: Chemeris-permissive
-
-Files: zip/unzip.c
-       zip/zunzip.h
-Copyright: 1998 Gilles Vollant
-License: Zlib
 
 Files: debian/*
 Copyright: 2026 Reaper <JohnGrimmReaper@disroot.org>
@@ -146,5 +141,5 @@ License: Apple-HID-Utilities
  from its use, reproduction, modification or distribution.
  .
  The original HID Utilities sample and its license notice were published by
- Apple as sample code; mmlib/osx.c identifies the incorporated section and
+ Apple as sample code; mmlib/macos.c identifies the incorporated section and
  credits George Warner.
