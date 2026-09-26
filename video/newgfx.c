@@ -79,7 +79,6 @@ __asm__(
     ASM_SEC_BSS(".bss")
     BSSD(nglogicval, 1)
     BSSD(mosjmptab, 15)
-    BSSB(Mode7HiRes, 1)
     BSSP(pesimpng, 1)
     BSSD(bgtxadd2, 1)
     ASM_SEC_END

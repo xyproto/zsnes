@@ -117,7 +117,7 @@ extern u1 winbgdata[]; /* endmem.c */
 
 /* video/newgfx.c */
 extern u1 OrLogicTable[4], AndLogicTable[4], XorLogicTable[4], XNorLogicTable[4];
-extern u1 NGNumSpr, Mode7HiRes;
+extern u1 NGNumSpr;
 extern u4 sprclprio;
 extern u4 ngwintable[32], ngwintablec[32], pwinen, pngwinen;
 extern u4 bgcmsung, modeused[2], reslbyl, mosjmptab[15], nglogicval;
@@ -312,7 +312,6 @@ static void test_newgfx(void)
     ZT_CHECK_INT(GAP(bgcmsung, modeused[0]), 4);
     ZT_CHECK_INT(GAP(modeused[0], reslbyl), 8);
     ZT_CHECK_INT(GAP(nglogicval, mosjmptab[0]), 4);
-    ZT_CHECK_INT(GAP(mosjmptab[0], Mode7HiRes), 60);
     /* NGNumSpr is a lone byte, so sprclprio after it is deliberately unaligned. */
     ZT_CHECK_INT(GAP(NGNumSpr, sprclprio), 1);
 }

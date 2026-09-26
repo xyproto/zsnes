@@ -6,7 +6,6 @@
 void StartDrawNewGfx(void);
 void preparesprpr(void);
 
-extern u1 Mode7HiRes; // XXX always 0
 extern u1 sprclprio[4];
 extern u1* ofsmcptr;
 extern u4 bgcmsung;

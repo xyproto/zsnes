@@ -96,10 +96,6 @@ void switchtovirq(zreg* const pedx, zreg* const pesi)
 {
 	irqon = 0x80;
 
-#if 0 // XXX 0x00 seems wrong
-	if (doirqnext & 0x02) edx = edx & 0xFFFF00FF | ((edx - (3 << 8)) & 0x0000FF00); // Cycle adjust.
-#endif
-
 	if (xe & 0x01)
 	{ // IRQ emulation mode.
 		IRQemulmode(pedx, pesi);

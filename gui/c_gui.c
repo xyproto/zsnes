@@ -1096,7 +1096,6 @@ static char const guiftimemsg8[] = "PRESS SPACEBAR TO PROCEED.";
 static void horizonfixmsg(void)
 {
     memset(pressed, 0, 256); // XXX maybe should be sizeof(pressed)
-    pressed[0x2C] = 0; // XXX redundant
 
     char const* const* const msg = horizon_get(GetTime());
     do {
@@ -1304,7 +1303,6 @@ void StartGUI(void)
 void guimencodermsg(void)
 {
     memset(pressed, 0, 256); // XXX maybe should be sizeof(pressed)
-    pressed[0x2C] = 0; // XXX redundant
 
     do {
         GUIBox3D(43, 75, 213, 163);
@@ -1321,7 +1319,6 @@ void guimencodermsg(void)
 void guilamemsg(void)
 {
     memset(pressed, 0, 256); // XXX maybe should be sizeof(pressed)
-    pressed[0x2C] = 0; // XXX redundant
 
     do {
         GUIBox3D(43, 75, 213, 163);

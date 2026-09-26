@@ -292,23 +292,6 @@ static void hid_GetElementInfo(CFTypeRef refElement, pRecElement pElement)
     if (refType)
         if (!CFStringGetCString(refType, pElement->name, 256, CFStringGetSystemEncoding()))
             HIDReportError("CFStringGetCString error retrieving pElement->name.");
-
-#if 0
-  if (!*pElement->name)
-  {
-    // set name from vendor id, product id & usage info look up
-    if (!HIDGetElementNameFromVendorProductUsage (gCurrentGetDevice->vendorID, gCurrentGetDevice->productID, pElement->usagePage, pElement->usage, pElement->name))
-    {
-      // set name from vendor id/product id look up
-      HIDGetElementNameFromVendorProductCookie (gCurrentGetDevice->vendorID, gCurrentGetDevice->productID, (long) pElement->cookie, pElement->name);
-      if (!*pElement->name) { // if no name
-        HIDGetUsageName (pElement->usagePage, pElement->usage, pElement->name);
-        if (!*pElement->name) // if not usage
-          sprintf (pElement->name, "Element");
-      }
-    }
-  }
-#endif
 }
 
 static void hid_AddElement(CFTypeRef refElement, pRecElement* ppElementCurrent)
@@ -386,10 +369,6 @@ static void hid_AddElement(CFTypeRef refElement, pRecElement* ppElementCurrent)
                     break;
                 }
             }
-#if 0
-            else
-                HIDReportError ("CFNumberGetValue error when getting value for refUsage or refUsagePage.");
-#endif
         } else // collection
             pElement = (pRecElement)malloc(sizeof(recElement));
     } else
@@ -467,10 +446,6 @@ static void hid_AddElement(CFTypeRef refElement, pRecElement* ppElementCurrent)
         }
         gAddAsChild = false; // add next as this elements sibling (when return from a collection or with non-collections)
     }
-#if 0
-    else
-        HIDReportError ("hid_AddElement - no element added.");
-#endif
 }
 
 static void hid_GetElementsCFArrayHandler(const void* value, void* parameter)
@@ -709,10 +684,6 @@ static pRecDevice hid_DisposeDevice(pRecDevice pDevice)
         pDeviceNext = pDevice->pNext;
 
         result = HIDDequeueDevice(pDevice);
-#if 0
-    if (kIOReturnSuccess != result)
-      HIDReportErrorNum ("hid_DisposeDevice: HIDDequeueDevice error: 0x%8.8X.", result);
-#endif
 
         hid_DisposeDeviceElements(pDevice->pListElements);
         pDevice->pListElements = NULL;
@@ -1018,43 +989,6 @@ static void hid_AddDevices(void* refCon, io_iterator_t iterator)
     while ((ioHIDDeviceObject = IOIteratorNext(iterator)) != 0) {
         pRecDevice pNewDevice = hid_BuildDevice(ioHIDDeviceObject);
         if (pNewDevice) {
-#if 0 // set true for verbose output
-      printf("\nhid_AddDevices: pNewDevice = {t: \"%s\", v: %ld, p: %ld, v: %ld, m: \"%s\", " \
-      "p: \"%s\", l: %ld, u: %4.4lX:%4.4lX, #e: %ld, #f: %ld, #i: %ld, #o: %ld, " \
-      "#c: %ld, #a: %ld, #b: %ld, #h: %ld, #s: %ld, #d: %ld, #w: %ld}.",
-      pNewDevice->transport,
-      pNewDevice->vendorID,
-      pNewDevice->productID,
-      pNewDevice->version,
-      pNewDevice->manufacturer,
-      pNewDevice->product,
-      pNewDevice->locID,
-      pNewDevice->usagePage,
-      pNewDevice->usage,
-      pNewDevice->totalElements,
-      pNewDevice->features,
-      pNewDevice->inputs,
-      pNewDevice->outputs,
-      pNewDevice->collections,
-      pNewDevice->axis,
-      pNewDevice->buttons,
-      pNewDevice->hats,
-      pNewDevice->sliders,
-      pNewDevice->dials,
-      pNewDevice->wheels
-      );
-      fflush(stdout);
-#elif 0 // otherwise output brief description
-            printf("\nhid_AddDevices: pNewDevice = {m: \"%s\" p: \"%s\", vid: %ld, pid: %ld, loc: %8.8lX, usage: %4.4lX:%4.4lX}.",
-                pNewDevice->manufacturer,
-                pNewDevice->product,
-                pNewDevice->vendorID,
-                pNewDevice->productID,
-                pNewDevice->locID,
-                pNewDevice->usagePage,
-                pNewDevice->usage);
-            fflush(stdout);
-#endif
             hid_AddDevice(pListDeviceHead, pNewDevice);
 
             // Register for an interest notification of this device being removed. Use a reference to
@@ -1366,13 +1300,8 @@ static unsigned int available_mice = 0;
 static pRecDevice* devices = NULL;
 
 /* returns non-zero if (a <= b). */
-typedef unsigned long long ui64;
 static inline int oldEvent(const AbsoluteTime* a, const AbsoluteTime* b)
 {
-#if 0 // !!! FIXME: doesn't work, timestamps aren't reliable.
-    const ui64 a64 = (((unsigned long long) a->hi) << 32) | a->lo;
-    const ui64 b64 = (((unsigned long long) b->hi) << 32) | b->lo;
-#endif
     return 0;
 } /* oldEvent */
 

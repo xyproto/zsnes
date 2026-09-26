@@ -1361,11 +1361,6 @@ SkipProcess2: {
 
     ProcessBRR:
         if (Voice0End[p1] == 1) { // No decode 1 block.
-#if 0 // XXX was commented out
-			DSPMem[0x5C]    &= ~(1U << p1);
-			DSPMem[0x4C]    &= ~(1U << p1);
-			Voice0Looped[p1] = 0;
-#endif
             if (Voice0Loop[p1] != 1) { // End sample.
                 DSPMem[0x7C] |= 1U << p1;
                 DSPMem[16 * p1 + 8] = 0;
@@ -1373,39 +1368,14 @@ SkipProcess2: {
                 DLPFsamples[p1][17] = 0;
                 DLPFsamples[p1][18] = 0;
                 DLPFsamples[p1][19] = 0;
-#if 0 // XXX was commented out
-				DSPMem[0x5C]        &= ~(1U << p1);
-#endif
                 Voice0EnvInc[p1] = 0;
                 Voice0IncNumber[p1] = 0;
                 Voice0Status[p1] = 0;
-#if 0 // XXX was commented out
-				DSPMem[16 * p1 + 9]  = 0;
-#endif
                 return;
             }
-#if 0 // XXX was commented out
-			Voice0Looped[p1] = 1;
-#endif
             SoundLooped0[p1] = 1;
             DSPMem[0x7C] |= 1U << p1;
-#if 0 // XXX was commented out
-			Voice0Prev0[p1] = 0;
-			Voice0Prev1[p1] = 0;
-#endif
-
-#if 0 // XXX was commented out
-			{
-				u2 const ax = DSPMem[0x5D] * 256 + DSPMem[16 * p1 + 4] * 4;
-				Voice0Ptr[p1]     = ld16u(&SPCRAM[ax]);
-				Voice0LoopPtr[p1] = ld16u(&SPCRAM[ax + 2]);
-			}
-#endif
-
             Voice0Ptr[p1] = Voice0LoopPtr[p1];
-#if 0 // XXX was commented out
-			Voice0Prev1[p1] = Voice0Prev0[p1];
-#endif
         }
 
         // Decode 1 block.

@@ -86,10 +86,6 @@ static void transdmappu2cpu(u1 const al, DMAInfo* const esi)
     u2 cx = esi->offset;
     esi->count = 0;
 
-#if 0 // XXX seems to be unused in the loop
-	u1 const* const esi = (cx & 0x8000 ? snesmmap : snesmap2)[curbank];
-#endif
-
     // Do loop
     u4 edx = dx != 0 ? dx : 65536;
     dma_charge(edx);
@@ -175,10 +171,6 @@ static void transdma(DMAInfo* const esi)
     u1 const curbank = esi->bank;
     u2 cx = esi->offset;
     esi->count = 0;
-
-#if 0 // XXX seems to be unused in the loop
-	u1 const* const esi = (cx & 0x8000 ? snesmmap : snesmap2)[curbank];
-#endif
 
     // Do loop
     u4 edx = dx != 0 ? dx : 65536;

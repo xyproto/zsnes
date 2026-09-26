@@ -240,7 +240,6 @@ void cachevideo(void)
     ngmsdraw = 0;
     ngextbg = 0;
     hiresstuff = 0;
-    Mode7HiRes = 0;
 
     scfbl = 1;
     maxbr = vidbright;

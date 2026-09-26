@@ -274,7 +274,7 @@ WRAPPER_GOALS := clean distclean debug linux_pi4 \
                  linux_i686 linux_x86_64 linux_aarch64 linux_riscv64 \
                  macos_aarch64 macos_x86_64 \
                  freebsd_aarch64 freebsd_x86_64 \
-                 win_i686 win_x86_64 portcheck portasm help test fmt unused
+                 win_i686 win_x86_64 portcheck help test fmt unused
 # Empty command-line backend variables are explicit opt-outs.
 BACKENDS_OPTOUT := $(if $(filter command line,$(origin WITH_SDL) \
                      $(origin WITH_PIPEWIRE) $(origin WITH_AO)),yes)
@@ -628,7 +628,6 @@ SRCS += video/c_procwin.c
 SRCS += video/c_m716gate.c
 SRCS += video/c_mv16draw.c
 SRCS += video/c_mv16msgate.c
-SRCS += video/c_mv16leaf.c
 SRCS += video/c_mode716draw.c
 SRCS += video/c_mode716gate.c
 SRCS += video/c_mv16tms.c
@@ -1034,7 +1033,6 @@ info:
 	@echo "PIPEWIRE_AVAILABLE = $(PIPEWIRE_AVAILABLE)"
 	@echo "AO_AVAILABLE  = $(AO_AVAILABLE)"
 	@echo "BINARY        = $(BINARY)"
-	@echo "ASM           = $(ASM)"
 	@echo "CC            = $(CC)"
 	@echo "CC_TARGET     = $(CC_TARGET)"
 	@echo "PSR           = $(PSR)"
