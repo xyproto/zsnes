@@ -1,9 +1,5 @@
 /*
  * draw16x816t and draw8x816toffset, ported from video/makev16t.asm.
- *
- * On their own because three difftests substitute stubs for them to observe
- * which way a dispatcher branched - see video/c_mv16draw.h. The targets that
- * want the real ones link this file; the ones that stub them do not.
  */
 
 #include "c_mv16draw.h"

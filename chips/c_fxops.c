@@ -1,6 +1,6 @@
 /* The SuperFX (GSU) core, ported from chips/fxemu2.asm, chips/fxemu2b.asm and
-   chips/fxemu2c.asm. The bodies are in chips/fx_ops.h, which the difftest
-   includes too; this file only supplies the state they share. */
+   chips/fxemu2c.asm. The bodies are in chips/fx_ops.h; this file only
+   supplies the state they share. */
 #include <stdint.h>
 
 #include "../endmem.h"

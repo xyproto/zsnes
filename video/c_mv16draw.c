@@ -3,8 +3,7 @@
  *
  * Each spills the register file into a seam, calls its C body and reloads, then
  * hands back the mosaic tail rather than taking it: the assembly reached
- * domosaic16b by a jump, and test/difftest_t8t.c records the register state
- * there.
+ * domosaic16b by a jump.
  *
  * draw8x816bt's mode 2 branch is a call that carries on afterwards, not a jump
  * away like draw8x816t's.

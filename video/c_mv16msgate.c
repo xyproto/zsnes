@@ -6,8 +6,7 @@
  * to it, so the leaf returns to the dispatcher's caller.
  *
  * The mosaic tail is handed back rather than taken: the assembly reached
- * domosaic16b by a jump, and test/difftest_mvall.c records the register state
- * there.
+ * domosaic16b by a jump.
  *
  * The window path needs curmosaicsz == 1 *and* winon set.
  */

@@ -1,7 +1,6 @@
 /* PPU read handlers ported from cpu/regs.inc.
  *
- * Kept apart from cpu/c_regs.c, which is the table setup and pulls in the
- * whole register file, so the difftest can link these on their own.
+ * Kept apart from cpu/c_regs.c, which is the table setup.
  */
 #include "../chips/regabi.h"
 #include "../types.h"
@@ -527,8 +526,7 @@ void c_reg2103w(u1 const al)
    0x10f) and bsnes (sfc/ppu/io.cpp with a uint10 address, and writeObject
    masking with 0x1f) both do. The assembly this replaced instead reset the
    address to 1 and dropped the byte into the latch once it passed 544, and
-   only when the auto-increment was live; difftest_regs.c records that
-   divergence. */
+   only when the auto-increment was live. */
 REGABI_REG_WRITE8(reg2104w);
 void c_reg2104w(u1 const al)
 {

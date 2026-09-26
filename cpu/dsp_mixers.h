@@ -1,7 +1,5 @@
 /*
- * The DSP voice mixers as register machines. Included by both the emulator
- * (cpu/c_dspproc.c) and the difftests, so what ships is what was proven
- * bit-identical to the assembly.
+ * The DSP voice mixers as register machines, included by cpu/c_dspproc.c.
  *
  * Textual include: the includer supplies the integer typedefs, the DSP globals
  * and the DSPInterpolate pointer.

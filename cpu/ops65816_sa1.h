@@ -19,8 +19,7 @@ extern u1 IRAM[2049] ASM_ALIGNED(4);
  * One more is a defect in the original - SA1COpD6m8, the 8-bit DEC d,x, read
  * and wrote sixteen bits while decrementing only al, touching the following
  * byte. The port leaves that opcode alone so the shared 8-bit handler serves
- * it, which is what bsnes and snes9x do; test/difftest_sa1.c carries it as a
- * deliberate divergence from the assembly.
+ * it, which is what bsnes and snes9x do.
  */
 #define OPS_OWN_COp00
 #define OPS_OWN_COp1B

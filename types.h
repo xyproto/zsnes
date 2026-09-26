@@ -12,9 +12,8 @@
     } while (0)
 
 /* Named for their width in bytes, and the whole tree means that literally: the
-   asm-derived layouts in endmem.c and the *data.c files, the save-state format,
-   and the difftests that compare against the original assembly all take u4 to
-   be exactly four bytes. The fixed-width types say so, where `unsigned int`
+   asm-derived layouts in endmem.c and the *data.c files and the save-state
+   format take u4 to be exactly four bytes. The fixed-width types say so, where `unsigned int`
    only promises at least sixteen bits and happens to be four bytes here. */
 typedef int8_t s1;
 typedef int16_t s2;

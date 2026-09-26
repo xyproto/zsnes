@@ -1,7 +1,6 @@
 /* 65816 opcode handlers ported from cpu/e65816.inc.
  *
- * The handlers are in cpu/ops65816.h so the difftest can include them next to
- * the original assembly; this file is what the emulator links. */
+ * The handlers are in cpu/ops65816.h; this file is what the emulator links. */
 #include <stdint.h>
 
 #include "../endmem.h"

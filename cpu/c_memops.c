@@ -1,5 +1,5 @@
 /* The memory access handlers ported from cpu/memory.asm. The bodies are in
-   cpu/mem_ops.h, which the difftest includes too; this file supplies the seam
+   cpu/mem_ops.h; this file supplies the seam
    they pass values through and the entry points the memtable holds. */
 #include <stdbool.h>
 #include <stdint.h>
@@ -62,9 +62,7 @@ uintptr_t MemSeamDI;
 
 /* The memtable and Bank0dat entry points.  cpu/memory.asm used to own these
    names and thunk into the c_ bodies above; the tables now hold the bodies
-   themselves, under the seam convention in cpu/memseam.h.  The c_ prefix
-   stays on the bodies because test/difftest_memops.c drives them alongside
-   the pre-port assembly oracle, which still exports the public names. */
+   themselves, under the seam convention in cpu/memseam.h. */
 #define MEM_BANK(name) \
     void name(void)    \
     {                  \

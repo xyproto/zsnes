@@ -33,8 +33,7 @@ void netplay_packet_encode(uint8_t out[NETPLAY_PACKET_BYTES], NetplayPacket cons
    drop it and keep waiting. */
 int netplay_packet_decode(NetplayPacket* out, uint8_t const in[NETPLAY_PACKET_BYTES]);
 
-/* The opening packet of a session: right magic, right session, and a neutral
-   pad on frame zero. */
+/* The opening packet of a session: right magic and session, on frame zero. */
 int netplay_packet_is_handshake(NetplayPacket const* p, uint32_t session);
 
 uint32_t netplay_fnv1a(void const* data, size_t len);

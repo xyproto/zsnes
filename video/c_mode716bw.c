@@ -7,8 +7,7 @@
  * One deliberate difference from the assembly: this call site used to reach
  * BuildWindow by the old register ABI and passed its saved ebx and eax rather
  * than the scanline twice, so the second argument indexed winbg1enval[] at the
- * wrong scanline. This passes what the assembly meant; difftest_m7bw.c pins
- * both behaviours.
+ * wrong scanline. This passes what the assembly meant.
  */
 #include <stdint.h>
 

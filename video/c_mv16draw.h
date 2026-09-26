@@ -5,11 +5,7 @@
 
 /* The 8x8 tile drawers, from video/mv16tms.asm and video/makev16t.asm. Each
    returns non-zero when the mosaic tail is due and the caller runs
-   domosaic16b, because the assembly jumped to it rather than calling.
-
-   draw16x816t and draw8x816toffset live alone in video/c_mv16leaf.c: the
-   difftests stub exactly those two to see which way a dispatch went, and a
-   call within one translation unit cannot be intercepted. */
+   domosaic16b, because the assembly jumped to it rather than calling. */
 u4 draw16x816t(m7regs* r);
 u4 draw8x816toffset(m7regs* r);
 
