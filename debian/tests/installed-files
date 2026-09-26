@@ -7,7 +7,55 @@ metainfo=/usr/share/metainfo/io.github.xyproto.zsnes2.metainfo.xml
 manpage=/usr/share/man/man1/zsnes2.1.gz
 
 [ -x "$binary" ]
-file "$binary" | grep -Eq 'ELF 32-bit.*Intel 80386'
+
+binary_info=$(file -b "$binary")
+architecture=$(dpkg --print-architecture)
+elf_type=$(LC_ALL=C readelf -h "$binary" | awk '$1 == "Type:" { print $2; exit }')
+
+if [ -z "$elf_type" ]; then
+    echo "Unable to determine ELF type for $binary" >&2
+    exit 1
+fi
+
+case "$architecture" in
+    amd64)
+        printf '%s\n' "$binary_info" | grep -Eq 'ELF 64-bit.*x86-64'
+        [ "$elf_type" = "EXEC" ] || {
+            echo "amd64 ZSNES 2 must follow upstream's non-PIE x86 build policy" >&2
+            echo "ELF type: $elf_type" >&2
+            exit 1
+        }
+        ;;
+    i386)
+        printf '%s\n' "$binary_info" | grep -Eq 'ELF 32-bit.*Intel 80386'
+        [ "$elf_type" = "EXEC" ] || {
+            echo "i386 ZSNES 2 must follow upstream's non-PIE x86 build policy" >&2
+            echo "ELF type: $elf_type" >&2
+            exit 1
+        }
+        ;;
+    arm64)
+        printf '%s\n' "$binary_info" | grep -Eq 'ELF 64-bit.*ARM aarch64'
+        [ "$elf_type" = "DYN" ] || {
+            echo "arm64 ZSNES 2 must retain PIE" >&2
+            echo "ELF type: $elf_type" >&2
+            exit 1
+        }
+        ;;
+    riscv64)
+        printf '%s\n' "$binary_info" | grep -Eq 'ELF 64-bit.*RISC-V'
+        [ "$elf_type" = "DYN" ] || {
+            echo "riscv64 ZSNES 2 must retain PIE" >&2
+            echo "ELF type: $elf_type" >&2
+            exit 1
+        }
+        ;;
+    *)
+        echo "Unexpected package architecture: $architecture" >&2
+        echo "Binary: $binary_info" >&2
+        exit 1
+        ;;
+esac
 
 if ldd "$binary" | grep -q 'not found'; then
     echo "Unresolved runtime dependency:" >&2

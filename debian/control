@@ -4,10 +4,11 @@ Priority: optional
 Maintainer: Reaper <JohnGrimmReaper@disroot.org>
 Build-Depends:
  debhelper-compat (= 13),
+ gcc-multilib [amd64],
+ libc6-dev-i386 [amd64],
  libgl-dev,
  libpng-dev,
  libsdl3-dev,
- nasm,
  pkgconf,
  python3,
  zlib1g-dev,
@@ -18,14 +19,15 @@ Vcs-Browser: https://github.com/johngrimmreaper/zsnes/tree/debian/unstable
 Vcs-Git: https://github.com/johngrimmreaper/zsnes.git -b debian/unstable
 
 Package: zsnes2
-Architecture: i386
+Architecture: amd64 i386 arm64 riscv64
 Depends:
  ${misc:Depends},
  ${shlibs:Depends},
 Description: ZSNES 2 Super Nintendo emulator
  ZSNES 2 is a maintained continuation of the classic ZSNES emulator,
- updated to build and run on modern Unix-like systems while retaining its
- low-overhead x86 implementation and familiar interface.
+ updated to build and run on modern Unix-like systems.
  .
- The Linux build is a 32-bit x86 program and provides both SDL software
- rendering and OpenGL rendering. Game ROM images are not included.
+ The original x86 assembly implementation has been ported to C11 and the
+ current upstream release supports multiple CPU architectures. The package
+ provides SDL3 rendering and audio together with OpenGL rendering support.
+ Game ROM images are not included.
