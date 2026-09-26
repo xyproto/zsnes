@@ -249,6 +249,12 @@ extern unsigned char* RGBtoYUVPtr;
 /* JOYSTICK AND KEYBOARD INPUT */
 static SDL_Joystick* JoystickInput[5];
 static SDL_JoystickID JoystickID[5];
+/* Devices SDL recognises as gamepads (Xbox, PlayStation, Switch Pro, ...) are
+   opened through the Gamepad API instead of the raw joystick one: it gives a
+   standard SOUTH/EAST/WEST/NORTH + D-pad layout across every controller and
+   driver, so a pad drives the SNES directly (GamepadReadPlayer) with no manual
+   binding. The two arrays line up by slot; a device is in one or the other. */
+static SDL_Gamepad* GamepadInput[5];
 static unsigned int AxisOffset[5] = { 256 + 128 + 64 }; // per joystick offsets in
 static unsigned int ButtonOffset[5] = { 448 }; // pressed. We have 128 + 64
 static unsigned int HatOffset[5] = { 448 }; // bytes for all joysticks. We
@@ -624,8 +630,8 @@ int Main_Proc(void)
 
         case SDL_EVENT_JOYSTICK_HAT_MOTION: {
             int idx = joystick_index_from_id(event.jhat.which);
-            if (idx < 0) {
-                break;
+            if (idx < 0 || GamepadInput[idx]) {
+                break; /* a gamepad slot: the Gamepad API drives it */
             }
             // POV hats act as direction pad
             offset = HatOffset[idx];
@@ -696,8 +702,8 @@ int Main_Proc(void)
 
         case SDL_EVENT_JOYSTICK_AXIS_MOTION: {
             int idx = joystick_index_from_id(event.jaxis.which);
-            if (idx < 0) {
-                break;
+            if (idx < 0 || GamepadInput[idx]) {
+                break; /* a gamepad slot: the Gamepad API drives it */
             }
             offset = AxisOffset[idx];
             offset += event.jaxis.axis * 2;
@@ -719,8 +725,8 @@ int Main_Proc(void)
 
         case SDL_EVENT_JOYSTICK_BUTTON_DOWN: {
             int idx = joystick_index_from_id(event.jbutton.which);
-            if (idx < 0) {
-                break;
+            if (idx < 0 || GamepadInput[idx]) {
+                break; /* a gamepad slot: the Gamepad API drives it */
             }
             offset = ButtonOffset[idx];
             offset += event.jbutton.button;
@@ -733,8 +739,8 @@ int Main_Proc(void)
 
         case SDL_EVENT_JOYSTICK_BUTTON_UP: {
             int idx = joystick_index_from_id(event.jbutton.which);
-            if (idx < 0) {
-                break;
+            if (idx < 0 || GamepadInput[idx]) {
+                break; /* a gamepad slot: the Gamepad API drives it */
             }
             offset = ButtonOffset[idx];
             offset += event.jbutton.button;
@@ -1476,6 +1482,10 @@ static void CloseJoystickInput(void)
     int i;
 
     for (i = 0; i < 5; i++) {
+        if (GamepadInput[i]) {
+            SDL_CloseGamepad(GamepadInput[i]);
+        }
+        GamepadInput[i] = NULL;
         if (JoystickInput[i]) {
             SDL_CloseJoystick(JoystickInput[i]);
         }
@@ -1495,6 +1505,7 @@ BOOL InitJoystickInput(void)
     CloseJoystickInput();
 
     SDL_InitSubSystem(SDL_INIT_JOYSTICK);
+    SDL_InitSubSystem(SDL_INIT_GAMEPAD);
     ids = SDL_GetJoysticks(&num_joysticks);
     if (!ids || num_joysticks <= 0) {
         printf("No joysticks found.\n");
@@ -1503,10 +1514,25 @@ BOOL InitJoystickInput(void)
         return FALSE;
     }
     SDL_SetJoystickEventsEnabled(true);
+    SDL_SetGamepadEventsEnabled(true);
 
     max_num_joysticks = num_joysticks > 5 ? 5 : num_joysticks;
 
     for (i = 0; i < max_num_joysticks; i++) {
+        /* A recognised gamepad goes through the Gamepad API and drives the
+           SNES directly; only its slot number matters, not raw axis/button
+           counts, so there are no offsets to work out. */
+        if (SDL_IsGamepad(ids[i])) {
+            GamepadInput[i] = SDL_OpenGamepad(ids[i]);
+            if (!GamepadInput[i]) {
+                printf("Could not open gamepad %d: %s\n", i, SDL_GetError());
+                continue;
+            }
+            JoystickID[i] = ids[i];
+            printf("Device %i %s (gamepad)\n", i, SDL_GetGamepadName(GamepadInput[i]));
+            continue;
+        }
+
         JoystickInput[i] = SDL_OpenJoystick(ids[i]);
         if (!JoystickInput[i]) {
             printf("Could not open joystick %d: %s\n", i, SDL_GetError());
@@ -1537,6 +1563,70 @@ BOOL InitJoystickInput(void)
     SDL_free(ids);
 
     return TRUE;
+}
+
+/* The SNES pad bits for a player, read straight from its gamepad (slot
+   player-1). Returns 0 when that slot holds no gamepad, so callers can OR it in
+   unconditionally. The layout is the one every SNES emulator uses: the face
+   buttons by position, shoulders and triggers both reaching L and R, and the
+   left stick standing in for the D-pad. */
+u4 GamepadReadPlayer(u4 const player)
+{
+    SDL_Gamepad* gp;
+    s2 lx, ly;
+    u4 bits = 0;
+
+    if (player < 1 || player > 5) {
+        return 0;
+    }
+    gp = GamepadInput[player - 1];
+    if (!gp || !SDL_GamepadConnected(gp)) {
+        return 0;
+    }
+
+    if (SDL_GetGamepadButton(gp, SDL_GAMEPAD_BUTTON_SOUTH)) {
+        bits |= 0x80000000; /* B */
+    }
+    if (SDL_GetGamepadButton(gp, SDL_GAMEPAD_BUTTON_EAST)) {
+        bits |= 0x00800000; /* A */
+    }
+    if (SDL_GetGamepadButton(gp, SDL_GAMEPAD_BUTTON_WEST)) {
+        bits |= 0x40000000; /* Y */
+    }
+    if (SDL_GetGamepadButton(gp, SDL_GAMEPAD_BUTTON_NORTH)) {
+        bits |= 0x00400000; /* X */
+    }
+    if (SDL_GetGamepadButton(gp, SDL_GAMEPAD_BUTTON_BACK)) {
+        bits |= 0x20000000; /* select */
+    }
+    if (SDL_GetGamepadButton(gp, SDL_GAMEPAD_BUTTON_START)) {
+        bits |= 0x10000000; /* start */
+    }
+    if (SDL_GetGamepadButton(gp, SDL_GAMEPAD_BUTTON_LEFT_SHOULDER)
+        || SDL_GetGamepadAxis(gp, SDL_GAMEPAD_AXIS_LEFT_TRIGGER) > joy_sensitivity) {
+        bits |= 0x00200000; /* L */
+    }
+    if (SDL_GetGamepadButton(gp, SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER)
+        || SDL_GetGamepadAxis(gp, SDL_GAMEPAD_AXIS_RIGHT_TRIGGER) > joy_sensitivity) {
+        bits |= 0x00100000; /* R */
+    }
+
+    lx = SDL_GetGamepadAxis(gp, SDL_GAMEPAD_AXIS_LEFTX);
+    ly = SDL_GetGamepadAxis(gp, SDL_GAMEPAD_AXIS_LEFTY);
+    if (SDL_GetGamepadButton(gp, SDL_GAMEPAD_BUTTON_DPAD_UP) || ly < -joy_sensitivity) {
+        bits |= 0x08000000; /* up */
+    }
+    if (SDL_GetGamepadButton(gp, SDL_GAMEPAD_BUTTON_DPAD_DOWN) || ly > joy_sensitivity) {
+        bits |= 0x04000000; /* down */
+    }
+    if (SDL_GetGamepadButton(gp, SDL_GAMEPAD_BUTTON_DPAD_LEFT) || lx < -joy_sensitivity) {
+        bits |= 0x02000000; /* left */
+    }
+    if (SDL_GetGamepadButton(gp, SDL_GAMEPAD_BUTTON_DPAD_RIGHT) || lx > joy_sensitivity) {
+        bits |= 0x01000000; /* right */
+    }
+
+    return bits;
 }
 
 BOOL InitInput(void)
@@ -2111,7 +2201,11 @@ void DoRumble(void)
     if ((RumbleData & 0xFF00) == 0x7200) {
         u2 RumbleLeft = ((RumbleData & 0x000F) * 4369);
         u2 RumbleRight = (((RumbleData & 0x00F0) >> 4) * 4369);
-        SDL_RumbleJoystick(JoystickInput[0], RumbleLeft, RumbleRight, 600);
+        if (GamepadInput[0]) {
+            SDL_RumbleGamepad(GamepadInput[0], RumbleLeft, RumbleRight, 600);
+        } else {
+            SDL_RumbleJoystick(JoystickInput[0], RumbleLeft, RumbleRight, 600);
+        }
         RumbleData = 0;
     }
 }
@@ -2311,9 +2405,10 @@ void UpdateVFrame(void)
 
     if (SNESRumble && !MultiTap) {
         DoRumble();
+    } else if (GamepadInput[0]) {
+        SDL_RumbleGamepad(GamepadInput[0], 0, 0, 1); // Stop vibration
     } else {
-        // Stop vibration
-        SDL_RumbleJoystick(JoystickInput[0], 0, 0, 1);
+        SDL_RumbleJoystick(JoystickInput[0], 0, 0, 1); // Stop vibration
     }
 
     if (sound_sdl) {

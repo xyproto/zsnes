@@ -427,6 +427,7 @@ void ReadInputDevice(void)
         PlayerDeviceHelp(pl1URk, &JoyAOrig, 0x09000000);
         PlayerDeviceHelp(pl1DLk, &JoyAOrig, 0x06000000);
         PlayerDeviceHelp(pl1DRk, &JoyAOrig, 0x05000000);
+        JoyAOrig |= GamepadReadPlayer(1); // a recognised pad, no binding needed
         PlayerDeviceFix(&JoyAOrig);
         if (!(TurboSw & TurboCB)) {
             PlayerDeviceHelp(pl1Xtk, &JoyAOrig, 0x00400000);
@@ -494,6 +495,7 @@ void ReadInputDevice(void)
         PlayerDeviceHelp(pl2URk, &JoyBOrig, 0x09000000);
         PlayerDeviceHelp(pl2DLk, &JoyBOrig, 0x06000000);
         PlayerDeviceHelp(pl2DRk, &JoyBOrig, 0x05000000);
+        JoyBOrig |= GamepadReadPlayer(2);
         PlayerDeviceFix(&JoyBOrig);
         if (!(TurboSw & TurboCB)) {
             PlayerDeviceHelp(pl2Xtk, &JoyBOrig, 0x00400000);
@@ -525,6 +527,7 @@ void ReadInputDevice(void)
         PlayerDeviceHelp(pl3URk, &JoyCOrig, 0x09000000);
         PlayerDeviceHelp(pl3DLk, &JoyCOrig, 0x06000000);
         PlayerDeviceHelp(pl3DRk, &JoyCOrig, 0x05000000);
+        JoyCOrig |= GamepadReadPlayer(3);
         PlayerDeviceFix(&JoyCOrig);
         if (!(TurboSw & TurboCB)) {
             PlayerDeviceHelp(pl3Xtk, &JoyCOrig, 0x00400000);
@@ -556,6 +559,7 @@ void ReadInputDevice(void)
         PlayerDeviceHelp(pl4URk, &JoyDOrig, 0x09000000);
         PlayerDeviceHelp(pl4DLk, &JoyDOrig, 0x06000000);
         PlayerDeviceHelp(pl4DRk, &JoyDOrig, 0x05000000);
+        JoyDOrig |= GamepadReadPlayer(4);
         PlayerDeviceFix(&JoyDOrig);
         if (!(TurboSw & TurboCB)) {
             PlayerDeviceHelp(pl4Xtk, &JoyDOrig, 0x00400000);
@@ -587,6 +591,7 @@ void ReadInputDevice(void)
         PlayerDeviceHelp(pl5URk, &JoyEOrig, 0x09000000);
         PlayerDeviceHelp(pl5DLk, &JoyEOrig, 0x06000000);
         PlayerDeviceHelp(pl5DRk, &JoyEOrig, 0x05000000);
+        JoyEOrig |= GamepadReadPlayer(5);
         PlayerDeviceFix(&JoyEOrig);
         if (!(TurboSw & TurboCB)) {
             PlayerDeviceHelp(pl5Xtk, &JoyEOrig, 0x00400000);
