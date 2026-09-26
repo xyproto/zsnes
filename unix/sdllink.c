@@ -280,6 +280,9 @@ static float MouseMinY = 0;
 static float MouseMaxY = 223;
 static int MouseX, MouseY;
 static int MouseMove2X, MouseMove2Y;
+/* Sub-pixel motion carried over; touchpads move in steps below one pixel. */
+static float MouseFracX, MouseFracY;
+static float MouseMoveFracX, MouseMoveFracY;
 u1 MouseButton;
 static float MouseXScale = 1.0;
 static float MouseYScale = 1.0;
@@ -548,8 +551,16 @@ int Main_Proc(void)
 
         case SDL_EVENT_MOUSE_MOTION:
             if (FullScreen) {
-                MouseX += (int)event.motion.xrel;
-                MouseY += (int)event.motion.yrel;
+                int dx, dy;
+
+                MouseFracX += event.motion.xrel;
+                MouseFracY += event.motion.yrel;
+                dx = (int)MouseFracX;
+                dy = (int)MouseFracY;
+                MouseFracX -= (float)dx;
+                MouseFracY -= (float)dy;
+                MouseX += dx;
+                MouseY += dy;
             } else {
                 /* Absolute, so the origin has to come back in: the scale is
                    the *span* over the window, and a slider drag narrows that
@@ -2477,8 +2488,12 @@ s4 GetMouseMoveX(void)
 {
     float fx = 0.0f, fy = 0.0f;
     SDL_GetRelativeMouseState(&fx, &fy);
+    fx += MouseMoveFracX;
+    fy += MouseMoveFracY;
     MouseMove2X = (int)fx;
     MouseMove2Y = (int)fy;
+    MouseMoveFracX = fx - (float)MouseMove2X;
+    MouseMoveFracY = fy - (float)MouseMove2Y;
     return (MouseMove2X);
 }
 
