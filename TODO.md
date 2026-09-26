@@ -3,7 +3,6 @@
 - [ ] Confirm the DSP4 division table on a DSP4 cart. `floor(0x8000/n)` verified, but not the chip's rounding.
 - [ ] Fix Super Mario RPG hanging in the attract demo at frame 19956, force-blank never cleared. Needs a reference trace.
 - [ ] Carry SRAM and the host's state into a netplay session; it power-cycles both sides instead.
-- [ ] `WITH_TLS`: build the netplay client against libssl/libtls when present, plaintext when not. The relay needs `-insecure` until then.
 - [ ] Move the Windows blitter (`win/winlink.c`) onto `video/filter.c`; it still size-matches the surface.
 - [ ] Retire the old graphics engine (`newengen=0` + `bgfixer`).
 - [ ] Use `SDL_Gamepad` for default bindings only. Saved bindings index the flat 256+ space and must not move.
@@ -12,7 +11,6 @@
 - [ ] Check PipeWire and libao determinism with `ZSNES_STATE_HASH=N` on a system that has both.
 - [ ] Handle horizontal scroll and absolute mouse motion better on macOS (`mmlib/macos.c`)
 - [ ] Check the `SDL_Renderer` path on real 512-wide content, fullscreen, and the old engine (`ZSNES_FRAME_DUMP=N`)
-- [ ] Use `DT_MAIN` in `difftest_ng2.c` or stop including `difftest.h` to make it a bit quieter.
 - [ ] Replace netplay's delay-lockstep with rollback.
 
 ## Maybe
@@ -26,4 +24,3 @@
 - [ ] Port the controls, GUI and netplay prose from `doc/*.html` into `man/zsnes.1`
 - [ ] Test `unix/battery.c` on a machine that reports battery state
 - [ ] Re-enable the FreeBSD, OpenBSD and NetBSD CI jobs
-- [ ] Give the difftests a 64-bit oracle (so it no longer depends on the 32-bit oracle).
