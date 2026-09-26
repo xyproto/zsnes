@@ -45,14 +45,11 @@ static uint32_t pipewire_target_frames = 256;
 static atomic_bool pipewire_shutting_down = false;
 bool sound_pipewire = false;
 
-/* Producer fills pw_ring; PipeWireProcess memcpys from it.
- * Producer waits until pw_format_ready and pw_stream_streaming are set. */
-static pthread_t pw_producer_thread;
-static int pw_producer_running = 0;
-static atomic_int pw_producer_terminated = 0;
+/* The emulator thread mixes into pw_ring; PipeWireProcess memcpys from it.
+ * Mixing elsewhere raced key-on writes to the voices mid-mix. */
+static int pw_sample_control_inited = 0;
 static pthread_mutex_t pw_audio_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t pw_audio_wait = PTHREAD_COND_INITIALIZER;
-static atomic_uint pw_samples_waiting = 0;
 
 static atomic_int pw_stream_streaming = 0; /* set by state_changed */
 static atomic_int pw_format_ready = 0; /* set by param_changed */
@@ -396,6 +393,18 @@ static int pw_banner_shown = 0;
 static double pw_sinc_table[PW_SINC_PHASES + 1][PW_SINC_TAPS];
 static pthread_mutex_t pw_rs_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+/* The first half second is silent while the longest gap between emulated
+ * frames is measured; the target is set from it once. A slow machine
+ * delivers frames in bursts, and the target has to cover the longest one. */
+#define PW_CALIB_SECONDS 0.5
+static atomic_int pw_calibrated = 0;
+static double pw_calib_start = 0.0;
+static double pw_calib_last = 0.0;
+static double pw_calib_maxgap = 0.0;
+/* Fill averaged over about a second, so the rate follows drift, not bursts. */
+#define PW_FILL_SMOOTH 0.02
+static double pw_fill_avg = -1.0;
+
 static struct {
     double pos;
     double ratio;
@@ -555,11 +564,17 @@ static void pw_rs_update_dynamic(void)
     if (fill_bytes > target * 3U) {
         pw_ring_tail += fill_bytes - target;
         fill_bytes = target;
+        pw_fill_avg = -1.0;
     }
     pthread_mutex_unlock(&pw_ring_mutex);
+    if (pw_fill_avg < 0.0) {
+        pw_fill_avg = (double)fill_bytes;
+    } else {
+        pw_fill_avg += PW_FILL_SMOOTH * ((double)fill_bytes - pw_fill_avg);
+    }
     /* How far off target, as a fraction of it, clamped so a wildly wrong fill
        still only bends the rate by the maximum. */
-    err = ((double)fill_bytes - (double)target) / (double)target;
+    err = (pw_fill_avg - (double)target) / (double)target;
     if (err > 1.0) {
         err = 1.0;
     } else if (err < -1.0) {
@@ -685,84 +700,109 @@ static void pw_smart_size_ring(uint32_t quantum_frames)
     }
 }
 
-static void* SoundThread_pipewire(void* useless)
+static void pw_calibrate(void)
+{
+    struct timespec ts;
+    double now;
+    uint32_t frames;
+    uint32_t const lo = (pw_rate_hz * 40U) / 1000U;
+    uint32_t const hi = (pw_rate_hz * PW_TARGET_MAX_MS) / 1000U;
+
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    now = (double)ts.tv_sec + (double)ts.tv_nsec / 1e9;
+    if (pw_calib_start == 0.0) {
+        pw_calib_start = now;
+    } else if (now - pw_calib_last < 0.25 && now - pw_calib_last > pw_calib_maxgap) {
+        pw_calib_maxgap = now - pw_calib_last;
+    }
+    pw_calib_last = now;
+    if (now - pw_calib_start < PW_CALIB_SECONDS) {
+        return;
+    }
+    /* A gap and a half of sound, plus two server periods. */
+    frames = (uint32_t)(pw_calib_maxgap * 1.5 * (double)pw_rate_hz)
+        + pw_observed_quantum_frames * 2U;
+    if (frames < lo) {
+        frames = lo;
+    } else if (frames > hi) {
+        frames = hi;
+    }
+    if (pw_stride_bytes && frames > (pw_ring_size / pw_stride_bytes) / 3U) {
+        frames = (pw_ring_size / pw_stride_bytes) / 3U;
+    }
+    pw_target_frames = frames;
+    pw_fill_avg = -1.0;
+    pw_calibrated = 1;
+    if (pw_stats_enabled) {
+        printf("PipeWire calibration: longest frame gap %.1f ms, target %u frames (%u ms)\n",
+            pw_calib_maxgap * 1000.0, frames, pw_rate_hz ? frames * 1000U / pw_rate_hz : 0U);
+    }
+}
+
+static void pw_produce(uint32_t samples)
 {
     int16_t stemp[1280];
     /* Output buffer sized for moderate upsampling (~2x). When the server
      * rate forces a larger expansion (e.g. RATE=32000 -> 96000Hz, ratio=3x),
      * the input is processed in sub-batches so output always fits. */
     int16_t outbuf[1280 * 2 + 32];
-    uint32_t channels = StereoSound + 1;
-    uint32_t out_max_frames;
-    (void)useless;
+    uint32_t const channels = StereoSound + 1;
+    uint32_t const out_max_frames = (uint32_t)(sizeof(outbuf) / (sizeof(int16_t) * channels));
+    /* Always mix, as that advances the chip; only a negotiated stream gets it. */
+    int const deliver = pw_format_ready && pw_stream_streaming;
 
-    if (!channels) {
-        channels = 1;
-    }
-    out_max_frames = (uint32_t)(sizeof(outbuf) / (sizeof(int16_t) * channels));
-
-    while (!pw_producer_terminated) {
-        unsigned int samples;
-
-        pthread_mutex_lock(&pw_audio_mutex);
-        while (!pw_producer_terminated
-            && (!pw_format_ready || !pw_stream_streaming || !pw_samples_waiting)) {
-            pthread_cond_wait(&pw_audio_wait, &pw_audio_mutex);
+    if (deliver) {
+        if (!pw_calibrated) {
+            pw_calibrate();
         }
-        samples = pw_samples_waiting;
-        pw_samples_waiting = 0;
-        pthread_mutex_unlock(&pw_audio_mutex);
-
-        if (pw_producer_terminated) {
-            break;
-        }
-
         pw_rs_update_dynamic();
+    }
 
-        while (samples > 0) {
-            uint32_t chunk = (samples > 1280) ? 1280 : samples;
-            uint32_t in_frames;
-            uint32_t in_done = 0;
-            double ratio_now;
-            uint32_t sub_max;
+    while (samples > 0) {
+        uint32_t chunk = (samples > 1280) ? 1280 : samples;
+        uint32_t in_frames;
+        uint32_t in_done = 0;
+        double ratio_now;
+        uint32_t sub_max;
 
-            MixSoundBlock(stemp, chunk);
-            in_frames = chunk / channels;
+        MixSoundBlock(stemp, chunk);
+        samples -= chunk;
+        if (!deliver) {
+            continue;
+        }
+        in_frames = chunk / channels;
 
+        pthread_mutex_lock(&pw_rs_mutex);
+        ratio_now = pw_rs.ratio;
+        if (ratio_now <= 0.0) {
+            ratio_now = pw_rs.base_ratio > 0.0 ? pw_rs.base_ratio : 1.0;
+        }
+        pthread_mutex_unlock(&pw_rs_mutex);
+
+        /* out ~= in / ratio, so cap in per call to keep out <= out_max_frames.
+         * 0.95 leaves headroom for dynamic-ratio drift; min 1 frame. */
+        {
+            double allow = (double)out_max_frames * ratio_now * 0.95;
+            sub_max = (allow >= 1.0) ? (uint32_t)allow : 1U;
+        }
+
+        while (in_done < in_frames) {
+            uint32_t sub = in_frames - in_done;
+            uint32_t out_frames;
+            if (sub > sub_max) {
+                sub = sub_max;
+            }
             pthread_mutex_lock(&pw_rs_mutex);
-            ratio_now = pw_rs.ratio;
-            if (ratio_now <= 0.0) {
-                ratio_now = pw_rs.base_ratio > 0.0 ? pw_rs.base_ratio : 1.0;
-            }
+            out_frames = pw_rs_process(stemp + in_done * channels, sub,
+                outbuf, out_max_frames, channels);
             pthread_mutex_unlock(&pw_rs_mutex);
-
-            /* out ~= in / ratio, so cap in per call to keep out <= out_max_frames.
-             * 0.95 leaves headroom for dynamic-ratio drift; min 1 frame. */
-            {
-                double allow = (double)out_max_frames * ratio_now * 0.95;
-                sub_max = (allow >= 1.0) ? (uint32_t)allow : 1U;
+            if (out_frames) {
+                pw_ring_write((uint8_t*)outbuf,
+                    out_frames * channels * sizeof(int16_t));
             }
-
-            while (in_done < in_frames) {
-                uint32_t sub = in_frames - in_done;
-                uint32_t out_frames;
-                if (sub > sub_max) {
-                    sub = sub_max;
-                }
-                pthread_mutex_lock(&pw_rs_mutex);
-                out_frames = pw_rs_process(stemp + in_done * channels, sub,
-                    outbuf, out_max_frames, channels);
-                pthread_mutex_unlock(&pw_rs_mutex);
-                if (out_frames) {
-                    pw_ring_write((uint8_t*)outbuf,
-                        out_frames * channels * sizeof(int16_t));
-                }
-                in_done += sub;
-            }
-            samples -= chunk;
+            in_done += sub;
         }
     }
-    return NULL;
 }
 
 /* Authoritative setter for pw_out_rate, pw_stride_bytes, and pw_ring.
@@ -927,6 +967,9 @@ static void PipeWireProcess(void* userdata)
         && !GUIOn2 && !GUIOn && !EMUPause && !RawDumpInProgress && !T36HZEnabled && soundon;
     atomic_fetch_add_explicit(&pw_stat_cycles, 1, memory_order_relaxed);
 
+    if (!pw_calibrated) {
+        render_audio = false;
+    }
     if (render_audio && pw_priming) {
         uint32_t fill;
         pthread_mutex_lock(&pw_ring_mutex);
@@ -985,25 +1028,15 @@ static void PipeWireProcess(void* userdata)
 
 void SoundWrite_pipewire(void)
 {
-    uint32_t samples = 0;
+    uint32_t samples;
 
-    if (!sound_pipewire) {
+    if (!sound_pipewire || !sample_control.lo) {
         return;
     }
-
-    /* Accumulate: a frame the producer has not picked up yet must not be lost. */
-    pthread_mutex_lock(&pw_audio_mutex);
-    if (sample_control.lo) {
-        samples = (unsigned int)((sample_control.balance / sample_control.lo) << StereoSound);
-        sample_control.balance %= sample_control.lo;
-        sample_control.balance += sample_control.hi;
-
-        if (pw_samples_waiting < ((RATE / 5U) << StereoSound)) {
-            pw_samples_waiting += samples;
-        }
-        pthread_cond_broadcast(&pw_audio_wait);
-    }
-    pthread_mutex_unlock(&pw_audio_mutex);
+    samples = (uint32_t)((sample_control.balance / sample_control.lo) << StereoSound);
+    sample_control.balance %= sample_control.lo;
+    sample_control.balance += sample_control.hi;
+    pw_produce(samples);
 }
 
 static int SoundInit_pipewire(void)
@@ -1056,6 +1089,9 @@ static int SoundInit_pipewire(void)
     pw_stream_streaming = 0;
     pw_drained = 0;
     pw_priming = 1;
+    pw_calibrated = 0;
+    pw_calib_start = pw_calib_last = pw_calib_maxgap = 0.0;
+    pw_fill_avg = -1.0;
     pw_out_rate = 0;
     pw_rate_hz = 0;
     pw_observed_quantum_frames = 0;
@@ -1157,14 +1193,9 @@ static int SoundInit_pipewire(void)
         return false;
     }
 
-    if (!pw_producer_running) {
+    if (!pw_sample_control_inited) {
         InitSampleControl();
-        pw_producer_terminated = 0;
-        if (pthread_create(&pw_producer_thread, NULL, SoundThread_pipewire, NULL) == 0) {
-            pw_producer_running = 1;
-        } else {
-            puts("pthread_create() for PipeWire producer failed.");
-        }
+        pw_sample_control_inited = 1;
     }
 
     sound_pipewire = true;
@@ -1455,15 +1486,6 @@ void DeinitSound(void)
 #ifdef __PIPEWIRE__
     pipewire_shutting_down = 1;
     sound_pipewire = false;
-    /* Stop producer first so the ring stops growing. */
-    if (pw_producer_running) {
-        pthread_mutex_lock(&pw_audio_mutex);
-        pw_producer_terminated = 1;
-        pthread_cond_broadcast(&pw_audio_wait);
-        pthread_mutex_unlock(&pw_audio_mutex);
-        pthread_join(pw_producer_thread, NULL);
-        pw_producer_running = 0;
-    }
     /* Drain queued audio, then tear down. Lock for stream ops; release
      * before pw_thread_loop_stop (loop docs require this). */
     if (pipewire_stream && pipewire_loop) {
