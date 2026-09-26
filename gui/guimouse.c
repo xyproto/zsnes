@@ -1250,6 +1250,12 @@ static void DisplayGUIVideoClick(s4 const eax, s4 const edx)
                 GUIHoldXlimR = wx + 23 + 100;
             }
         }
+        if (GUIClickArea(eax, edx, 150, 176, 232, 188)) {
+            /* Reset every retro effect to off in one go. */
+            GUISetScanlines(0);
+            sl_vibrancy = 0;
+            BloomLevel = 0;
+        }
     }
 
     if (GUIVideoTabs[0] == 4) { // Monitors tab

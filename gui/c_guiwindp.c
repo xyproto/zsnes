@@ -1124,6 +1124,10 @@ void DisplayGUIVideo(void)
         GUICrtFocusMark(row, CRT_FOCUS_BLOOM, CRT_ROW_BLOOM);
         GUIDrawSlider(5, 23, 100, (u4)row[CRT_ROW_BLOOM], &BloomLevel, glscslidSet,
             glscslidText);
+
+        /* One button to take the tube back to a flat panel. The id (99) is one
+           no held-button handler sets, so it always draws unpressed. */
+        DrawGUIButton(5, 150, 176, 232, 188, "RESET ALL", 99, 0, 0);
     }
 
     if (GUIVideoTabs[0] == 4) { // Monitors tab
