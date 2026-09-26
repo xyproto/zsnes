@@ -3,7 +3,7 @@
  * The session state machine talks to this and nothing else, so porting
  * netplay to another platform is a matter of writing one of these rather than
  * finding the socket calls scattered through the protocol. unix/net_transport.c
- * is the BSD sockets implementation. */
+ * is the BSD sockets implementation, win/net_transport.c the Winsock one. */
 
 #ifndef ZSNES_NET_TRANSPORT_H
 #define ZSNES_NET_TRANSPORT_H
@@ -49,6 +49,9 @@ long net_send(NetSocket s, void const* buf, size_t len);
 long net_recv(NetSocket s, void* buf, size_t len);
 long net_recv_from(NetSocket s, void* buf, size_t len, NetAddr* from);
 long net_send_to(NetSocket s, void const* buf, size_t len, NetAddr const* to);
+
+/* After a negative return: non-zero when trying again later may succeed. */
+int net_retry(void);
 
 /* Point a datagram socket at one peer, so plain send and recv work. */
 int net_connect_addr(NetSocket s, NetAddr const* a);

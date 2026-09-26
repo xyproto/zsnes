@@ -602,6 +602,7 @@ SRCS += gui/guimouse.c
 SRCS += gui/guitools.c
 SRCS += net/packet.c
 SRCS += net/netplay.c
+SRCS += net/znp.c
 SRCS += gui/menu.c
 SRCS += initdata.c
 SRCS += initc.c
@@ -714,7 +715,6 @@ SRCS += unix/safelib.c
 SRCS += unix/sdl_render.c
 SRCS += unix/sdllink.c
 SRCS += unix/net_transport.c
-SRCS += net/znp.c
 SRCS += unix/sw_draw.c
 
 ifdef WITH_OPENGL
@@ -769,11 +769,12 @@ SRCS += win/zsnes.rc
 SRCS += win/c_winintrf.c
 SRCS += win/dx_ddraw.c
 SRCS += win/lib.c
+SRCS += win/net_transport.c
 SRCS += win/safelib.c
 SRCS += win/winlink.c
 
 # xinput9_1_0 is available on a clean Windows installation.
-LDFLAGS += -ldxguid -ldinput -lxinput9_1_0 -lgdi32 -lole32 -lwinmm
+LDFLAGS += -ldxguid -ldinput -lxinput9_1_0 -lgdi32 -lole32 -lwinmm -lws2_32
 
 ifdef WITH_OPENGL
 SRCS += win/gl_draw.c

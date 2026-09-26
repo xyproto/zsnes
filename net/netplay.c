@@ -3,12 +3,12 @@
  * This lived in gui/c_guiwindp.c, next to the code that draws the video panel,
  * which is why it could never be built or tested without a windowing system.
  * There is no platform code left in it: everything it needs from the machine
- * it runs on comes from net/transport.h, and unix/net_transport.c is the BSD
- * sockets implementation of that. The `__UNIXSDL__` guards below say only that
- * no other transport has been written yet, not that this file cares.
+ * it runs on comes from net/transport.h: unix/net_transport.c for BSD sockets,
+ * win/net_transport.c for Winsock.
  *
  * The wire format is net/packet.c, which the tests link directly. */
 
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -39,10 +39,8 @@ enum {
 
 char NetplayStatusLine[64] = "IDLE";
 static char NetplayLastEvent[64] = "";
-#ifdef __UNIXSDL__
 static int NetplayClientSocket = -1;
 static int NetplayServerSocket = -1;
-#endif
 static u1 NetplaySessionState = NETPLAY_IDLE;
 u1 NetplayHostRole = 0;
 static u4 NetplayLocalSeq = 0;
@@ -53,7 +51,6 @@ static u4 NetplaySessionToken = 0;
 u1 NetplayUDPConfig = 1;
 u1 NetplayRelayConfig = 0;
 char NetplayHostName[32] = "127.0.0.1";
-#ifdef __UNIXSDL__
 /* Set while the session runs through the relay: packets are framed, and
    neither side listens. */
 static u1 NetplayRelayActive = 0;
@@ -64,7 +61,6 @@ static uint64_t NetplayRelayPingAt = 0;
 static u1 NetplayPendingRemoteValid = 0;
 static u1 NetplayHandshakePending = 0;
 static NetplayPacket NetplayPendingRemote;
-#endif
 
 #define NETPLAY_INPUT_DELAY 3
 #define NETPLAY_FRAME_MS 17
@@ -72,7 +68,6 @@ static NetplayPacket NetplayPendingRemote;
 /* Well inside the minute the relay gives a quiet client. */
 enum { NETPLAY_RELAY_PING_MS = 20000 };
 
-#ifdef __UNIXSDL__
 static u4 NetplayInputQueue[NETPLAY_INPUT_DELAY];
 /* The peer's input, filed under the frame it is for rather than applied on
    whichever frame it happened to arrive. `seq` carries that frame number, so
@@ -191,7 +186,7 @@ static int NetplayRecvPacket(int const fd, NetplayPacket* const packet, int time
         }
         if (n == 0)
             return 0;
-        if (n < 0 && (errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK))
+        if (n < 0 && net_retry())
             continue;
         return 0;
     }
@@ -209,8 +204,6 @@ static u4 NetplayStateHash(void)
     return h;
 }
 
-#endif
-
 /* Set while a session is starting; see NetplayStartPending in netplay.h. */
 static u1 NetplayStartWanted;
 
@@ -222,23 +215,16 @@ int NetplayStartPending(void)
 void NetplayStartDone(void)
 {
     NetplayStartWanted = 0;
-#ifdef __UNIXSDL__
     NetplayAnnounce(NetplayHostRole != 0 ? "PLAYER 2 JOINED" : "CONNECTED");
-#endif
 }
 
 unsigned NetplayPort(void)
 {
-#ifdef __UNIXSDL__
     char host[sizeof(NetplayHostName)];
 
     return NetplayTarget(host, sizeof(host));
-#else
-    return 7845;
-#endif
 }
 
-#ifdef __UNIXSDL__
 /* Everything that counts frames, cleared together whenever a session starts
    or ends. Missing one of these leaves a new session reading a stale frame's
    input out of the ring. */
@@ -251,9 +237,7 @@ static void NetplaySessionResetTiming(void)
     NetplayStartWanted = 1;
     memset(NetplayRemoteRingValid, 0, sizeof(NetplayRemoteRingValid));
 }
-#endif
 
-#ifdef __UNIXSDL__
 /* Say hello, take the session token from the challenge, say hello again with
    it. Exactly what the connecting thread used to do, moved here because it is
    protocol rather than transport. */
@@ -301,9 +285,7 @@ static int NetplayJoinHandshake(NetSocket const fd)
     hello.session = NetplaySessionToken;
     return NetplaySendPacket(fd, &hello, 1000);
 }
-#endif
 
-#ifdef __UNIXSDL__
 /* The relay's error text, as a status line. */
 static void NetplayRelayFaultFrom(uint8_t const* const buf, size_t const len)
 {
@@ -421,11 +403,9 @@ static void NetplayRelayStart(void)
     NetplayRelayActive = 1;
     NetplaySessionState = NETPLAY_JOINING;
 }
-#endif
 
 void NetplayDisconnectSession(void)
 {
-#ifdef __UNIXSDL__
     if (NetplayClientSocket >= 0) {
         if (NetplayRelayActive != 0) {
             znp_frame_send(NetplayClientSocket, ZNP_BYE, NULL, 0, 100);
@@ -445,7 +425,6 @@ void NetplayDisconnectSession(void)
     NetplayStartWanted = 0;
     NetplayLastEvent[0] = '\0';
     net_connect_cancel();
-#endif
     NetplaySessionState = NETPLAY_IDLE;
     NetplayHostRole = 0;
     NetplayLocalSeq = 0;
@@ -453,37 +432,37 @@ void NetplayDisconnectSession(void)
     NetplayRemoteSeqValid = 0;
     NetplayRemoteJoy = 0x00008000;
     NetplaySessionToken = 0;
-#ifdef __UNIXSDL__
     NetplayPendingRemoteValid = 0;
     NetplayHandshakePending = 0;
-#endif
 }
 
-#ifdef __UNIXSDL__
-/* Drop any session and wait for a guest on the panel's port. */
-static int NetplayOpenHost(void)
+/* A bound socket on the panel's port, listening when it is TCP. */
+static NetSocket NetplayListen(int const udp)
 {
-    int const udp = NetplayUDPConfig != 0;
     char host[sizeof(NetplayHostName)];
     uint16_t const port = NetplayTarget(host, sizeof(host));
-    NetSocket fd;
+    NetSocket const fd = net_open(udp);
 
-    NetplayDisconnectSession();
-    fd = net_open(udp);
     if (fd == NET_SOCKET_NONE) {
         strcpy(NetplayLastEvent, "SERVER SOCKET FAILED");
-        return 0;
+        return NET_SOCKET_NONE;
     }
     if (!net_bind_any(fd, port)) {
         net_close(fd);
         strcpy(NetplayLastEvent, "BIND FAILED");
-        return 0;
+        return NET_SOCKET_NONE;
     }
     if (!udp && !net_listen(fd, 4)) {
         net_close(fd);
         strcpy(NetplayLastEvent, "LISTEN FAILED");
-        return 0;
+        return NET_SOCKET_NONE;
     }
+    return fd;
+}
+
+/* Wait for a guest on `fd`, as NetplayListen made it. */
+static void NetplayOpenHost(NetSocket const fd, int const udp)
+{
     NetplayHostRole = 1;
     NetplaySessionToken = net_random_u32();
     NetplayLocalGame = NetplayGameId();
@@ -493,16 +472,23 @@ static int NetplayOpenHost(void)
         NetplayServerSocket = fd;
     }
     NetplaySessionState = NETPLAY_WAITING;
-    return 1;
 }
 
 /* A direct host outlives its guest and waits for the next one. */
 static void NetplayPeerLost(char const* const why)
 {
     int const rehost = NetplayHostRole != 0 && NetplayRelayActive == 0;
+    /* A TCP host keeps its listener: re-binding the port can fail while old
+       connections linger. A UDP one needs a fresh, unconnected socket. */
+    NetSocket listener = rehost ? NetplayServerSocket : NET_SOCKET_NONE;
+    int const udp = listener == NET_SOCKET_NONE;
 
+    NetplayServerSocket = NET_SOCKET_NONE;
     NetplayDisconnectSession();
-    if (rehost && NetplayOpenHost()) {
+    if (rehost && udp)
+        listener = NetplayListen(1);
+    if (rehost && listener != NET_SOCKET_NONE) {
+        NetplayOpenHost(listener, udp);
         NetplayKeepRunning = 1;
         snprintf(NetplayLastEvent, sizeof(NetplayLastEvent), "%s", why);
         NetplayAnnounce("PLAYER 2 LEFT");
@@ -542,30 +528,26 @@ static int NetplayAdmit(NetplayPacket const* const hello)
         NetplayVerdictText(verdict));
     return 0;
 }
-#endif
 
 void NetplayHostSession(void)
 {
-#ifndef __UNIXSDL__
-    strcpy(NetplayStatusLine, "UNSUPPORTED ON THIS PORT");
-    NetplaySessionState = NETPLAY_IDLE;
-#else
+    int const udp = NetplayUDPConfig != 0;
+    NetSocket fd;
+
     if (NetplayRelayConfig != 0) {
         NetplayRelayStart();
         return;
     }
-    if (NetplayOpenHost()) {
+    NetplayDisconnectSession();
+    fd = NetplayListen(udp);
+    if (fd != NET_SOCKET_NONE) {
+        NetplayOpenHost(fd, udp);
         net_extip_start();
     }
-#endif
 }
 
 void NetplayJoinSession(void)
 {
-#ifndef __UNIXSDL__
-    strcpy(NetplayLastEvent, "UNSUPPORTED ON THIS PORT");
-    NetplaySessionState = NETPLAY_IDLE;
-#else
     if (NetplayRelayConfig != 0) {
         NetplayRelayStart();
         return;
@@ -581,10 +563,8 @@ void NetplayJoinSession(void)
     } else {
         strcpy(NetplayLastEvent, "CONNECT FAILED");
     }
-#endif
 }
 
-#ifdef __UNIXSDL__
 /* Waiting for a peer, or reaching for one. */
 static int NetplaySessionPending(void)
 {
@@ -613,11 +593,10 @@ static void NetplayHoldEmulation(int const hold)
         NetplayHeldEmulation = 0;
     }
 }
-#endif
 
 void NetplayAdvanceState(int timeout_ms)
 {
-#if defined(__UNIXSDL__) && defined(ZSNES_DEBUG_HOOKS)
+#ifdef ZSNES_DEBUG_HOOKS
     /* Report every state change once. The status line only updates while the
        panel is on screen, so a headless run would otherwise leave no trace of
        whether the two sides ever paired. */
@@ -636,12 +615,9 @@ void NetplayAdvanceState(int timeout_ms)
     }
 #endif
 
-#ifdef __UNIXSDL__
     NetplayHoldEmulation(NetplaySessionPending() && NetplayKeepRunning == 0);
     if (NetplaySessionState == NETPLAY_HANDSHAKING || NetplaySessionState == NETPLAY_CONNECTED)
         NetplayTurnAway();
-#endif
-#ifdef __UNIXSDL__
     if (NetplaySessionState == NETPLAY_WAITING && NetplayUDPConfig == 0 && NetplayServerSocket >= 0) {
         if (net_wait(NetplayServerSocket, 0, timeout_ms) > 0) {
             NetSocket const fd = net_accept(NetplayServerSocket);
@@ -654,7 +630,7 @@ void NetplayAdvanceState(int timeout_ms)
                     NetplaySessionState = NETPLAY_HANDSHAKING;
                     strcpy(NetplayLastEvent, "TCP CLIENT HANDSHAKING");
                 } else {
-                    close(fd);
+                    net_close(fd);
                 }
             }
         }
@@ -662,7 +638,7 @@ void NetplayAdvanceState(int timeout_ms)
 
     if (NetplaySessionState == NETPLAY_HANDSHAKING && NetplayClientSocket >= 0) {
         if (net_now_ms() >= NetplayHandshakeDeadline) {
-            close(NetplayClientSocket);
+            net_close(NetplayClientSocket);
             NetplayClientSocket = -1;
             NetplaySessionState = NETPLAY_WAITING;
             strcpy(NetplayLastEvent, "TCP HANDSHAKE TIMEOUT");
@@ -679,7 +655,7 @@ void NetplayAdvanceState(int timeout_ms)
                 NetplaySessionState = NETPLAY_CONNECTED;
                 strcpy(NetplayLastEvent, "TCP CLIENT CONNECTED");
             } else {
-                close(NetplayClientSocket);
+                net_close(NetplayClientSocket);
                 NetplayClientSocket = -1;
                 NetplaySessionState = NETPLAY_WAITING;
                 if (!shook)
@@ -793,9 +769,6 @@ void NetplayAdvanceState(int timeout_ms)
             }
         }
     }
-#else
-    (void)timeout_ms;
-#endif
 }
 
 #ifdef ZSNES_DEBUG_HOOKS
@@ -831,7 +804,6 @@ static void NetplayDebugAutoStart(void)
 }
 #endif
 
-#ifdef __UNIXSDL__
 /* Read packets until the peer's input for `frame` is in hand, filing away
    anything that arrives early. Returns zero only when the peer has gone
    quiet for the whole of `patience` timeouts. */
@@ -869,11 +841,9 @@ static int NetplayAwaitFrame(u4 const frame, int const timeout, int patience,
         }
     }
 }
-#endif
 
 void NetplaySyncInputs(unsigned int* joy_a, unsigned int* joy_b)
 {
-#ifdef __UNIXSDL__
 #ifdef ZSNES_DEBUG_HOOKS
     NetplayDebugAutoStart();
 #endif
@@ -1014,15 +984,10 @@ void NetplaySyncInputs(unsigned int* joy_a, unsigned int* joy_b)
 #endif
 
     NetplayFrame++;
-#else
-    (void)joy_a;
-    (void)joy_b;
-#endif
 }
 
 void NetplayUpdateStatus(void)
 {
-#ifdef __UNIXSDL__
 
     switch ((int)NetplaySessionState) {
     case NETPLAY_IDLE:
@@ -1056,5 +1021,4 @@ void NetplayUpdateStatus(void)
             NetplayLastEvent[0] != '\0' ? NetplayLastEvent : "CONNECTED");
         return;
     }
-#endif
 }

@@ -232,6 +232,11 @@ long net_send_to(NetSocket const s, void const* const buf, size_t const len, Net
         (struct sockaddr const*)to->opaque, (socklen_t)to->len);
 }
 
+int net_retry(void)
+{
+    return errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK;
+}
+
 int net_connect_addr(NetSocket const s, NetAddr const* const a)
 {
     return connect(s, (struct sockaddr const*)a->opaque, (socklen_t)a->len) == 0;

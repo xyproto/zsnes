@@ -15,7 +15,6 @@
 
 ## Maybe
 
-- [ ] Write `win/net_transport.c` and drop the `__UNIXSDL__` guards to get netplay on Windows.
 - [ ] Add the missing ST-011 opcodes; blocked until someone logs them from Morita Shougi 2 (stderr names each one)
 - [ ] Legacy GL's 512x512 buffer drops hq3x/hq4x back to unfiltered; widen it, or let it go with the path
 - [ ] Put the rest of the GUI's allocations on the arena (`gui/guiarena.c`), not just the file lists
