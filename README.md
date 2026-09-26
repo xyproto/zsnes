@@ -221,5 +221,5 @@ Additional documentation:
 ### General info
 
 * License: GPL2
-* Version: 2.3.2
+* Version: 2.3.3
 * Fork author: Alexander F. Rødseth &lt;xyproto@archlinux.org&gt;
