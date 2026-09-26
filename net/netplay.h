@@ -39,4 +39,7 @@ extern u1 NetplayUDPConfig;
    accept a connection. The host field then reads "relay[:port][/room]". */
 extern u1 NetplayRelayConfig;
 
+/* The port in "host[:port]", or the default. */
+unsigned NetplayPort(void);
+
 #endif

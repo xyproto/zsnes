@@ -1782,8 +1782,13 @@ void DisplayNetOptns(void)
     GUIDisplayText(8, 6, 46, NetplayHostRole != 0 ? "ROLE: HOST (P1)" : "ROLE: CLIENT (P2)");
     if (NetplayRelayConfig != 0)
         GUIDisplayText(8, 6, 56, "VIA RELAY (TCP LOCKSTEP)");
-    else
-        GUIDisplayText(8, 6, 56, NetplayUDPConfig != 0 ? "PORT: 7845 (UDP LOCKSTEP)" : "PORT: 7845 (TCP LOCKSTEP)");
+    else {
+        char port[32];
+
+        snprintf(port, sizeof(port), "PORT: %u (%s LOCKSTEP)", NetplayPort(),
+            NetplayUDPConfig != 0 ? "UDP" : "TCP");
+        GUIDisplayText(8, 6, 56, port);
+    }
     GUIDisplayCheckbox(8, 8, 66, &NetplayUDPConfig, "USE UDP");
     GUIDisplayCheckbox(8, 110, 66, &NetplayRelayConfig, "USE RELAY");
 

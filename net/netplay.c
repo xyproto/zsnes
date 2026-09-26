@@ -20,6 +20,7 @@
 #include "../gblhdr.h"
 #include "../types.h"
 #include "../ui.h"
+#include "../video/procvid.h"
 #include "netplay.h"
 #include "packet.h"
 #include "transport.h"
@@ -43,9 +44,6 @@ static int NetplayClientSocket = -1;
 static int NetplayServerSocket = -1;
 #endif
 static u1 NetplaySessionState = NETPLAY_IDLE;
-#ifdef __UNIXSDL__
-static uint16_t const NetplayDefaultPort = 7845;
-#endif
 u1 NetplayHostRole = 0;
 static u4 NetplayLocalSeq = 0;
 static u4 NetplayRemoteSeq = 0;
@@ -60,7 +58,8 @@ char NetplayHostName[32] = "127.0.0.1";
    neither side listens. */
 static u1 NetplayRelayActive = 0;
 static char NetplayRelayRoom[ZNP_ROOM_BYTES + 1] = "";
-static char NetplayRelayFault[48] = "";
+/* Why the last join or pairing failed, for the status line. */
+static char NetplayFault[64] = "";
 static uint64_t NetplayRelayPingAt = 0;
 static u1 NetplayPendingRemoteValid = 0;
 static u1 NetplayHandshakePending = 0;
@@ -92,6 +91,38 @@ static int NetplayInputQueueFilled = 0;
 static int NetplayJoinIsUDP = 0;
 static char NetplayJoinHostCopy[32] = "";
 static uint64_t NetplayHandshakeDeadline = 0;
+static u4 NetplayLocalGame = 0;
+/* Set once a guest has left: the host plays on alone while it waits. */
+static u1 NetplayKeepRunning = 0;
+static char NetplayAnnouncement[64];
+
+extern u4 NumofBytes;
+
+static u4 NetplayGameId(void)
+{
+    return romdata != NULL ? netplay_fnv1a(romdata, NumofBytes) : 0;
+}
+
+static uint16_t NetplayTarget(char* const host, size_t const host_sz)
+{
+    char room[ZNP_ROOM_BYTES + 1];
+    uint16_t port = ZNP_DEFAULT_PORT;
+
+    znp_parse_target(NetplayHostName, host, host_sz, &port, room, sizeof(room));
+    return port;
+}
+
+static void NetplayAnnounce(char const* const text)
+{
+    snprintf(NetplayAnnouncement, sizeof(NetplayAnnouncement), "NETPLAY: %s", text);
+    Msgptr = NetplayAnnouncement;
+    MessageOn = MsgCount;
+}
+
+static char const* NetplayVerdictText(int const verdict)
+{
+    return verdict == NETPLAY_HELLO_VERSION ? "VERSION MISMATCH" : "WRONG GAME";
+}
 
 static int NetplaySendPacket(int const fd, NetplayPacket const* const packet, int timeout_ms)
 {
@@ -191,6 +222,20 @@ int NetplayStartPending(void)
 void NetplayStartDone(void)
 {
     NetplayStartWanted = 0;
+#ifdef __UNIXSDL__
+    NetplayAnnounce(NetplayHostRole != 0 ? "PLAYER 2 JOINED" : "CONNECTED");
+#endif
+}
+
+unsigned NetplayPort(void)
+{
+#ifdef __UNIXSDL__
+    char host[sizeof(NetplayHostName)];
+
+    return NetplayTarget(host, sizeof(host));
+#else
+    return 7845;
+#endif
 }
 
 #ifdef __UNIXSDL__
@@ -214,14 +259,12 @@ static void NetplaySessionResetTiming(void)
    protocol rather than transport. */
 static int NetplayJoinHandshake(NetSocket const fd)
 {
-    NetplayPacket hello;
+    NetplayPacket hello = netplay_hello(0, NetplayLocalGame);
     NetplayPacket challenge;
-
+    int verdict;
     int attempt;
 
-    memset(&hello, 0, sizeof(hello));
-    hello.magic = NETPLAY_MAGIC;
-    hello.joy = NETPLAY_JOY_NEUTRAL;
+    NetplayFault[0] = '\0';
 
     /* Say hello until answered. Over UDP the opening packet is the one most
        likely to go missing - the peer may not have finished binding - and
@@ -233,9 +276,7 @@ static int NetplayJoinHandshake(NetSocket const fd)
             return 0;
         }
         if (NetplayRecvPacket(fd, &challenge, 400)
-            && challenge.magic == NETPLAY_MAGIC && challenge.session != 0
-            && challenge.seq == 0 && challenge.joy == NETPLAY_JOY_NEUTRAL
-            && challenge.crc == 0) {
+            && challenge.magic == NETPLAY_MAGIC && challenge.seq == 0) {
             break;
         }
         if (NetplayJoinIsUDP == 0) {
@@ -243,6 +284,17 @@ static int NetplayJoinHandshake(NetSocket const fd)
         }
     }
     if (attempt == 5) {
+        snprintf(NetplayFault, sizeof(NetplayFault), "NO ANSWER");
+        return 0;
+    }
+    /* A host that already has a guest answers with no session. */
+    if (challenge.session == 0) {
+        snprintf(NetplayFault, sizeof(NetplayFault), "SERVER FULL");
+        return 0;
+    }
+    verdict = netplay_hello_verdict(&challenge, NetplayLocalGame);
+    if (verdict != NETPLAY_HELLO_OK) {
+        snprintf(NetplayFault, sizeof(NetplayFault), "%s", NetplayVerdictText(verdict));
         return 0;
     }
     NetplaySessionToken = challenge.session;
@@ -255,10 +307,8 @@ static int NetplayJoinHandshake(NetSocket const fd)
 /* The relay's error text, as a status line. */
 static void NetplayRelayFaultFrom(uint8_t const* const buf, size_t const len)
 {
-    size_t const take = len < sizeof(NetplayRelayFault) - 1 ? len : sizeof(NetplayRelayFault) - 1;
-
-    memcpy(NetplayRelayFault, buf, take);
-    NetplayRelayFault[take] = '\0';
+    snprintf(NetplayFault, sizeof(NetplayFault), "RELAY: %.*s",
+        (int)(len < 48 ? len : 48), (char const*)buf);
 }
 
 /* Prefix, hello, hello back. The relay hands out the roles, so neither side
@@ -273,9 +323,9 @@ static int NetplayRelayHandshake(NetSocket const fd)
     unsigned role = 0;
     size_t len = 0;
 
-    NetplayRelayFault[0] = '\0';
+    NetplayFault[0] = '\0';
     if (!znp_prefix_exchange(fd, 5000)) {
-        snprintf(NetplayRelayFault, sizeof(NetplayRelayFault), "NOT A RELAY");
+        snprintf(NetplayFault, sizeof(NetplayFault), "NOT A RELAY");
         return 0;
     }
     /* CREATE reads as "join the room or make it"; first there is P1. */
@@ -298,6 +348,60 @@ static int NetplayRelayHandshake(NetSocket const fd)
     return 1;
 }
 
+/* Once paired, each side says which game it runs and hears the other's. */
+static int NetplayRelayGameCheck(NetSocket const fd)
+{
+    NetplayPacket const mine = netplay_hello(0, NetplayLocalGame);
+    uint64_t const until = net_now_ms() + 5000;
+    uint8_t wire[NETPLAY_PACKET_BYTES];
+
+    netplay_packet_encode(wire, &mine);
+    if (!znp_frame_send(fd, ZNP_GAME, wire, sizeof(wire), 1000)) {
+        snprintf(NetplayFault, sizeof(NetplayFault), "RELAY LOST");
+        return 0;
+    }
+    for (;;) {
+        uint64_t const now = net_now_ms();
+        uint8_t frame[ZNP_MAX_PAYLOAD];
+        NetplayPacket theirs;
+        unsigned type = 0;
+        size_t len = 0;
+        int verdict;
+
+        if (now >= until
+            || !znp_frame_recv(fd, &type, frame, sizeof(frame), &len, (int)(until - now))) {
+            snprintf(NetplayFault, sizeof(NetplayFault), "NO ANSWER");
+            return 0;
+        }
+        if (type == ZNP_SERVER_ERROR) {
+            NetplayRelayFaultFrom(frame, len);
+            return 0;
+        }
+        if (type == ZNP_BYE) {
+            snprintf(NetplayFault, sizeof(NetplayFault), "PEER LEFT");
+            return 0;
+        }
+        /* A peer that sends input first predates the game check. */
+        if (type == ZNP_INPUT) {
+            snprintf(NetplayFault, sizeof(NetplayFault), "VERSION MISMATCH");
+            return 0;
+        }
+        if (type != ZNP_GAME) {
+            continue;
+        }
+        if (len != NETPLAY_PACKET_BYTES || !netplay_packet_decode(&theirs, frame)) {
+            snprintf(NetplayFault, sizeof(NetplayFault), "VERSION MISMATCH");
+            return 0;
+        }
+        verdict = netplay_hello_verdict(&theirs, NetplayLocalGame);
+        if (verdict != NETPLAY_HELLO_OK) {
+            snprintf(NetplayFault, sizeof(NetplayFault), "%s", NetplayVerdictText(verdict));
+            return 0;
+        }
+        return 1;
+    }
+}
+
 /* Both players connect out, so HOST and JOIN do the same thing. */
 static void NetplayRelayStart(void)
 {
@@ -305,6 +409,7 @@ static void NetplayRelayStart(void)
     uint16_t port = ZNP_DEFAULT_PORT;
 
     NetplayDisconnectSession();
+    NetplayLocalGame = NetplayGameId();
     znp_parse_target(NetplayHostName, host, sizeof(host), &port,
         NetplayRelayRoom, sizeof(NetplayRelayRoom));
     memcpy(NetplayJoinHostCopy, host, sizeof(NetplayJoinHostCopy));
@@ -330,7 +435,8 @@ void NetplayDisconnectSession(void)
     }
     NetplayRelayActive = 0;
     NetplayRelayRoom[0] = '\0';
-    NetplayRelayFault[0] = '\0';
+    NetplayFault[0] = '\0';
+    NetplayKeepRunning = 0;
     if (NetplayServerSocket >= 0) {
         net_close(NetplayServerSocket);
         NetplayServerSocket = -1;
@@ -353,46 +459,104 @@ void NetplayDisconnectSession(void)
 #endif
 }
 
+#ifdef __UNIXSDL__
+/* Drop any session and wait for a guest on the panel's port. */
+static int NetplayOpenHost(void)
+{
+    int const udp = NetplayUDPConfig != 0;
+    char host[sizeof(NetplayHostName)];
+    uint16_t const port = NetplayTarget(host, sizeof(host));
+    NetSocket fd;
+
+    NetplayDisconnectSession();
+    fd = net_open(udp);
+    if (fd == NET_SOCKET_NONE) {
+        strcpy(NetplayLastEvent, "SERVER SOCKET FAILED");
+        return 0;
+    }
+    if (!net_bind_any(fd, port)) {
+        net_close(fd);
+        strcpy(NetplayLastEvent, "BIND FAILED");
+        return 0;
+    }
+    if (!udp && !net_listen(fd, 4)) {
+        net_close(fd);
+        strcpy(NetplayLastEvent, "LISTEN FAILED");
+        return 0;
+    }
+    NetplayHostRole = 1;
+    NetplaySessionToken = net_random_u32();
+    NetplayLocalGame = NetplayGameId();
+    if (udp) {
+        NetplayClientSocket = fd;
+    } else {
+        NetplayServerSocket = fd;
+    }
+    NetplaySessionState = NETPLAY_WAITING;
+    return 1;
+}
+
+/* A direct host outlives its guest and waits for the next one. */
+static void NetplayPeerLost(char const* const why)
+{
+    int const rehost = NetplayHostRole != 0 && NetplayRelayActive == 0;
+
+    NetplayDisconnectSession();
+    if (rehost && NetplayOpenHost()) {
+        NetplayKeepRunning = 1;
+        snprintf(NetplayLastEvent, sizeof(NetplayLastEvent), "%s", why);
+        NetplayAnnounce("PLAYER 2 LEFT");
+        return;
+    }
+    if (!rehost) {
+        snprintf(NetplayLastEvent, sizeof(NetplayLastEvent), "%s", why);
+    }
+    NetplayAnnounce(why);
+}
+
+/* One guest at a time; anyone else is told the host is full. */
+static void NetplayTurnAway(void)
+{
+    NetplayPacket const full = netplay_hello(0, NetplayLocalGame);
+    NetSocket fd;
+
+    if (NetplayServerSocket < 0 || net_wait(NetplayServerSocket, 0, 0) <= 0) {
+        return;
+    }
+    fd = net_accept(NetplayServerSocket);
+    if (fd != NET_SOCKET_NONE) {
+        NetplaySendPacket(fd, &full, 100);
+        net_close(fd);
+    }
+}
+
+/* The guest's second hello, checked before it is let in. */
+static int NetplayAdmit(NetplayPacket const* const hello)
+{
+    int const verdict = netplay_hello_verdict(hello, NetplayLocalGame);
+
+    if (verdict == NETPLAY_HELLO_OK) {
+        return 1;
+    }
+    snprintf(NetplayLastEvent, sizeof(NetplayLastEvent), "REJECTED: %s",
+        NetplayVerdictText(verdict));
+    return 0;
+}
+#endif
+
 void NetplayHostSession(void)
 {
 #ifndef __UNIXSDL__
     strcpy(NetplayStatusLine, "UNSUPPORTED ON THIS PORT");
     NetplaySessionState = NETPLAY_IDLE;
 #else
-    int const udp = NetplayUDPConfig != 0;
-    NetSocket fd;
-
     if (NetplayRelayConfig != 0) {
         NetplayRelayStart();
         return;
     }
-    fd = net_open(udp);
-
-    if (fd == NET_SOCKET_NONE) {
-        strcpy(NetplayLastEvent, "SERVER SOCKET FAILED");
-        return;
+    if (NetplayOpenHost()) {
+        net_extip_start();
     }
-    if (!net_bind_any(fd, NetplayDefaultPort)) {
-        net_close(fd);
-        strcpy(NetplayLastEvent, "BIND FAILED");
-        return;
-    }
-
-    NetplayDisconnectSession();
-    NetplayHostRole = 1;
-    NetplaySessionToken = net_random_u32();
-    if (!udp) {
-        if (!net_listen(fd, 1)) {
-            net_close(fd);
-            strcpy(NetplayLastEvent, "LISTEN FAILED");
-            return;
-        }
-        NetplayServerSocket = fd;
-    } else {
-        NetplayClientSocket = fd;
-    }
-    NetplaySessionState = NETPLAY_WAITING;
-    net_extip_start();
 #endif
 }
 
@@ -409,8 +573,10 @@ void NetplayJoinSession(void)
     NetplayDisconnectSession();
     NetplayHostRole = 0;
     NetplayJoinIsUDP = NetplayUDPConfig != 0 ? 1 : 0;
-    memcpy(NetplayJoinHostCopy, NetplayHostName, sizeof(NetplayJoinHostCopy));
-    if (net_connect_start(NetplayJoinHostCopy, NetplayDefaultPort, NetplayJoinIsUDP)) {
+    NetplayLocalGame = NetplayGameId();
+    if (net_connect_start(NetplayJoinHostCopy,
+            NetplayTarget(NetplayJoinHostCopy, sizeof(NetplayJoinHostCopy)),
+            NetplayJoinIsUDP)) {
         NetplaySessionState = NETPLAY_JOINING;
     } else {
         strcpy(NetplayLastEvent, "CONNECT FAILED");
@@ -471,18 +637,17 @@ void NetplayAdvanceState(int timeout_ms)
 #endif
 
 #ifdef __UNIXSDL__
-    NetplayHoldEmulation(NetplaySessionPending());
+    NetplayHoldEmulation(NetplaySessionPending() && NetplayKeepRunning == 0);
+    if (NetplaySessionState == NETPLAY_HANDSHAKING || NetplaySessionState == NETPLAY_CONNECTED)
+        NetplayTurnAway();
 #endif
 #ifdef __UNIXSDL__
     if (NetplaySessionState == NETPLAY_WAITING && NetplayUDPConfig == 0 && NetplayServerSocket >= 0) {
         if (net_wait(NetplayServerSocket, 0, timeout_ms) > 0) {
             NetSocket const fd = net_accept(NetplayServerSocket);
             if (fd != NET_SOCKET_NONE) {
-                NetplayPacket challenge;
-                memset(&challenge, 0, sizeof(challenge));
-                challenge.magic = NETPLAY_MAGIC;
-                challenge.session = NetplaySessionToken;
-                challenge.joy = 0x00008000u;
+                NetplayPacket const challenge = netplay_hello(NetplaySessionToken, NetplayLocalGame);
+
                 if (NetplaySendPacket(fd, &challenge, 1000)) {
                     NetplayClientSocket = fd;
                     NetplayHandshakeDeadline = net_now_ms() + 1000;
@@ -503,20 +668,22 @@ void NetplayAdvanceState(int timeout_ms)
             strcpy(NetplayLastEvent, "TCP HANDSHAKE TIMEOUT");
         } else if (net_wait(NetplayClientSocket, 0, timeout_ms) > 0) {
             NetplayPacket handshake;
-            if (NetplayRecvPacket(NetplayClientSocket, &handshake, 1000) && netplay_packet_is_handshake(&handshake, NetplaySessionToken)) {
+            int const shook = NetplayRecvPacket(NetplayClientSocket, &handshake, 1000)
+                && netplay_packet_is_handshake(&handshake, NetplaySessionToken);
+
+            if (shook && NetplayAdmit(&handshake)) {
                 NetplayPendingRemote = handshake;
                 NetplayPendingRemoteValid = 1;
                 NetplayHandshakePending = 1;
                 NetplaySessionResetTiming();
-                close(NetplayServerSocket);
-                NetplayServerSocket = -1;
                 NetplaySessionState = NETPLAY_CONNECTED;
                 strcpy(NetplayLastEvent, "TCP CLIENT CONNECTED");
             } else {
                 close(NetplayClientSocket);
                 NetplayClientSocket = -1;
                 NetplaySessionState = NETPLAY_WAITING;
-                strcpy(NetplayLastEvent, "TCP HANDSHAKE FAILED");
+                if (!shook)
+                    strcpy(NetplayLastEvent, "TCP HANDSHAKE FAILED");
             }
         }
     }
@@ -530,13 +697,11 @@ void NetplayAdvanceState(int timeout_ms)
             if (n == (long)sizeof(wire)) {
                 netplay_packet_decode(&packet, wire);
                 if (netplay_packet_is_handshake(&packet, 0)) {
-                    NetplayPacket challenge;
-                    memset(&challenge, 0, sizeof(challenge));
-                    challenge.magic = NETPLAY_MAGIC;
-                    challenge.session = NetplaySessionToken;
-                    challenge.joy = 0x00008000u;
+                    NetplayPacket const challenge = netplay_hello(NetplaySessionToken, NetplayLocalGame);
+
                     NetplaySendPacketTo(NetplayClientSocket, &challenge, &peer);
-                } else if (netplay_packet_is_handshake(&packet, NetplaySessionToken) && net_connect_addr(NetplayClientSocket, &peer)) {
+                } else if (netplay_packet_is_handshake(&packet, NetplaySessionToken)
+                    && NetplayAdmit(&packet) && net_connect_addr(NetplayClientSocket, &peer)) {
                     NetplayPendingRemote = packet;
                     NetplayPendingRemoteValid = 1;
                     NetplayHandshakePending = 1;
@@ -586,17 +751,11 @@ void NetplayAdvanceState(int timeout_ms)
                 strcpy(NetplayLastEvent,
                     NetplayJoinIsUDP != 0 ? "UDP CONNECTED" : "TCP CONNECTED");
             } else {
-                char fault[sizeof(NetplayRelayFault)];
-
-                snprintf(fault, sizeof(fault), "%s", NetplayRelayFault);
                 net_close(fd);
                 NetplayRelayActive = 0;
                 NetplaySessionState = NETPLAY_IDLE;
-                if (fault[0] != '\0')
-                    snprintf(NetplayLastEvent, sizeof(NetplayLastEvent),
-                        "RELAY: %s", fault);
-                else
-                    strcpy(NetplayLastEvent, "HANDSHAKE FAILED");
+                snprintf(NetplayLastEvent, sizeof(NetplayLastEvent), "%s",
+                    NetplayFault[0] != '\0' ? NetplayFault : "HANDSHAKE FAILED");
             }
         } else if (got == NET_CONNECT_FAILED) {
             NetplayRelayActive = 0;
@@ -619,18 +778,18 @@ void NetplayAdvanceState(int timeout_ms)
                     &len, 1000)) {
                 NetplayDisconnectSession();
                 strcpy(NetplayLastEvent, "RELAY LOST");
-            } else if (type == ZNP_PEER_READY) {
+            } else if (type == ZNP_PEER_READY && NetplayRelayGameCheck(NetplayClientSocket)) {
                 NetplaySessionResetTiming();
                 NetplaySessionState = NETPLAY_CONNECTED;
                 strcpy(NetplayLastEvent, "RELAY CONNECTED");
-            } else if (type == ZNP_SERVER_ERROR) {
-                char fault[sizeof(NetplayRelayFault)];
+            } else if (type == ZNP_PEER_READY || type == ZNP_SERVER_ERROR) {
+                char fault[sizeof(NetplayFault)];
 
-                NetplayRelayFaultFrom(frame, len);
-                snprintf(fault, sizeof(fault), "%s", NetplayRelayFault);
+                if (type == ZNP_SERVER_ERROR)
+                    NetplayRelayFaultFrom(frame, len);
+                snprintf(fault, sizeof(fault), "%s", NetplayFault);
                 NetplayDisconnectSession();
-                snprintf(NetplayLastEvent, sizeof(NetplayLastEvent), "RELAY: %s",
-                    fault);
+                snprintf(NetplayLastEvent, sizeof(NetplayLastEvent), "%s", fault);
             }
         }
     }
@@ -657,6 +816,9 @@ static void NetplayDebugAutoStart(void)
         return;
     }
     if (!strcmp(spec, "host")) {
+        NetplayHostSession();
+    } else if (!strncmp(spec, "host:", 5)) {
+        snprintf(NetplayHostName, sizeof(NetplayHostName), "%s", spec + 5);
         NetplayHostSession();
     } else if (!strncmp(spec, "join:", 5)) {
         snprintf(NetplayHostName, sizeof(NetplayHostName), "%s", spec + 5);
@@ -780,8 +942,7 @@ void NetplaySyncInputs(unsigned int* joy_a, unsigned int* joy_b)
                 ok = NetplayRecvPacket(NetplayClientSocket, &handshake, timeout);
             }
             if (ok == 0 || !netplay_packet_is_handshake(&handshake, NetplaySessionToken)) {
-                NetplayDisconnectSession();
-                strcpy(NetplayLastEvent, "INVALID HANDSHAKE");
+                NetplayPeerLost("INVALID HANDSHAKE");
                 return;
             }
             NetplayHandshakePending = 0;
@@ -809,8 +970,7 @@ void NetplaySyncInputs(unsigned int* joy_a, unsigned int* joy_b)
     }
 
     if (ok == 0) {
-        NetplayDisconnectSession();
-        strcpy(NetplayLastEvent, "CONNECTION LOST");
+        NetplayPeerLost("CONNECTION LOST");
         return;
     }
 

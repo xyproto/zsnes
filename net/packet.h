@@ -15,7 +15,15 @@
 enum { NETPLAY_MAGIC = 0x4E455450u, /* "NETP" */
     NETPLAY_PACKET_BYTES = 20,
     /* A pad reading neutral: no buttons, and the bit the SNES always sets. */
-    NETPLAY_JOY_NEUTRAL = 0x00008000u };
+    NETPLAY_JOY_NEUTRAL = 0x00008000u,
+    /* Bump when two builds can no longer play together. */
+    NETPLAY_PROTOCOL = 2 };
+
+/* What a handshake says about the peer: its `joy` is NETPLAY_PROTOCOL and its
+   `crc` identifies the loaded game. */
+enum { NETPLAY_HELLO_OK = 0,
+    NETPLAY_HELLO_VERSION = 1,
+    NETPLAY_HELLO_GAME = 2 };
 
 typedef struct {
     uint32_t magic;
@@ -35,6 +43,9 @@ int netplay_packet_decode(NetplayPacket* out, uint8_t const in[NETPLAY_PACKET_BY
 
 /* The opening packet of a session: right magic and session, on frame zero. */
 int netplay_packet_is_handshake(NetplayPacket const* p, uint32_t session);
+
+NetplayPacket netplay_hello(uint32_t session, uint32_t game);
+int netplay_hello_verdict(NetplayPacket const* p, uint32_t game);
 
 uint32_t netplay_fnv1a(void const* data, size_t len);
 

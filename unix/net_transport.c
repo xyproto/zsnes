@@ -68,9 +68,17 @@ static void net_set_stream_options(int const fd)
 
 NetSocket net_open(int const udp)
 {
-    int const fd = socket(AF_INET, udp ? SOCK_DGRAM : SOCK_STREAM, 0);
+    int const type = udp ? SOCK_DGRAM : SOCK_STREAM;
+    int fd = socket(AF_INET6, type, 0);
     int const reuse = 1;
+    int const v6only = 0;
 
+    /* Dual-stack when there is IPv6, so one socket hears both families. */
+    if (fd >= 0) {
+        setsockopt(fd, IPPROTO_IPV6, IPV6_V6ONLY, &v6only, sizeof(v6only));
+    } else {
+        fd = socket(AF_INET, type, 0);
+    }
     if (fd < 0) {
         return NET_SOCKET_NONE;
     }
@@ -102,13 +110,31 @@ void net_adopt(NetSocket const s, int const udp)
 
 int net_bind_any(NetSocket const s, uint16_t const port)
 {
-    struct sockaddr_in addr;
+    struct sockaddr_storage self;
+    socklen_t self_len = sizeof(self);
 
-    memset(&addr, 0, sizeof(addr));
-    addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    addr.sin_port = htons(port);
-    return bind(s, (struct sockaddr*)&addr, sizeof(addr)) == 0;
+    memset(&self, 0, sizeof(self));
+    if (getsockname(s, (struct sockaddr*)&self, &self_len) != 0) {
+        return 0;
+    }
+    if (self.ss_family == AF_INET6) {
+        struct sockaddr_in6 addr;
+
+        memset(&addr, 0, sizeof(addr));
+        addr.sin6_family = AF_INET6;
+        addr.sin6_addr = in6addr_any;
+        addr.sin6_port = htons(port);
+        return bind(s, (struct sockaddr*)&addr, sizeof(addr)) == 0;
+    }
+    {
+        struct sockaddr_in addr;
+
+        memset(&addr, 0, sizeof(addr));
+        addr.sin_family = AF_INET;
+        addr.sin_addr.s_addr = htonl(INADDR_ANY);
+        addr.sin_port = htons(port);
+        return bind(s, (struct sockaddr*)&addr, sizeof(addr)) == 0;
+    }
 }
 
 int net_listen(NetSocket const s, int const backlog)
@@ -432,12 +458,13 @@ static void* net_connect_thread(void* arg)
 {
     struct addrinfo hints;
     struct addrinfo* res = NULL;
+    struct addrinfo* ai;
     char portstr[8];
-    NetSocket fd;
+    NetSocket fd = NET_SOCKET_NONE;
 
     (void)arg;
     memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_INET;
+    hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = net_conn_udp ? SOCK_DGRAM : SOCK_STREAM;
     snprintf(portstr, sizeof(portstr), "%u", (unsigned)net_conn_port);
 
@@ -453,10 +480,18 @@ static void* net_connect_thread(void* arg)
 
     /* Blocking on purpose: this is a thread of its own, and a connect that
        has to wait for a distant peer is exactly what it is here for. */
-    fd = socket(hints.ai_family, hints.ai_socktype, 0);
-    if (fd < 0 || connect(fd, res->ai_addr, (socklen_t)res->ai_addrlen) != 0
-        || net_conn_cancel) {
+    for (ai = res; ai != NULL && !net_conn_cancel; ai = ai->ai_next) {
+        fd = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
+        if (fd >= 0 && connect(fd, ai->ai_addr, (socklen_t)ai->ai_addrlen) == 0) {
+            break;
+        }
         if (fd >= 0) {
+            close(fd);
+        }
+        fd = NET_SOCKET_NONE;
+    }
+    if (fd == NET_SOCKET_NONE || net_conn_cancel) {
+        if (fd != NET_SOCKET_NONE) {
             close(fd);
         }
         freeaddrinfo(res);

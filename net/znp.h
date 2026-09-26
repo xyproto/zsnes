@@ -29,6 +29,8 @@ enum { ZNP_CLIENT_HELLO = 0x0001,
     ZNP_PEER_READY = 0x0003,
     ZNP_SERVER_ERROR = 0x0004,
     ZNP_INPUT = 0x0010,
+    /* A netplay_hello, sent once both are paired; the relay passes it on. */
+    ZNP_GAME = 0x0011,
     ZNP_PING = 0x0020,
     ZNP_PONG = 0x0021,
     ZNP_BYE = 0x00FF };

@@ -35,8 +35,22 @@ int netplay_packet_decode(NetplayPacket* const out, uint8_t const in[NETPLAY_PAC
 
 int netplay_packet_is_handshake(NetplayPacket const* const p, uint32_t const session)
 {
-    return p->magic == NETPLAY_MAGIC && p->session == session && p->seq == 0
-        && p->joy == NETPLAY_JOY_NEUTRAL && p->crc == 0;
+    return p->magic == NETPLAY_MAGIC && p->session == session && p->seq == 0;
+}
+
+NetplayPacket netplay_hello(uint32_t const session, uint32_t const game)
+{
+    NetplayPacket const p = { NETPLAY_MAGIC, session, 0, NETPLAY_PROTOCOL, game };
+
+    return p;
+}
+
+int netplay_hello_verdict(NetplayPacket const* const p, uint32_t const game)
+{
+    if (p->joy != NETPLAY_PROTOCOL) {
+        return NETPLAY_HELLO_VERSION;
+    }
+    return p->crc == game ? NETPLAY_HELLO_OK : NETPLAY_HELLO_GAME;
 }
 
 uint32_t netplay_fnv1a(void const* const data, size_t const len)
