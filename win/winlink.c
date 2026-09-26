@@ -1267,7 +1267,7 @@ void ShutdownSemaphore()
     }
 }
 
-extern unsigned char pressed[256 + 128 + 64]; /* cpu/execute.h */
+extern unsigned char pressed[256 + 128 + 64] ASM_ALIGNED(2); /* cpu/execute.h */
 extern unsigned char romispal;
 
 void Start60HZ(void)
