@@ -1,10 +1,8 @@
 #!/bin/bash
 # z64.sh - compare the 64-bit build against the 32-bit one on the same ROM.
 #
-# The difftests cannot help here: they build -m32, where zreg and u4 are the
-# same type, so every 64-bit width bug is invisible to them. The only real
-# check is running both binaries and comparing what they draw, indexed by
-# emulated frame the way test/harness/zab.sh does.
+# Runs both binaries and compares what they draw, indexed by emulated frame
+# the way test/harness/zab.sh does.
 #
 #   -r ROM   rom path (required)
 #   -t SECS  seconds to run (default 20)

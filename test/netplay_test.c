@@ -195,9 +195,9 @@ static void test_packet_rejects_rubbish(void)
 
 static void test_handshake_recognised(void)
 {
-    ZT_SECTION("handshake is magic, session, neutral pad on frame zero");
+    ZT_SECTION("handshake is magic and session on frame zero");
 
-    Packet p = { NETP_MAGIC, 0xABCDu, 0, NETPLAY_JOY_NEUTRAL, 0 };
+    Packet p = netplay_hello(0xABCDu, 0x1234u);
 
     ZT_CHECK(netplay_packet_is_handshake(&p, 0xABCDu));
     ZT_CHECK(!netplay_packet_is_handshake(&p, 0xABCEu));
@@ -205,8 +205,24 @@ static void test_handshake_recognised(void)
     p.seq = 1;
     ZT_CHECK(!netplay_packet_is_handshake(&p, 0xABCDu));
     p.seq = 0;
-    p.joy = 0;
+    p.magic ^= 1u;
     ZT_CHECK(!netplay_packet_is_handshake(&p, 0xABCDu));
+}
+
+static void test_hello_verdict(void)
+{
+    ZT_SECTION("hello carries protocol and game");
+
+    Packet p = netplay_hello(7, 0x1234u);
+
+    ZT_CHECK(p.joy == NETPLAY_PROTOCOL && p.crc == 0x1234u);
+    ZT_CHECK(netplay_hello_verdict(&p, 0x1234u) == NETPLAY_HELLO_OK);
+    ZT_CHECK(netplay_hello_verdict(&p, 0x1235u) == NETPLAY_HELLO_GAME);
+
+    /* What a build before the check sends. */
+    p.joy = NETPLAY_JOY_NEUTRAL;
+    p.crc = 0;
+    ZT_CHECK(netplay_hello_verdict(&p, 0) == NETPLAY_HELLO_VERSION);
 }
 
 static void test_magic_bytes(void)
@@ -623,6 +639,7 @@ int main(void)
     test_packet_roundtrip();
     test_packet_rejects_rubbish();
     test_handshake_recognised();
+    test_hello_verdict();
     test_fnv1a();
     test_desync_detection();
     test_udp_loopback();

@@ -2,8 +2,7 @@
  * 2xSaI line filter tests (video/2xsaiw.c).
  *
  * The three entry points - _2xSaILine, _2xSaISuper2xSaILine and
- * _2xSaISuperEagleLine - are Kreed's filters. Bit-identity with the original
- * assembly is the difftest's job (make 2xsai); these cover the shape of the
+ * _2xSaISuperEagleLine - are Kreed's filters. These cover the shape of the
  * output and that the three are no longer the same function.
  */
 
