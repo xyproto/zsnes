@@ -14,9 +14,7 @@ import (
 	"time"
 )
 
-// startTestServer spins up a server bound to 127.0.0.1:0 (random free port)
-// over plain TCP — easier to inspect than TLS, and the framed protocol on top
-// is identical.
+// startTestServer spins up a server bound to 127.0.0.1:0 (random free port).
 func startTestServer(tb testing.TB, password string) (string, func()) {
 	tb.Helper()
 	l, err := net.Listen("tcp", "127.0.0.1:0")
@@ -32,9 +30,7 @@ func startTestServer(tb testing.TB, password string) (string, func()) {
 		srv.password = h[:]
 	}
 	var wg sync.WaitGroup
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
+	wg.Go(func() {
 		for {
 			c, err := l.Accept()
 			if err != nil {
@@ -45,7 +41,7 @@ func startTestServer(tb testing.TB, password string) (string, func()) {
 			}
 			go srv.handle(c)
 		}
-	}()
+	})
 	return l.Addr().String(), func() {
 		_ = l.Close()
 		wg.Wait()
@@ -62,7 +58,7 @@ func helloPayload(mode uint8, room, password, nick string) []byte {
 	return out
 }
 
-// dial completes the TLS-less prefix exchange and returns the live connection.
+// dial completes the prefix exchange and returns the live connection.
 func dial(tb testing.TB, addr string) net.Conn {
 	tb.Helper()
 	c, err := net.Dial("tcp", addr)
@@ -569,30 +565,5 @@ func TestRoleSlotContract(t *testing.T) {
 	}
 	if gotA.typ != FrameInput || binary.BigEndian.Uint32(gotA.payload[8:12]) != 0x4040 {
 		t.Errorf("host did not receive client's pad: %x", gotA.payload)
-	}
-}
-
-func TestSPKIPinIsDeterministic(t *testing.T) {
-	// Self-generated cert; pin derives from the leaf's SPKI bytes. The hex
-	// should be stable for a given key but the key is fresh per call, so we
-	// just check format & length.
-	cert, pin, err := loadOrGenerateCert("", "")
-	if err != nil {
-		t.Fatalf("gen: %v", err)
-	}
-	if cert.Leaf == nil {
-		t.Fatal("leaf nil")
-	}
-	if len(pin) != 64 {
-		t.Errorf("pin len = %d, want 64", len(pin))
-	}
-	for _, c := range pin {
-		if !(c >= '0' && c <= '9' || c >= 'a' && c <= 'f') {
-			t.Errorf("non-hex char %q in pin", c)
-			break
-		}
-	}
-	if got := spkiPin(cert.Leaf); got != pin {
-		t.Errorf("spkiPin(leaf) = %s, want %s", got, pin)
 	}
 }

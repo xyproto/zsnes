@@ -1,6 +1,6 @@
 // EXPERIMENTAL ZSNES netplay relay server
 //
-// Two clients connect over TLS, present the same room code + password, and
+// Two clients connect over plain TCP, present the same room code + password, and
 // the server pairs them and forwards INPUT frames between them. The first
 // client into a room is assigned the host role (player 1); the second is
 // the client (player 2). When either side disconnects, the room is torn
@@ -8,7 +8,7 @@
 //
 // Wire protocol (all integers big-endian, fixed-size payloads NUL-padded):
 //
-//	Stream prefix (sent once per direction immediately after TLS handshake):
+//	Stream prefix (sent once per direction on connect):
 //	  bytes  "ZNP1"   protocol identifier
 //
 //	Frame:
@@ -22,29 +22,21 @@
 //	  0x0003  PEER_READY     char peer_nick[16]
 //	  0x0004  SERVER_ERROR   utf-8 message
 //	  0x0010  INPUT          u32 magic ("NETP"), u32 session, u32 seq, u32 joy, u32 crc
+//	  0x0011  GAME           same layout as INPUT: protocol in joy, ROM hash in crc
 //	  0x0020  PING           u64 ts
 //	  0x0021  PONG           u64 ts_echo
 //	  0x00FF  BYE            (empty)
 package main
 
 import (
-	"crypto/ecdsa"
-	"crypto/elliptic"
-	"crypto/rand"
 	"crypto/sha256"
 	"crypto/subtle"
-	"crypto/tls"
-	"crypto/x509"
-	"crypto/x509/pkix"
 	"encoding/binary"
-	"encoding/hex"
-	"encoding/pem"
 	"errors"
 	"flag"
 	"fmt"
 	"io"
 	"log/slog"
-	"math/big"
 	"net"
 	"os"
 	"sync"
@@ -59,7 +51,7 @@ const (
 	RoomCodeLen      = 16
 	PasswordLen      = 32
 	NicknameLen      = 16
-	InputPayloadSize = 20 // net/packet.c's encoding, forwarded as it stands
+	InputPayloadSize = 20                 // net/packet.c's encoding, forwarded as it stands
 	InputMagic       = uint32(0x4E455450) // "NETP"
 
 	FrameClientHello = uint16(0x0001)
@@ -112,9 +104,6 @@ type server struct {
 
 func main() {
 	addr := flag.String("addr", ":7845", "listen address")
-	certFile := flag.String("cert", "", "TLS certificate (PEM). Auto-generated self-signed if empty.")
-	keyFile := flag.String("key", "", "TLS private key (PEM). Auto-generated if cert is empty.")
-	insecure := flag.Bool("insecure", false, "disable TLS (plain TCP — testing only)")
 	password := flag.String("password", "", "shared password required from all clients (optional)")
 	logLevelArg := flag.String("log-level", "info", "log level: debug|info|warn|error")
 	flag.Parse()
@@ -135,46 +124,14 @@ func main() {
 		srv.password = h[:]
 	}
 
-	var listener net.Listener
-	if *insecure {
-		log.Warn("starting in INSECURE mode — connections are unencrypted")
-		l, err := net.Listen("tcp", *addr)
-		if err != nil {
-			log.Error("listen failed", "err", err)
-			os.Exit(1)
-		}
-		listener = l
-	} else {
-		cert, pin, err := loadOrGenerateCert(*certFile, *keyFile)
-		if err != nil {
-			log.Error("certificate load failed", "err", err)
-			os.Exit(1)
-		}
-		tlsCfg := &tls.Config{
-			Certificates: []tls.Certificate{cert},
-			MinVersion:   tls.VersionTLS12,
-			CipherSuites: []uint16{
-				tls.TLS_AES_128_GCM_SHA256,
-				tls.TLS_AES_256_GCM_SHA384,
-				tls.TLS_CHACHA20_POLY1305_SHA256,
-				tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
-				tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
-				tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,
-				tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,
-			},
-		}
-		l, err := tls.Listen("tcp", *addr, tlsCfg)
-		if err != nil {
-			log.Error("tls listen failed", "err", err)
-			os.Exit(1)
-		}
-		listener = l
-		fmt.Fprintf(os.Stderr, "ZSNES netplay server listening on %s (TLS)\n", *addr)
-		fmt.Fprintf(os.Stderr, "SPKI SHA-256 pin: %s\n", pin)
-		fmt.Fprintf(os.Stderr, "Clients should set ZSNES_NETPLAY_PIN to this value to verify the server.\n")
+	listener, err := net.Listen("tcp", *addr)
+	if err != nil {
+		log.Error("listen failed", "err", err)
+		os.Exit(1)
 	}
+	fmt.Fprintf(os.Stderr, "ZSNES netplay server listening on %s\n", *addr)
 	defer listener.Close()
-	log.Info("listening", "addr", *addr, "tls", !*insecure)
+	log.Info("listening", "addr", *addr)
 
 	for {
 		conn, err := listener.Accept()
@@ -189,78 +146,10 @@ func main() {
 	}
 }
 
-// loadOrGenerateCert returns the server certificate plus the hex SHA-256 of
-// the certificate's SubjectPublicKeyInfo (used for client-side pinning).
-func loadOrGenerateCert(certPath, keyPath string) (tls.Certificate, string, error) {
-	if certPath != "" && keyPath != "" {
-		c, err := tls.LoadX509KeyPair(certPath, keyPath)
-		if err != nil {
-			return tls.Certificate{}, "", err
-		}
-		leaf, err := x509.ParseCertificate(c.Certificate[0])
-		if err != nil {
-			return tls.Certificate{}, "", err
-		}
-		c.Leaf = leaf
-		return c, spkiPin(leaf), nil
-	}
-
-	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	if err != nil {
-		return tls.Certificate{}, "", err
-	}
-	serial, err := rand.Int(rand.Reader, new(big.Int).Lsh(big.NewInt(1), 128))
-	if err != nil {
-		return tls.Certificate{}, "", err
-	}
-	now := time.Now()
-	tmpl := x509.Certificate{
-		SerialNumber:          serial,
-		Subject:               pkix.Name{CommonName: "zsnes-netplay-relay"},
-		NotBefore:             now.Add(-time.Hour),
-		NotAfter:              now.AddDate(5, 0, 0),
-		KeyUsage:              x509.KeyUsageDigitalSignature | x509.KeyUsageKeyEncipherment,
-		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
-		BasicConstraintsValid: true,
-		IsCA:                  false,
-		DNSNames:              []string{"localhost"},
-		IPAddresses:           []net.IP{net.IPv4(127, 0, 0, 1), net.IPv6loopback},
-	}
-	der, err := x509.CreateCertificate(rand.Reader, &tmpl, &tmpl, &priv.PublicKey, priv)
-	if err != nil {
-		return tls.Certificate{}, "", err
-	}
-	leaf, err := x509.ParseCertificate(der)
-	if err != nil {
-		return tls.Certificate{}, "", err
-	}
-	cert := tls.Certificate{
-		Certificate: [][]byte{der},
-		PrivateKey:  priv,
-		Leaf:        leaf,
-	}
-	_ = pem.Encode // keep import live in case the user wants to dump it later
-	return cert, spkiPin(leaf), nil
-}
-
-func spkiPin(cert *x509.Certificate) string {
-	sum := sha256.Sum256(cert.RawSubjectPublicKeyInfo)
-	return hex.EncodeToString(sum[:])
-}
-
 func (s *server) handle(raw net.Conn) {
 	remote := raw.RemoteAddr().String()
 	logger := s.log.With("remote", remote)
 	defer raw.Close()
-
-	if tc, ok := raw.(*tls.Conn); ok {
-		_ = tc.SetDeadline(time.Now().Add(HandshakeTimeout))
-		if err := tc.Handshake(); err != nil {
-			logger.Debug("tls handshake failed", "err", err)
-			return
-		}
-		_ = tc.SetDeadline(time.Time{})
-	}
 
 	if err := raw.SetReadDeadline(time.Now().Add(HandshakeTimeout)); err != nil {
 		logger.Debug("set deadline failed", "err", err)
@@ -613,6 +502,3 @@ func writeFrameTimeout(c net.Conn, typ uint16, payload []byte, d time.Duration) 
 	defer c.SetWriteDeadline(time.Time{})
 	return writeFrame(c, typ, payload)
 }
-
-// pem is referenced to keep the import live for future cert-dump tooling.
-var _ = pem.Encode
