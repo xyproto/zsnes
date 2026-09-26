@@ -399,11 +399,8 @@ static int win_run(u1** const pecx, u4* const peax, u4 edx, u4 const val)
 
 /* ngwintable holds alternating run lengths - covered, then not - and the mask
    is written from one byte *before* the line's buffer, which the first dword
-   store then covers. Not static: test/difftest_sprwin.c compares it against a
-   verbatim transcription of the assembly it replaced. */
-void ng_build_sprite_window(u1* dest);
-
-void ng_build_sprite_window(u1* const dest)
+   store then covers. */
+static void ng_build_sprite_window(u1* const dest)
 {
     u4 const* tab = ngwintable;
     u4 eax = 256;

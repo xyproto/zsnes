@@ -114,19 +114,6 @@ u4 procspritessub16t(m7regs* const r)
         bgfixer == 1 ? c_procspritessub16tfix : c_procspritessub16t, r);
 }
 
-/* The *fix twins. The branch above reaches them, so the emulator never calls
-   these - but the assembly exported them and test/difftest_m716t.c drives them
-   as cases of their own, which is worth keeping. */
-u4 procspritesmain16tfix(m7regs* const r)
-{
-    return sprite_gate(c_procspritesmain16tfix, r);
-}
-
-u4 procspritessub16tfix(m7regs* const r)
-{
-    return sprite_gate(c_procspritessub16tfix, r);
-}
-
 /* The background gates *call* their renderer and then do one more thing, so
    they split in two: the caller runs the first half, dispatches on the id, and
    runs the second. The whole register file crosses this seam; the assembly's
@@ -166,16 +153,6 @@ u4 drawbackgrndsub16t(m7regs* const r)
 {
     return bg_gate(
         bgfixer == 1 ? c_drawbackgrndsub16tfix : c_drawbackgrndsub16t, r);
-}
-
-u4 drawbackgrndmain16tfix(m7regs* const r)
-{
-    return bg_gate(c_drawbackgrndmain16tfix, r);
-}
-
-u4 drawbackgrndsub16tfix(m7regs* const r)
-{
-    return bg_gate(c_drawbackgrndsub16tfix, r);
 }
 
 /* The tail of a background gate: run once the renderer, if any, has been. */

@@ -390,33 +390,3 @@ void c_drawsprng16bhr(void)
     NGSDI = r.di;
     NGSBP = r.bp;
 }
-
-/* Test entry point: one pixel through one writer shape. The windowed
-   skeletons are not reached by any local ROM, so test/difftest_ngspr.c
-   compares them against verbatim transcriptions of the macros. */
-void ng_spr_test(u1 pixel, u4 x, u4 n, u2* edi, u2 const* pal, u1 const* win,
-    u1 adder, u1 dl, int sk, int pal512, int transp, int sub, int orbit,
-    int mask, int hires, u4* eax_out);
-
-void ng_spr_test(u1 const pixel, u4 const x, u4 const n, u2* const edi,
-    u2 const* const pal, u1 const* const win, u1 const adder, u1 const dl,
-    int const sk, int const pal512, int const transp, int const sub,
-    int const orbit, int const mask, int const hires, u4* const eax_out)
-{
-    regs r;
-    sform f;
-    u1 src[8];
-
-    memset(&r, 0, sizeof r);
-    memset(&f, 0, sizeof f);
-    memset(src, 0, sizeof src);
-    src[0] = pixel;
-    r.bx = x;
-    f.sk = (u1)sk;
-    f.pal512 = (u1)pal512;
-    f.transp = (u1)transp;
-    f.sub = (u1)sub;
-    f.orbit = (u1)orbit;
-    spr_px(&r, src, 0, n, edi, pal, win, adder, dl, f, mask, hires);
-    *eax_out = r.ax;
-}

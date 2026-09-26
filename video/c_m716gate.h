@@ -28,16 +28,12 @@ u4 procmode716tmainextbg2(m7regs* r);
 /* 0 none, 1 drawsprites16t, anything else drawsprites16bt. */
 u4 procspritesmain16t(m7regs* r);
 u4 procspritessub16t(m7regs* r);
-u4 procspritesmain16tfix(m7regs* r);
-u4 procspritessub16tfix(m7regs* r);
 
 /* The background gates come in two halves; the caller dispatches between them
    on the id, which is 1..6 for a renderer and 0 for "nothing more to do".
    drawbackgrnd_mark runs for any non-zero id, renderer or not. */
 u4 drawbackgrndmain16t(m7regs* r);
 u4 drawbackgrndsub16t(m7regs* r);
-u4 drawbackgrndmain16tfix(m7regs* r);
-u4 drawbackgrndsub16tfix(m7regs* r);
 void drawbackgrnd_mark(m7regs* r);
 
 /* The sprite renderers a gate's tail picks between. */
