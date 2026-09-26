@@ -1,3 +1,4 @@
+main.c
 cpu/c_irq.c
 cpu/c_table.c
 cpu/firtable.c
