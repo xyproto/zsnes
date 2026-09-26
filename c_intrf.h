@@ -137,6 +137,33 @@ void VideoMonitorSelect(u4 i);
 int VideoMonitorIsHDR(u4 i);
 int VideoMonitorHDR(void);
 
+/* The short ID is the name with everything but letters and digits taken out, so
+   for a plain name like "HDMI-1" it comes back the same and listing both just
+   repeats it. True when that is the case - the ID already spells the whole name
+   out and nothing was lost to truncation - so the caller can drop the name. */
+static inline int VideoMonitorNameRedundant(char const* id, char const* name)
+{
+    u4 k = 0;
+    int any = 0;
+
+    for (; *name; ++name) {
+        char c = *name;
+
+        if (c >= 'a' && c <= 'z') {
+            c = (char)(c - 'a' + 'A');
+        }
+        if (!((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z'))) {
+            continue;
+        }
+        any = 1;
+        if (id[k] != c) {
+            return 0;
+        }
+        ++k;
+    }
+    return !any || id[k] == '\0';
+}
+
 // Input Device Names
 extern char const GUIInputNames[][17];
 

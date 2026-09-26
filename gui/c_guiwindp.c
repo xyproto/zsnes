@@ -1149,11 +1149,18 @@ void DisplayGUIVideo(void)
         for (i = 0; i < count && i < (u4)MON_MAX; i++) {
             char id[16], line[34];
 
+            char const* const name = VideoMonitorName(i);
+            char const* const hdr = VideoMonitorIsHDR(i) ? " (HDR)" : "";
+
             VideoMonitorID(i, id, (u4)sizeof(id));
             /* HDR is not a choice, so the list only says which monitors have
-               it; nothing is said about the ones that do not. */
-            snprintf(line, sizeof(line), "%-10.10s %.14s%s", id,
-                VideoMonitorName(i), VideoMonitorIsHDR(i) ? " (HDR)" : "");
+               it; nothing is said about the ones that do not. The name is only
+               added when the ID does not already spell it out. */
+            if (VideoMonitorNameRedundant(id, name)) {
+                snprintf(line, sizeof(line), "%-10.10s%s", id, hdr);
+            } else {
+                snprintf(line, sizeof(line), "%-10.10s %.14s%s", id, name, hdr);
+            }
             GUIDisplayButtonHoleTu(5, 18, (u4)(row[MON_ROW_LIST] + (s4)i * MON_PITCH), &monitorrow, (u4)i,
                 line, 0);
         }

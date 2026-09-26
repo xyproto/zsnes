@@ -816,8 +816,14 @@ static void handle_params(int argc, char* argv[])
                         for (m = 0; m < count; m++) {
                             char id[16];
 
+                            char const* const name = VideoMonitorName(m);
+
                             VideoMonitorID(m, id, (u4)sizeof(id));
-                            printf("  %-12s %s\n", id, VideoMonitorName(m));
+                            if (VideoMonitorNameRedundant(id, name)) {
+                                printf("  %s\n", id);
+                            } else {
+                                printf("  %-12s %s\n", id, name);
+                            }
                         }
                         zexit();
                     }
