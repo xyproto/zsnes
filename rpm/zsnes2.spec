@@ -12,6 +12,15 @@ Source0:        %{name}-%{version}.tar.gz
 # upstream build mapping instead of silently attempting unsupported arches.
 ExclusiveArch:  x86_64 i686 aarch64 riscv64
 
+# Upstream x86 deliberately uses absolute addressing and links a non-PIE
+# executable. Fedora's hardened GCC specs inject -fPIE/-pie even when upstream
+# later passes -fno-pic/-no-pie, so disable that RPM hardening layer only on
+# x86. Other Fedora hardening flags remain, and -z now is restored explicitly
+# below. arm64 and riscv64 retain Fedora's normal PIE hardening.
+%ifarch x86_64 i686
+%undefine _hardened_build
+%endif
+
 %ifarch x86_64
 %global zsnes_bits 64
 %global zsnes_cpu x86
@@ -63,6 +72,11 @@ not included.
 # upstream's architecture policy. Upstream deliberately builds x86 non-PIE
 # with -fno-pic/-no-pie, while arm64 and riscv64 remain position-independent.
 %set_build_flags
+%ifarch x86_64 i686
+# %undefine _hardened_build removes Fedora's PIE specs and their -z now;
+# retain immediate binding while allowing upstream's required non-PIE link.
+export LDFLAGS="$LDFLAGS -Wl,-z,now"
+%endif
 %make_build \
     ARCH=LINUX \
     BITS=%{zsnes_bits} \
@@ -180,6 +194,7 @@ grep -q '<binary>zsnes2</binary>' \
 - Remove the obsolete NASM and i686-only packaging assumptions.
 - Update icon installation for the upstream img/ directory layout.
 - Run the upstream test suite, including its 32-bit x86 tests on x86_64.
+- Disable Fedora's PIE injection only on x86 to match upstream's non-PIE ABI.
 
 * Mon Sep 07 2026 Reaper <JohnGrimmReaper@disroot.org> - 2.2.3-1
 - Initial Fedora package.
