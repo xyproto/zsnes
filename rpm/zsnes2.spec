@@ -49,9 +49,11 @@ BuildRequires:  pkgconfig(sdl3)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  desktop-file-utils
 # Upstream intentionally exercises the portable x86 test suite as 32-bit
-# even when the emulator itself is built as x86_64.
+# even when the emulator itself is built as x86_64. Fedora's 32-bit GCC
+# support also needs the matching libatomic runtime available to the linker.
 %ifarch x86_64
 BuildRequires:  glibc-devel(x86-32)
+BuildRequires:  libatomic(x86-32)
 %endif
 
 %description
