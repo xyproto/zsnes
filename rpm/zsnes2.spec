@@ -53,6 +53,7 @@ BuildRequires:  desktop-file-utils
 # support also needs the matching libatomic runtime available to the linker.
 %ifarch x86_64
 BuildRequires:  glibc-devel(x86-32)
+BuildRequires:  libatomic(x86-64)
 BuildRequires:  libatomic(x86-32)
 %endif
 
