@@ -425,7 +425,7 @@ static void backup_all_vars(void) {
 
 /* Only what the command line actually changed is reverted; otherwise a GUI
    change would be thrown away, since the snapshot predates the session. */
-#define MARK_VAR(var) cmdline_var_set._##var = (var != saved_cmdline_vars._##var);
+#define MARK_VAR(var) cmdline_var_set._##var = (unsigned char)(var != saved_cmdline_vars._##var);
 static struct backup_cmdline_vars cmdline_var_set;
 static void mark_overridden_vars(void) {
     BACKUP_HELP(MARK_VAR)
@@ -434,9 +434,9 @@ static void mark_overridden_vars(void) {
 
 #define SWAP_BACKUP_VAR(var)              \
     if (cmdline_var_set._##var) {         \
-        saved_cmdline_vars._##var ^= var; \
-        var ^= saved_cmdline_vars._##var; \
-        saved_cmdline_vars._##var ^= var; \
+        __typeof__(var) swap_tmp = var;          \
+        var = saved_cmdline_vars._##var;         \
+        saved_cmdline_vars._##var = swap_tmp;    \
     }
 void swap_backup_vars(void)
 {
@@ -459,6 +459,19 @@ static size_t zatoi(const char* str)
         return (~0);
     }
     return ((size_t)val);
+}
+
+/* Parse a CLI integer and require it in [lo, hi]; on parse failure (zatoi
+   returns ~0) or out of range, print msg and exit. Validating the full value
+   before the caller narrows it avoids the truncate-then-check bug. */
+static size_t zatoi_range(const char* str, size_t lo, size_t hi, const char* msg)
+{
+    size_t const v = zatoi(str);
+    if (v < lo || v > hi) {
+        puts(msg);
+        zexit_error();
+    }
+    return v;
 }
 
 static void handle_params(int argc, char* argv[])
@@ -492,23 +505,27 @@ static void handle_params(int argc, char* argv[])
 
                 case '1': // Player 1 Input
                     i++;
-
-                    if ((pl1contrl = zatoi(argv[i])) >= NumInputDevices) {
-                        printf("Player 1 Input must be a value from 0 to %u!\n", NumInputDevices - 1);
-                        zexit_error();
+                    {
+                        size_t const v = zatoi(argv[i]);
+                        if (v >= NumInputDevices) {
+                            printf("Player 1 Input must be a value from 0 to %u!\n", NumInputDevices - 1);
+                            zexit_error();
+                        }
+                        pl1contrl = (unsigned char)v;
                     }
-
                     ConvertJoyMap1();
                     break;
 
                 case '2': // Player 2 Input
                     i++;
-
-                    if ((pl2contrl = zatoi(argv[i])) >= NumInputDevices) {
-                        printf("Player 2 Input must be a value from 0 to %u!\n", NumInputDevices - 1);
-                        zexit_error();
+                    {
+                        size_t const v = zatoi(argv[i]);
+                        if (v >= NumInputDevices) {
+                            printf("Player 2 Input must be a value from 0 to %u!\n", NumInputDevices - 1);
+                            zexit_error();
+                        }
+                        pl2contrl = (unsigned char)v;
                     }
-
                     ConvertJoyMap2();
                     break;
 
@@ -524,14 +541,9 @@ static void handle_params(int argc, char* argv[])
 #ifdef __WIN32__
                 case '6': // Force Refresh Rate
                     i++;
-                    SetRefreshRate = zatoi(argv[i]);
-                    if ((SetRefreshRate < 50) || (SetRefreshRate > 180)) {
-                        ForceRefreshRate = 0;
-                        puts("Refresh Rate must be a value 50 to 180!");
-                        zexit_error();
-                    } else {
-                        ForceRefreshRate = 1;
-                    }
+                    SetRefreshRate = (unsigned char)zatoi_range(argv[i], 50, 180,
+                        "Refresh Rate must be a value 50 to 180!");
+                    ForceRefreshRate = 1;
                     break;
 #endif
 
@@ -562,16 +574,14 @@ static void handle_params(int argc, char* argv[])
                             puts("Frame Skip must be a value of 0 to 9!");
                             zexit_error();
                         }
-                        frameskip = skip + 1;
+                        frameskip = (unsigned char)(skip + 1);
                     }
                     break;
 
                 case 'g': // Specify gamma correction value
                     i++;
-                    if ((gammalevel = zatoi(argv[i])) > 15) {
-                        puts("Gamma Correction Level must be a value of 0 to 15!");
-                        zexit_error();
-                    }
+                    gammalevel = (unsigned char)zatoi_range(argv[i], 0, 15,
+                        "Gamma Correction Level must be a value of 0 to 15!");
                     break;
 
                 case 'h': // Force HiROM
@@ -584,10 +594,8 @@ static void handle_params(int argc, char* argv[])
 
                 case 'k': // Set volume level
                     i++;
-                    if ((MusicRelVol = zatoi(argv[i])) > 100) {
-                        puts("Volume must be a value from 0 to 100!");
-                        zexit_error();
-                    }
+                    MusicRelVol = (unsigned char)zatoi_range(argv[i], 0, 100,
+                        "Volume must be a value from 0 to 100!");
                     break;
 
                 case 'l': // Force LoROM
@@ -609,11 +617,8 @@ static void handle_params(int argc, char* argv[])
 
                 case 'p': // Percentage of instructions to execute
                     i++;
-                    per2exec = zatoi(argv[i]);
-                    if (per2exec > 150 || per2exec < 50) {
-                        puts("Percentage of instructions to execute must be a value from 50 to 150!");
-                        zexit_error();
-                    }
+                    per2exec = (uint32_t)zatoi_range(argv[i], 50, 150,
+                        "Percentage of instructions to execute must be a value from 50 to 150!");
                     break;
 
                 case 'r': // Set sampling rate
@@ -626,10 +631,8 @@ static void handle_params(int argc, char* argv[])
                        and scripts carrying it keep working. */
                     (void)argv[i];
 #else
-                    if ((SoundQuality = zatoi(argv[i])) > 6) {
-                        puts("Sound Sampling Rate must be a value of 0 to 6!");
-                        zexit_error();
-                    }
+                    SoundQuality = (unsigned int)zatoi_range(argv[i], 0, 6,
+                        "Sound Sampling Rate must be a value of 0 to 6!");
 #endif
                     break;
 
@@ -648,10 +651,8 @@ static void handle_params(int argc, char* argv[])
 
                 case 'v': // Select video mode
                     i++;
-                    if ((cvidmode = zatoi(argv[i])) > VIDEO_MODE_COUNT) {
-                        puts("Invalid Video Mode!");
-                        zexit_error();
-                    }
+                    cvidmode = (unsigned char)zatoi_range(argv[i], 0, VIDEO_MODE_COUNT,
+                        "Invalid Video Mode!");
                     break;
 
 #ifndef __UNIXSDL__
@@ -754,10 +755,9 @@ static void handle_params(int argc, char* argv[])
                 else if (tolower(argv[i][1]) == 'j' && tolower(argv[i][2]) == 's') // Set joystick sensitivity
                 {
                     i++;
-                    if ((joy_sensitivity = zatoi(argv[i]) + 1) > 32767) {
-                        puts("Joystick sensitivity must be a value of 0 to 32767!");
-                        zexit_error();
-                    }
+                    joy_sensitivity = (uint16_t)(zatoi_range(argv[i], 0, 32766,
+                        "Joystick sensitivity must be a value of 0 to 32767!")
+                        + 1);
                 }
 
 #ifdef __WIN32__
@@ -783,17 +783,15 @@ static void handle_params(int argc, char* argv[])
                 else if (tolower(argv[i][1]) == 'm' && tolower(argv[i][2]) == 'd') // Dump raw vid with ZMV
                 {
                     i++;
-                    if ((ZMVRawDump = zatoi(argv[i])) > 5) {
-                        puts("Movie mode must be a number 1 to 5");
-                        zexit_error();
-                    }
+                    ZMVRawDump = (unsigned char)zatoi_range(argv[i], 0, 5,
+                        "Movie mode must be a number 1 to 5");
                 }
 
                 else if (tolower(argv[i][1]) == 'm' && tolower(argv[i][2]) == 'l') // Force ZMV length
                 {
                     i++;
                     MovieForcedLengthEnabled = true;
-                    MovieForcedLength = zatoi(argv[i]);
+                    MovieForcedLength = (uint32_t)zatoi(argv[i]);
                 }
 
                 /* -ml is the movie dump length, so the monitor flags live
@@ -843,19 +841,17 @@ static void handle_params(int argc, char* argv[])
                 else if (tolower(argv[i][1]) == 'z' && tolower(argv[i][2]) == 's') // Autoload save state
                 {
                     i++;
-                    if ((autoloadstate = zatoi(argv[i]) + 1) > 100) {
-                        puts("State load position must be a value of 0 to 99!");
-                        zexit_error();
-                    }
+                    autoloadstate = (unsigned char)(zatoi_range(argv[i], 0, 99,
+                        "State load position must be a value of 0 to 99!")
+                        + 1);
                 }
 
                 else if (tolower(argv[i][1]) == 'z' && tolower(argv[i][2]) == 'm') // Autoload movie
                 {
                     i++;
-                    if ((autoloadmovie = zatoi(argv[i]) + 1) > 10) {
-                        puts("Movie load position must be a value of 0 to 9!");
-                        zexit_error();
-                    }
+                    autoloadmovie = (unsigned char)(zatoi_range(argv[i], 0, 9,
+                        "Movie load position must be a value of 0 to 9!")
+                        + 1);
                 }
 
                 else {
@@ -952,7 +948,7 @@ int main(int const argc, char** const argv)
         handle_params(argc, argv);
 
         atexit(ZCleanup);
-        srand(time(0));
+        srand((unsigned)time(0));
 
 #ifdef QT_DEBUGGER
         if (debugger)

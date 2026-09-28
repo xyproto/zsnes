@@ -467,7 +467,7 @@ static char *find_str(char *str, const char *match_str)
             self.c_stream.write("""
 static inline int atoui(const char *nptr)
 {
-  return(strtoul(nptr, 0, 10));
+  return((int)strtoul(nptr, 0, 10));
 }
 """)
 
