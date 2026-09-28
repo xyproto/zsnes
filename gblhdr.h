@@ -58,6 +58,7 @@ however it's a static value that we can just define */
 #endif
 
 #ifdef __UNIXSDL__
+#include "zcompat.h"
 #include <SDL3/SDL.h>
 #include <arpa/inet.h>
 #include <glob.h>
@@ -71,7 +72,6 @@ however it's a static value that we can just define */
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <utime.h>
-#include <zlib.h>
 #ifndef NO_PNG
 #include <png.h>
 #endif

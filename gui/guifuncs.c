@@ -10,11 +10,11 @@
 #include "../win/lib.h"
 #endif
 
+#include "../zcompat.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <zlib.h>
 #define fnamencmp strncasecmp
 #define fnamecmp strcasecmp
 #endif

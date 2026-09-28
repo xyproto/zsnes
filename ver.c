@@ -1,5 +1,5 @@
+#include "zcompat.h"
 #include <string.h>
-#include <zlib.h>
 
 char const* VERSION_DATE = __DATE__;
 

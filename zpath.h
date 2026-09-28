@@ -1,10 +1,10 @@
 #ifndef ZPATH_H
 #define ZPATH_H
 
+#include "zcompat.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <sys/stat.h>
-#include <zlib.h>
 
 #include "zip/zipread.h"
 

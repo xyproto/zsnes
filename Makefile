@@ -192,9 +192,9 @@ endif
 endif
 # Darwin uses -dead_strip instead of GNU section GC.
 ifeq ($(ARCH),DARWIN)
-LDFLAGS += -Wl,-dead_strip -lz -lm
+LDFLAGS += -Wl,-dead_strip -lm
 else
-LDFLAGS += -Wl,--as-needed $(if $(filter arm64 riscv64,$(CPU)),,-no-pie) -Wl,--gc-sections -lz -lm
+LDFLAGS += -Wl,--as-needed $(if $(filter arm64 riscv64,$(CPU)),,-no-pie) -Wl,--gc-sections -lm
 endif
 
 WITH_OPENGL   := yes
@@ -678,6 +678,8 @@ SRCS += zmovie.c
 SRCS += zpath.c
 SRCS += zstate.c
 SRCS += ztimec.c
+SRCS += zcompat.c
+SRCS += miniz.c
 
 PSRS :=
 PSRS += cfg.psr
@@ -1002,6 +1004,10 @@ $(BUILD_DIR)/%.o: %.c
 	@echo '===> CC $<'
 	$(Q)mkdir -p $(@D)
 	$(Q)$(CC_TARGET) $(CFLAGS) -iquote $(BUILD_DIR) -c $(DEPFLAGS_C) -o $@ $<
+
+# miniz is vendored third-party code (the bundled zlib replacement); build it
+# without the project's strict warning set so its own style does not trip -W*.
+$(BUILD_DIR)/miniz.o: WARN_FLAGS := -w
 
 $(BUILD_DIR)/%.o: %.rc
 	@echo '===> RES $<'

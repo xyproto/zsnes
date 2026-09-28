@@ -11,10 +11,10 @@
 
 #include "zipread.h"
 
+#include "../zcompat.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <zlib.h>
 
 enum { SIG_EOCD = 0x06054B50u,
     SIG_CENTRAL = 0x02014B50u,

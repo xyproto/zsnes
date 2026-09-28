@@ -8,13 +8,13 @@
 #include "unix/safelib.h"
 #else
 #define _POSIX_
+#include "zcompat.h"
 #include <ctype.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <zlib.h>
 #define signal(x, y)
 #ifdef __WIN32__
 #include <direct.h>

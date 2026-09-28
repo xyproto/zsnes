@@ -3,11 +3,11 @@
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
 #else
+#include "zcompat.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <zlib.h>
 #ifdef __WIN32__
 #include <io.h>
 #else
