@@ -32,7 +32,7 @@ Tested on Arch Linux, Fedora and Debian 12 on x86_64, and on macOS on aarch64.
 
     make
 
-These specific targets are also available:
+These specific targets are available (all but `linux_x86_64` may be a bit experimental):
 
 ```sh
 make win_i686
