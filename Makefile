@@ -894,7 +894,7 @@ MINGW64_WINDRES ?= $(if $(MINGW64_NATIVE),windres,$(MINGW64_PREFIX)-windres)
 .PHONY: linux_i686 linux_x86_64 linux_aarch64 linux_riscv64
 .PHONY: macos_aarch64 macos_x86_64
 .PHONY: freebsd_aarch64 freebsd_x86_64
-.PHONY: win_i686 win_x86_64 help
+.PHONY: win_i686 win_x86_64 help win32 win64
 
 linux_i686:
 	$(call need_tool,$(LINUX_I686_CC),an i686 Linux C compiler)
@@ -946,6 +946,7 @@ freebsd_aarch64:
 	  CC=$(FREEBSD_AARCH64_CC) CC_TARGET=$(FREEBSD_AARCH64_CC) \
 	  PKG_CONFIG=$(FREEBSD_AARCH64_PKG_CONFIG) all
 
+win32:
 win_i686:
 	$(call need_tool,$(MINGW32_CC),the mingw32 toolchain)
 	$(call need_tool,$(MINGW32_WINDRES),the mingw32 resource compiler)
@@ -953,6 +954,7 @@ win_i686:
 	  CC=$(MINGW32_CC) CC_TARGET=$(MINGW32_CC) \
 	  WINDRES=$(MINGW32_WINDRES) PKG_CONFIG=$(MINGW32_PKG_CONFIG) all
 
+win64:
 win_x86_64:
 	$(call need_tool,$(MINGW64_CC),the mingw-w64 toolchain)
 	$(call need_tool,$(MINGW64_WINDRES),the mingw-w64 resource compiler)
