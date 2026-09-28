@@ -171,7 +171,11 @@ static void ProcSNESMouse(u4* const device)
         d |= 0x00100000;
     if (mousebuttons & 0x01)
         d |= 0x00400000;
-    d = (d & 0xFFFF0000) | 0x00010000 | (mouseypos & 0x7F) << 8 | (mousexpos & 0x7F);
+    /* The SNES mouse saturates at its top speed rather than wrapping, so clamp
+       the per-frame magnitude to the 7-bit field instead of masking it. */
+    u4 const mx = mousexpos > 0x7F ? 0x7F : mousexpos;
+    u4 const my = mouseypos > 0x7F ? 0x7F : mouseypos;
+    d = (d & 0xFFFF0000) | 0x00010000 | (my << 8) | mx;
     if (mouseydir & 0x01)
         d |= 0x00008000;
     if (mousexdir & 0x01)
