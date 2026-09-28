@@ -414,8 +414,8 @@ void Set_MousePosition(u4 const x, u4 const y)
 
 u4 Get_MousePositionDisplacement(void)
 {
-    u4 const x = GetMouseMoveX();
-    u4 const y = GetMouseMoveY();
+    u4 const x = (u4)GetMouseMoveX() & 0xFFFF;
+    u4 const y = (u4)GetMouseMoveY() & 0xFFFF;
     return y << 16 | x;
 }
 
