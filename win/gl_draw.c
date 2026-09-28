@@ -11,7 +11,7 @@
 // OPENGL VARIABLES
 static unsigned short* glvidbuffer = 0;
 static GLuint gltextures[4];
-static uint32_t gltexture256, gltexture512;
+static int gltexture256, gltexture512;
 static uint32_t glfilters = GL_NEAREST;
 static uint32_t glscanready = 0;
 
@@ -88,7 +88,7 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
     return TRUE;
 }
 
-void gl_end()
+void gl_end(void)
 {
     wglMakeCurrent(NULL, NULL);
     wglDeleteContext(hRC);
@@ -101,7 +101,7 @@ void gl_end()
 extern uint32_t NGNoTransp; /* a dword where it is defined (video/c_newgfx16data.c) */
 extern uint8_t SpecialLine[256]; /* 0 if lo-res, > 0 if hi-res; real size (see endmem) */
 
-void gl_clearwin()
+void gl_clearwin(void)
 {
     glClear(GL_COLOR_BUFFER_BIT);
     if (En2xSaI) {
@@ -210,7 +210,7 @@ static void gl_drawspan(int hires, int start, int end)
     }
 }
 
-void gl_drawwin()
+void gl_drawwin(void)
 {
     int i;
 
@@ -328,7 +328,7 @@ void gl_drawwin()
     SwapBuffers(hDC);
 }
 
-void gl_scanlines()
+void gl_scanlines(void)
 {
     GLubyte scanbuffer[256][4];
     int i, j = (100 - sl_intensity) * 256 / 100;

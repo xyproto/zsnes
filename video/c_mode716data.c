@@ -6,7 +6,6 @@
    pins it all. */
 #include "../asmdata.h"
 
-/* clang-format off */
 
 __asm__(
     ASM_SEC_BSS_ALIGNED(".bss")
@@ -130,4 +129,3 @@ __asm__(
     ".short 0\n"
     ASM_SEC_END);
 
-/* clang-format on */

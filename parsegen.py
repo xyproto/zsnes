@@ -465,7 +465,7 @@ static char *find_str(char *str, const char *match_str)
 
         if config_data.unsigned_used():
             self.c_stream.write("""
-static int atoui(const char *nptr)
+static inline int atoui(const char *nptr)
 {
   return(strtoul(nptr, 0, 10));
 }

@@ -25,7 +25,6 @@
 #define PTRSYM(sym) \
     ".balign " ASM_STR(__SIZEOF_POINTER__) "\n" ASM_GSYM(sym) ".skip " ASM_STR(__SIZEOF_POINTER__) "\n"
 
-/* clang-format off */
 
 __asm__(
     ASM_SEC_DATA_ALIGNED(".data")
@@ -97,7 +96,6 @@ __asm__(
     ".byte 0\n"
     ASM_SEC_END);
 
-/* clang-format on */
 
 __asm__(
     ASM_SEC_BSS_ALIGNED(".bss")

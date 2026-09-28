@@ -14,6 +14,8 @@
 FILE* safe_popen(char*, const char*);
 void safe_pclose(FILE* fp);
 
+#undef popen
+#undef pclose
 #define popen safe_popen
 #define pclose safe_pclose
 

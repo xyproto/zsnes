@@ -1562,7 +1562,7 @@ u4 GUILoadKeysNavigate(u1 const gui_key_extended)
 #ifdef __UNIXSDL__
 #define DriveCount() 0
 #else
-static unsigned int DriveCount()
+static unsigned int DriveCount(void)
 {
     unsigned int drives = GetLogicalDrives(), count = 0, i = 0;
     while (i < 26) {

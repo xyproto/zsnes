@@ -7,7 +7,6 @@
    pads with nop (0x90) bytes, not zeroes. */
 #include "../asmdata.h"
 
-/* clang-format off */
 
 #define BSSB(sym, n) ASM_GSYM(sym) ".skip (" #n ")\n"
 #define BSSD(sym, n) ASM_GSYM(sym) ".skip (" #n ")*4\n"
@@ -113,4 +112,3 @@ __asm__(
     BSSD(sprsingle, 1)
     ASM_SEC_END);
 
-/* clang-format on */

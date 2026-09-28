@@ -4,7 +4,6 @@
    adjacency. Data-only so the layout test can link it alone. */
 #include "../asmdata.h"
 
-/* clang-format off */
 
 __asm__(
     ASM_SEC_DATA_ALIGNED(".data")
@@ -41,4 +40,3 @@ __asm__(
     ".skip 1\n"
     ASM_SEC_END);
 
-/* clang-format on */

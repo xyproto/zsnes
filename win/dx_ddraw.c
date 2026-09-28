@@ -25,7 +25,7 @@ static LPDIRECTDRAWCLIPPER lpDDClipper = NULL;
 
 DDSURFACEDESC2 ddsd;
 
-void DDrawError()
+void DDrawError(void)
 {
     char message1[256];
 
@@ -76,7 +76,7 @@ static void resolve_dest_rect(LPDIRECTDRAWSURFACE7 dst_surf,
     out->bottom = out->top + fit_h;
 }
 
-void DDDrawScreen()
+void DDDrawScreen(void)
 {
     RECT dst;
     if (FullScreen == 1) {
@@ -153,7 +153,7 @@ void DDDrawScreen()
     }
 }
 
-DWORD LockSurface()
+DWORD LockSurface(void)
 {
     HRESULT hRes;
 
@@ -204,7 +204,7 @@ DWORD LockSurface()
     }
 }
 
-void UnlockSurface()
+void UnlockSurface(void)
 {
     if (AltSurface == 0) {
         IDirectDrawSurface7_Unlock(DD_CFB, (struct tagRECT*)ddsd.lpSurface);
@@ -213,7 +213,7 @@ void UnlockSurface()
     }
 }
 
-int InitDirectDraw()
+int InitDirectDraw(void)
 {
     DDSURFACEDESC2 ddsd2;
     DDPIXELFORMAT format;
@@ -513,7 +513,7 @@ int InitDirectDraw()
     return TRUE;
 }
 
-void ReleaseDirectDraw()
+void ReleaseDirectDraw(void)
 {
     if (DD_CFB) {
         IDirectDrawSurface7_Release(DD_CFB);
@@ -541,7 +541,7 @@ void ReleaseDirectDraw()
     }
 }
 
-void clear_ddraw()
+void clear_ddraw(void)
 {
     if (FullScreen == 1) {
         DDBLTFX ddbltfx;

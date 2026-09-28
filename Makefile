@@ -1005,9 +1005,9 @@ $(BUILD_DIR)/%.o: %.c
 	$(Q)mkdir -p $(@D)
 	$(Q)$(CC_TARGET) $(CFLAGS) -iquote $(BUILD_DIR) -c $(DEPFLAGS_C) -o $@ $<
 
-# miniz is vendored third-party code (the bundled zlib replacement); build it
-# without the project's strict warning set so its own style does not trip -W*.
+# Vendored miniz: silence its warnings, and drop its unused stdio/archive path.
 $(BUILD_DIR)/miniz.o: WARN_FLAGS := -w
+$(BUILD_DIR)/miniz.o: CFLAGS += -DMINIZ_NO_STDIO
 
 $(BUILD_DIR)/%.o: %.rc
 	@echo '===> RES $<'

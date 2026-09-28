@@ -106,12 +106,12 @@ static bool get_save_path(char* path_buffer)
     HMODULE hM_shell32 = LoadLibrary("shell32.dll\0");
     if (hM_shell32) {
         typedef HRESULT(WINAPI * lpSHGetKnownFolderPath)(GUID*, DWORD, HANDLE, PWSTR*);
-        lpSHGetKnownFolderPath pSHGetKnownFolderPath = (lpSHGetKnownFolderPath)GetProcAddress(hM_shell32, "SHGetKnownFolderPath\0");
+        lpSHGetKnownFolderPath pSHGetKnownFolderPath = (lpSHGetKnownFolderPath)(void (*)(void))GetProcAddress(hM_shell32, "SHGetKnownFolderPath\0");
         if (pSHGetKnownFolderPath) {
             GUID FOLDERID_SavedGames = { 0x4c5c32ff, 0xbb9d, 0x43b0, { 0xb5, 0xb4, 0x2d, 0x72, 0xe5, 0x4e, 0xaa, 0xa4 } };
             wchar_t* path;
             if (SUCCEEDED(pSHGetKnownFolderPath(&FOLDERID_SavedGames, KF_FLAG_CREATE, 0, &path))) {
-                if (wcstombs(path_buffer, path, PATH_SIZE) < ~0) {
+                if (wcstombs(path_buffer, path, PATH_SIZE) != (size_t)-1) {
                     found_path = true;
                 }
                 CoTaskMemFree(path);
@@ -127,7 +127,7 @@ static bool get_save_path(char* path_buffer)
     return (found_path);
 }
 
-static void user_specifc_path()
+static void user_specifc_path(void)
 {
     char path_buffer[PATH_SIZE];
     bool relbase_override = false;

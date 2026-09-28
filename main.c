@@ -45,7 +45,7 @@
 #endif
 
 #ifdef __WIN32__
-void ImportDirectX();
+void ImportDirectX(void);
 #endif
 
 extern uint8_t ZMVZClose, ZMVRawDump;
@@ -56,7 +56,7 @@ extern uint32_t MovieForcedLength;
 void zstart(void);
 
 #ifdef __WIN32__
-void InitDebugger();
+void InitDebugger(void);
 #endif
 
 #define put_line(x) puts(x)

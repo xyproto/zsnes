@@ -5,7 +5,6 @@
    can link it alone. */
 #include "../asmdata.h"
 
-/* clang-format off */
 
 __asm__(
     ASM_SEC_BSS_ALIGNED(".bss")
@@ -25,4 +24,3 @@ __asm__(
     ".skip 2\n"
     ASM_SEC_END);
 
-/* clang-format on */

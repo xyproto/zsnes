@@ -108,12 +108,12 @@ HANDLE hLock, hThread;
 DWORD dwThreadId, dwThreadParam, semaphore_run;
 
 int SemaphoreMax = 5;
-void InitSemaphore();
-void ShutdownSemaphore();
-void InitDebugger();
-void DockDebugger();
-void Clear2xSaIBuffer();
-void clear_display();
+void InitSemaphore(void);
+void ShutdownSemaphore(void);
+void InitDebugger(void);
+void DockDebugger(void);
+void Clear2xSaIBuffer(void);
+void clear_display(void);
 DWORD CurMode = ~0;
 extern WORD totlines;
 static char dinput8_dll[] = { "dinput8.dll\0" };
@@ -134,7 +134,7 @@ static void EnableDpiAwareness(void)
         typedef BOOL(WINAPI * lpSetProcessDPIAware)(void);
         lpSetProcessDPIAware set_process_dpi_aware;
 
-        set_process_dpi_aware = (lpSetProcessDPIAware)GetProcAddress(user32, "SetProcessDPIAware");
+        set_process_dpi_aware = (lpSetProcessDPIAware)(void (*)(void))GetProcAddress(user32, "SetProcessDPIAware");
         if (set_process_dpi_aware) {
             set_process_dpi_aware();
         }
@@ -154,7 +154,7 @@ typedef HRESULT(WINAPI* lpDirectSoundCreate8)(LPCGUID pcGuidDevice, LPDIRECTSOUN
     LPUNKNOWN pUnkOuter);
 static lpDirectSoundCreate8 pDirectSoundCreate8;
 
-void FreeDirectX()
+void FreeDirectX(void)
 {
     FreeLibrary(hM_dsound);
     FreeLibrary(hM_ddraw);
@@ -162,7 +162,7 @@ void FreeDirectX()
     zexit();
 }
 
-void DXLoadError()
+void DXLoadError(void)
 {
     if (MessageBox(NULL,
             "Sorry, you need to install or reinstall DirectX v8.0 or higher\nto use ZSNESW.\nWould you like to go to the DirectX homepage?",
@@ -173,7 +173,7 @@ void DXLoadError()
     FreeDirectX();
 }
 
-void ImportDirectX()
+void ImportDirectX(void)
 {
     hM_dinput8 = LoadLibrary(dinput8_dll);
 
@@ -181,7 +181,7 @@ void ImportDirectX()
         DXLoadError();
     }
 
-    pDirectInput8Create = (lpDirectInput8Create)GetProcAddress(hM_dinput8, dinput8_imp);
+    pDirectInput8Create = (lpDirectInput8Create)(void (*)(void))GetProcAddress(hM_dinput8, dinput8_imp);
 
     if (pDirectInput8Create == NULL) {
         char err[256];
@@ -199,7 +199,7 @@ void ImportDirectX()
         DXLoadError();
     }
 
-    pDirectDrawCreateEx = (lpDirectDrawCreateEx)GetProcAddress(hM_ddraw, ddraw_imp);
+    pDirectDrawCreateEx = (lpDirectDrawCreateEx)(void (*)(void))GetProcAddress(hM_ddraw, ddraw_imp);
 
     if (pDirectDrawCreateEx == NULL) {
         char err[256];
@@ -217,7 +217,7 @@ void ImportDirectX()
         DXLoadError();
     }
 
-    pDirectSoundCreate8 = (lpDirectSoundCreate8)GetProcAddress(hM_dsound, dsound_imp);
+    pDirectSoundCreate8 = (lpDirectSoundCreate8)(void (*)(void))GetProcAddress(hM_dsound, dsound_imp);
 
     if (pDirectSoundCreate8 == NULL) {
         char err[256];
@@ -235,24 +235,24 @@ void ImportDirectX()
 
 double start, end, freq, update_ticks_pc, start2, end2, update_ticks_pc2;
 
-void ReleaseDirectDraw();
-void ReleaseDirectSound();
-void ReleaseDirectInput();
-int InitDirectDraw();
-int ReInitSound();
+void ReleaseDirectDraw(void);
+void ReleaseDirectSound(void);
+void ReleaseDirectInput(void);
+int InitDirectDraw(void);
+int ReInitSound(void);
 
-void MultiMouseInit();
-void MultiMouseShutdown();
+void MultiMouseInit(void);
+void MultiMouseShutdown(void);
 extern BYTE device1, device2;
 extern BYTE GUIOn;
 extern BYTE GUIOn2;
 DWORD InputEn = 0;
-void reInitSound()
+void reInitSound(void)
 {
     ReInitSound();
 }
 
-BOOL InputAcquire()
+BOOL InputAcquire(void)
 {
     if (device1 && device2 && !GUIOn2) {
         MultiMouseInit();
@@ -266,7 +266,7 @@ BOOL InputAcquire()
     return TRUE;
 }
 
-BOOL InputDeAcquire()
+BOOL InputDeAcquire(void)
 {
     if (KeyboardInput) {
         IDirectInputDevice8_Unacquire(KeyboardInput);
@@ -287,7 +287,7 @@ extern int CurKeyReadPos;
 extern int KeyBuffer[16];
 extern BYTE debugger;
 
-void CheckPriority()
+void CheckPriority(void)
 {
     if (HighPriority == 1) {
         if (!SetPriorityClass(GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS)) {
@@ -298,7 +298,7 @@ void CheckPriority()
     }
 }
 
-void CheckAlwaysOnTop()
+void CheckAlwaysOnTop(void)
 {
     if (AlwaysOnTop == 1) {
         SetWindowPos(hMainWindow, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
@@ -326,7 +326,7 @@ static void ActivateMainWindow(void)
     }
 }
 
-void CheckScreenSaver()
+void CheckScreenSaver(void)
 {
     if (DisableScreenSaver == 1 && IsActivated == 1) {
         SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, 0, SPIF_SENDCHANGE);
@@ -339,13 +339,13 @@ void CheckScreenSaver()
     }
 }
 
-void MinimizeWindow()
+void MinimizeWindow(void)
 {
     ShowWindow(hMainWindow, SW_MINIMIZE);
     IsActivated = 0;
 }
 
-BOOL InputRead()
+BOOL InputRead(void)
 {
     static int PrevZ = 0;
     WinMouseMoveX = 0;
@@ -395,7 +395,7 @@ BOOL InputRead()
     return TRUE;
 }
 
-void ExitFunction()
+void ExitFunction(void)
 {
     // We need to clean up the debug window if it's running
 
@@ -801,7 +801,7 @@ BYTE PrevStereoSound;
 DWORD PrevSoundQuality;
 extern unsigned int SoundOutputRate; /* initdata.c */
 
-BOOL InitSound()
+BOOL InitSound(void)
 {
     WAVEFORMATEX wfx;
     DSBCAPS dsbcaps;
@@ -930,7 +930,7 @@ BOOL InitSound()
     }
 }
 
-BOOL ReInitSound()
+BOOL ReInitSound(void)
 {
     WAVEFORMATEX wfx;
     DSBCAPS dsbcaps;
@@ -1051,7 +1051,7 @@ BOOL ReInitSound()
     }
 }
 
-void ReleaseDirectInput()
+void ReleaseDirectInput(void)
 {
     if (MouseInput) {
         IDirectInputDevice8_Release(MouseInput);
@@ -1069,7 +1069,7 @@ void ReleaseDirectInput()
     }
 }
 
-void ReleaseDirectSound()
+void ReleaseDirectSound(void)
 {
     if (lpSoundBuffer) {
         IDirectSoundBuffer8_Release(lpSoundBuffer);
@@ -1087,7 +1087,7 @@ void ReleaseDirectSound()
     }
 }
 
-void DInputError()
+void DInputError(void)
 {
     char message1[256];
 
@@ -1177,7 +1177,7 @@ static bool InitInput(HINSTANCE const hInst)
     return TRUE;
 }
 
-void TestJoy()
+void TestJoy(void)
 {
     int i;
 
@@ -1204,12 +1204,12 @@ DWORD prevHQMode = ~0;
 DWORD prevNTSCMode = 0;
 DWORD prevScanlines = ~0;
 
-DWORD LockSurface();
-void UnlockSurface();
-void clear_ddraw();
+DWORD LockSurface(void);
+void UnlockSurface(void);
+void clear_ddraw(void);
 
 // The big extern
-char CheckOGLMode();
+char CheckOGLMode(void);
 BYTE* SurfBuf;
 DWORD DMode = 0;
 DWORD DSMode = 0;
@@ -1242,7 +1242,7 @@ DWORD WINAPI SemaphoreThread(LPVOID lpParam)
     return 0;
 }
 
-void InitSemaphore()
+void InitSemaphore(void)
 {
     if (!hLock) {
         hLock = CreateSemaphore(NULL, 1, SemaphoreMax, NULL);
@@ -1253,7 +1253,7 @@ void InitSemaphore()
     }
 }
 
-void ShutdownSemaphore()
+void ShutdownSemaphore(void)
 {
     if (hLock) {
         semaphore_run = 0;
@@ -1321,7 +1321,7 @@ void Start36HZ(void)
     T36HZEnabled = 1;
 }
 
-void Stop36HZ()
+void Stop36HZ(void)
 {
     T36HZEnabled = 0;
 }
@@ -1329,10 +1329,10 @@ void Stop36HZ()
 char WinMessage[256];
 
 char WinName[] = { "ZSNESW\0" };
-void NTSCFilterInit();
+void NTSCFilterInit(void);
 void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char* buffer);
 
-void SetHiresOpt()
+void SetHiresOpt(void)
 {
     if (CustomResX >= 512 && CustomResY >= 448) {
         GUIM7VID[cvidmode] = 1;
@@ -1341,7 +1341,7 @@ void SetHiresOpt()
     }
 }
 
-void KeepTVRatio()
+void KeepTVRatio(void)
 {
     int ratiox = WindowWidth * 3;
     int ratioy = WindowHeight * 4;
@@ -1362,7 +1362,7 @@ void KeepTVRatio()
     }
 }
 
-char CheckTVRatioReq()
+char CheckTVRatioReq(void)
 {
     return (GUIKEEP43[cvidmode] && Keep4_3Ratio);
 }
@@ -1693,7 +1693,7 @@ void initwinvideo(void)
 extern int DSPBuffer;
 int* DSPBuffer1;
 DWORD ScreenPtr2;
-void Game60hzcall();
+void Game60hzcall(void);
 
 void CheckTimers(void)
 {
@@ -1851,12 +1851,12 @@ void UpdateVFrame(void)
 }
 
 extern unsigned char curblank;
-void hq2x_16b();
-void hq2x_32b();
-void hq3x_16b();
-void hq3x_32b();
-void hq4x_16b();
-void hq4x_32b();
+void hq2x_16b(void);
+void hq2x_32b(void);
+void hq3x_16b(void);
+void hq3x_32b(void);
+void hq4x_16b(void);
+void hq4x_32b(void);
 extern uint32_t NGNoTransp; /* a dword where it is defined (video/c_newgfx16data.c) */
 
 void clearwin(void)
@@ -1884,7 +1884,7 @@ void clearwin(void)
     UnlockSurface();
 }
 
-void initDirectDraw()
+void initDirectDraw(void)
 {
     InitDirectDraw();
     if (CheckTVRatioReq()) {
@@ -1895,7 +1895,7 @@ void initDirectDraw()
     clear_display();
 }
 
-void clear_display()
+void clear_display(void)
 {
     if (!CheckOGLMode()) {
         clear_ddraw();
@@ -2223,7 +2223,7 @@ void drawscreenwin(void)
         DDDrawScreen();
 }
 
-void WinUpdateDevices()
+void WinUpdateDevices(void)
 {
     int i;
     unsigned char* keys;
@@ -2253,7 +2253,7 @@ void WinUpdateDevices()
     if (keys2[0x38] != 0 && keys2[0x3E] != 0) {
         zexit();
     }
-    if (keys2[0xB8] != 0 && keys2[0x1C] != 0 || keys2[0x38] != 0 && keys2[0x1C] != 0) {
+    if ((keys2[0xB8] != 0 && keys2[0x1C] != 0) || (keys2[0x38] != 0 && keys2[0x1C] != 0)) {
         SwitchFullScreen();
         return;
     }
@@ -2578,7 +2578,7 @@ void ProjectPage(void)
 char* CBBuffer;
 u4 CBLength;
 
-void PasteClipBoard()
+void PasteClipBoard(void)
 {
     if (OpenClipboard(0)) {
         char* p = (char*)GetClipboardData(CF_TEXT);
@@ -2605,7 +2605,7 @@ void PasteClipBoard()
 
 extern int NumberOfOpcodes;
 
-void WriteLine()
+void WriteLine(void)
 {
     char buf[50];
     sprintf(buf, "%d\n", NumberOfOpcodes);
@@ -2613,7 +2613,7 @@ void WriteLine()
 }
 
 // This function creates the debug console
-void InitDebugger()
+void InitDebugger(void)
 {
     if (AllocConsole()) {
         debugWindow = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -2622,7 +2622,7 @@ void InitDebugger()
     }
 }
 
-int CheckBattery()
+int CheckBattery(void)
 {
     SYSTEM_POWER_STATUS SysPowerStat;
     GetSystemPowerStatus(&SysPowerStat);
@@ -2647,14 +2647,14 @@ int CheckBattery()
     return (1); // Running off of battery
 }
 
-int CheckBatteryTime()
+int CheckBatteryTime(void)
 {
     SYSTEM_POWER_STATUS SysPowerStat;
     GetSystemPowerStatus(&SysPowerStat);
     return SysPowerStat.BatteryLifeTime;
 }
 
-int CheckBatteryPercent()
+int CheckBatteryPercent(void)
 {
     SYSTEM_POWER_STATUS SysPowerStat;
     GetSystemPowerStatus(&SysPowerStat);
@@ -2662,7 +2662,7 @@ int CheckBatteryPercent()
 }
 
 // Delay function for GUI
-void DoSleep()
+void DoSleep(void)
 {
     // Fraction value for windows version of sleep
     delayvalue /= 100;
@@ -2670,7 +2670,7 @@ void DoSleep()
     Sleep(delayvalue);
 }
 
-void DockDebugger()
+void DockDebugger(void)
 {
     RECT MainWindowXY;
     ZeroMemory(&MainWindowXY, sizeof(RECT));

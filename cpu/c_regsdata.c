@@ -5,7 +5,6 @@
    NASM's ALIGN pads in a data section. */
 #include "../asmdata.h"
 
-/* clang-format off */
 
 __asm__(
     ASM_SEC_DATA_ALIGNED(".data")
@@ -457,4 +456,3 @@ __asm__(
     ".skip 1\n"
     ASM_SEC_END);
 
-/* clang-format on */

@@ -7,7 +7,6 @@
    resw N is N*2, resd N is N*4. */
 #include "../asmdata.h"
 
-/* clang-format off */
 
 #define BSSB(sym, n) ASM_GSYM(sym) ".skip (" #n ")\n"
 #define BSSW(sym, n) ASM_GSYM(sym) ".skip (" #n ")*2\n"
@@ -137,4 +136,3 @@ __asm__(
     BSSB(a16x16yinc, 1)
     ASM_SEC_END);
 
-/* clang-format on */

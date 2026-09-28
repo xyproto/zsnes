@@ -1,6 +1,6 @@
 #define __ZSNES__
 
-#if (defined __ZSNES__ && __UNIXSDL__)
+#if (defined __ZSNES__ && defined __UNIXSDL__)
 #include "../gblhdr.h"
 #else
 

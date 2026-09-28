@@ -31,7 +31,9 @@ misrepresented as being the original software.
 #if (defined(_WIN32) || defined(__CYGWIN__))
 
 /* WinUser.h won't include rawinput stuff without this... */
-#if (_WIN32_WINNT < 0x0501)
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT 0x0501
+#elif (_WIN32_WINNT < 0x0501)
 #undef _WIN32_WINNT
 #define _WIN32_WINNT 0x0501
 #endif
@@ -468,7 +470,7 @@ static int accept_device(const RAWINPUTDEVICELIST* dev)
 
     /* avoiding memcmp here so we don't get a C runtime dependency... */
     if (ct >= sizeof(rdp_ident) - 1) {
-        int i;
+        size_t i;
         for (i = 0; i < sizeof(rdp_ident) - 1; i++) {
             if (buf[i] != rdp_ident[i])
                 break;
@@ -539,7 +541,7 @@ static void get_device_product_name(char* name, size_t namesize,
     if (rc != ERROR_SUCCESS)
         return;
 
-    rc = pRegQueryValueExA(hkey, "DeviceDesc", NULL, &regtype, name, &outsize);
+    rc = pRegQueryValueExA(hkey, "DeviceDesc", NULL, &regtype, (LPBYTE)name, &outsize);
     pRegCloseKey(hkey);
     if (rc != ERROR_SUCCESS) {
         /* msdn says failure may mangle the buffer, so default it again. */

@@ -5,7 +5,6 @@
    N*2, resd N is N*4, and ALIGN32/ALIGN16 pad with nops, not zeroes. */
 #include "../asmdata.h"
 
-/* clang-format off */
 
 #define BSSB(sym, n) ASM_GSYM(sym) ".skip (" #n ")\n"
 #define BSSW(sym, n) ASM_GSYM(sym) ".skip (" #n ")*2\n"
@@ -535,4 +534,3 @@ __asm__(
     PTRSYM(DSPInterpolate)
     ASM_SEC_END);
 
-/* clang-format on */
