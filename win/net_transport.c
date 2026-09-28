@@ -2,6 +2,9 @@
    a SOCKET does not fit the int the rest of netplay passes around. */
 
 #define _CRT_RAND_S
+/* Winsock header order matters: winsock2.h must precede windows.h (so the old
+   winsock.h is not pulled in), and mstcpip.h depends on types (GUID, the
+   SOCKET_* structs) that winsock2.h/ws2tcpip.h bring in, so it comes after. */
 #include <mstcpip.h>
 #include <windows.h>
 #include <winsock2.h>
