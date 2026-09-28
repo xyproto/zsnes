@@ -34,13 +34,16 @@ char ZCfgFile[] = "zsnesl.cfg";
 
 #endif
 
-char *ZStartPath = 0, *ZCfgPath = 0, *ZSramPath = 0, *ZRomPath = 0;
+/* Owned paths get fixed program-lifetime storage (allocation can't fail); the
+   others alias one of these or a config-var path, so they stay plain pointers. */
+static char ZStartPath_buf[PATH_SIZE], ZCfgPath_buf[PATH_SIZE], ZRomPath_buf[PATH_SIZE];
+static char ZCartName_buf[NAME_SIZE], ZSaveName_buf[NAME_SIZE];
+static char ZStateName_buf[NAME_SIZE], ZSaveST2Name_buf[NAME_SIZE];
+
+char *ZStartPath = ZStartPath_buf, *ZCfgPath = ZCfgPath_buf, *ZSramPath = 0, *ZRomPath = ZRomPath_buf;
 char *ZSnapPath = 0, *ZSpcPath = 0, *ZIpsPath = 0, *ZMoviePath = 0;
 char *ZChtPath = 0, *ZComboPath = 0, *ZInpPath = 0, *ZSStatePath = 0;
-char *ZCartName = 0, *ZSaveName = 0, *ZStateName = 0, *ZSaveST2Name = 0;
-
-static bool ZStartAlloc = false, ZCfgAlloc = false, ZSramAlloc = false, ZRomAlloc = false;
-static bool ZCartAlloc = false, ZSaveAlloc = false, ZStateAlloc = false, ZSaveST2Alloc = false;
+char *ZCartName = ZCartName_buf, *ZSaveName = ZSaveName_buf, *ZStateName = ZStateName_buf, *ZSaveST2Name = ZSaveST2Name_buf;
 
 #ifdef __UNIXSDL__
 
@@ -75,18 +78,12 @@ void cfgpath_ensure(const char* launch_command)
     }
 
     if (cfgdir) {
-        ZCfgPath = malloc(PATH_SIZE);
-        if (ZCfgPath) {
-            ZCfgAlloc = true;
-            snprintf(ZCfgPath, PATH_SIZE, "%s", cfgdir);
-            if (mkpath(ZCfgPath, 0755) && !access(ZCfgPath, W_OK)) {
-                strcatslash(ZCfgPath);
-            } else {
-                printf("Error creating: %s\n", ZCfgPath);
-                free(ZCfgPath);
-                ZCfgAlloc = false;
-                ZCfgPath = ZStartPath;
-            }
+        snprintf(ZCfgPath, PATH_SIZE, "%s", cfgdir);
+        if (mkpath(ZCfgPath, 0755) && !access(ZCfgPath, W_OK)) {
+            strcatslash(ZCfgPath);
+        } else {
+            printf("Error creating: %s\n", ZCfgPath);
+            ZCfgPath = ZStartPath;
         }
     } else {
         ZCfgPath = ZStartPath;
@@ -169,30 +166,22 @@ static void user_specifc_path(void)
 }
 void cfgpath_ensure(const char* launch_command)
 {
-    ZCfgPath = malloc(PATH_SIZE);
-    if (ZCfgPath) {
-        char* p = 0;
-        ZCfgAlloc = true;
+    char* p = 0;
 
-        if (isextension(launch_command, "exe")) {
-            p = realpath(launch_command, ZCfgPath);
-        } else {
-            char buff[PATH_SIZE];
-            strcpy(buff, launch_command);
-            setextension(buff, "exe");
-            p = realpath(buff, ZCfgPath);
-        }
+    if (isextension(launch_command, "exe")) {
+        p = realpath(launch_command, ZCfgPath);
+    } else {
+        char buff[PATH_SIZE];
+        strcpy(buff, launch_command);
+        setextension(buff, "exe");
+        p = realpath(buff, ZCfgPath);
+    }
 
-        if (p) {
-            strdirname(ZCfgPath);
-            strcatslash(ZCfgPath);
+    if (p) {
+        strdirname(ZCfgPath);
+        strcatslash(ZCfgPath);
 
-            user_specifc_path(); // This will set a user specific config directory if desired
-        } else {
-            free(ZCfgPath);
-            ZCfgAlloc = false;
-            ZCfgPath = ZStartPath;
-        }
+        user_specifc_path(); // This will set a user specific config directory if desired
     } else {
         ZCfgPath = ZStartPath;
     }
@@ -212,59 +201,11 @@ void deinit_paths(void)
     SaveSramData();
     GUISaveVars();
     SaveGameSpecificInput();
-
-    // Now deallocate the paths
-    if (ZStartAlloc && ZStartPath) {
-        free(ZStartPath);
-    }
-    if (ZCfgAlloc && ZCfgPath) {
-        free(ZCfgPath);
-    }
-    if (ZSramAlloc && ZSramPath) {
-        free(ZSramPath);
-    }
-    if (ZRomAlloc && ZRomPath) {
-        free(ZRomPath);
-    }
-
-    if (ZCartAlloc && ZCartName) {
-        free(ZCartName);
-    }
-    if (ZSaveAlloc && ZSaveName) {
-        free(ZSaveName);
-    }
-    if (ZStateAlloc && ZStateName) {
-        free(ZStateName);
-    }
-    if (ZSaveST2Alloc && ZSaveST2Name) {
-        free(ZSaveST2Name);
-    }
 }
-
-#define INIT_PATH_HELPER(x)              \
-    if ((x##Path = malloc(PATH_SIZE))) { \
-        x##Alloc = true;                 \
-    } else {                             \
-        return false;                    \
-    }
-#define INIT_NAME_HELPER(x)              \
-    if ((x##Name = malloc(NAME_SIZE))) { \
-        x##Alloc = true;                 \
-        *x##Name = 0;                    \
-    } else {                             \
-        return false;                    \
-    }
 
 bool init_paths(char* launch_command)
 {
     void GUIRestoreVars(void);
-
-    INIT_PATH_HELPER(ZStart);
-    INIT_PATH_HELPER(ZRom);
-    INIT_NAME_HELPER(ZCart);
-    INIT_NAME_HELPER(ZSave);
-    INIT_NAME_HELPER(ZState);
-    INIT_NAME_HELPER(ZSaveST2);
 
     if (getcwd(ZStartPath, PATH_SIZE)) {
         strcatslash(ZStartPath);
