@@ -1,4 +1,16 @@
-main.c
+chips/c_fxdata.c
+cpu/c_execdata.c
 cpu/c_irq.c
+cpu/c_regsdata.c
+cpu/c_regswdata.c
+cpu/c_spcdata.c
 cpu/c_table.c
+cpu/dspproc.c
 cpu/firtable.c
+main.c
+video/c_makev16tdata.c
+video/c_mode716data.c
+video/c_newgfx16data.c
+video/makevid.c
+video/newgfx.c
+win/net_transport.c
