@@ -273,7 +273,7 @@ endif
 WRAPPER_GOALS := clean distclean debug linux_pi4 \
                  linux_i686 linux_x86_64 linux_aarch64 linux_riscv64 \
                  macos_aarch64 macos_x86_64 \
-                 freebsd_aarch64 freebsd_x86_64 \
+                 freebsd_aarch64 freebsd_x86_64 freebsd_rpi4 \
                  win_i686 win_x86_64 portcheck help test fmt unused win32 win64
 # Empty command-line backend variables are explicit opt-outs.
 BACKENDS_OPTOUT := $(if $(filter command line,$(origin WITH_SDL) \
@@ -895,7 +895,7 @@ MINGW64_WINDRES ?= $(if $(MINGW64_NATIVE),windres,$(MINGW64_PREFIX)-windres)
 .PHONY: linux_pi4
 .PHONY: linux_i686 linux_x86_64 linux_aarch64 linux_riscv64
 .PHONY: macos_aarch64 macos_x86_64
-.PHONY: freebsd_aarch64 freebsd_x86_64
+.PHONY: freebsd_aarch64 freebsd_x86_64 freebsd_rpi4
 .PHONY: win_i686 win_x86_64 help win32 win64
 
 linux_i686:
@@ -948,6 +948,12 @@ freebsd_aarch64:
 	  CC=$(FREEBSD_AARCH64_CC) CC_TARGET=$(FREEBSD_AARCH64_CC) \
 	  PKG_CONFIG=$(FREEBSD_AARCH64_PKG_CONFIG) all
 
+freebsd_rpi4:
+	$(call need_tool,$(FREEBSD_AARCH64_CC),an aarch64 FreeBSD C compiler)
+	$(MAKE) ARCH=FREEBSD BITS=64 CPU=arm64 ARM64_CFLAGS='-mcpu=cortex-a72 -mtune=cortex-a72' \
+	  CC=$(FREEBSD_AARCH64_CC) CC_TARGET=$(FREEBSD_AARCH64_CC) \
+	  PKG_CONFIG=$(FREEBSD_AARCH64_PKG_CONFIG) all
+
 win32: win_i686
 win_i686:
 	$(call need_tool,$(MINGW32_CC),the mingw32 toolchain)
@@ -976,6 +982,7 @@ help:
 	@echo '  macos_aarch64  Apple Silicon macOS'
 	@echo '  macos_x86_64   Intel macOS'
 	@echo '  freebsd_aarch64  64-bit ARM FreeBSD'
+	@echo '  freebsd_rpi4     the same, tuned for a Raspberry Pi 4 Cortex-A72'
 	@echo '  freebsd_x86_64   64-bit x86 FreeBSD'
 	@echo '  win_i686       32-bit Windows'
 	@echo '  win_x86_64     64-bit Windows'
