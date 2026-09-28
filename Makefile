@@ -13,7 +13,7 @@ HOST_ARCH := $(if $(filter arm64,$(HOST_CPU_FAMILY)),aarch64,$(if $(filter riscv
 NAMED_TARGETS := linux_i686 linux_x86_64 linux_aarch64 linux_riscv64 \
                  macos_aarch64 macos_x86_64 \
                  freebsd_aarch64 freebsd_x86_64 \
-                 win_i686 win_x86_64
+                 win_i686 win_x86_64 win32 win64
 HOST_TARGET := $(filter $(NAMED_TARGETS),$(patsubst DARWIN,macos,$(patsubst LINUX,linux,$(patsubst FREEBSD,freebsd,$(patsubst WIN,win,$(HOST_OS)))))_$(HOST_ARCH))
 
 ARCH ?= $(HOST_OS)
@@ -274,7 +274,7 @@ WRAPPER_GOALS := clean distclean debug linux_pi4 \
                  linux_i686 linux_x86_64 linux_aarch64 linux_riscv64 \
                  macos_aarch64 macos_x86_64 \
                  freebsd_aarch64 freebsd_x86_64 \
-                 win_i686 win_x86_64 portcheck help test fmt unused
+                 win_i686 win_x86_64 portcheck help test fmt unused win32 win64
 # Empty command-line backend variables are explicit opt-outs.
 BACKENDS_OPTOUT := $(if $(filter command line,$(origin WITH_SDL) \
                      $(origin WITH_PIPEWIRE) $(origin WITH_AO)),yes)
@@ -946,7 +946,7 @@ freebsd_aarch64:
 	  CC=$(FREEBSD_AARCH64_CC) CC_TARGET=$(FREEBSD_AARCH64_CC) \
 	  PKG_CONFIG=$(FREEBSD_AARCH64_PKG_CONFIG) all
 
-win32:
+win32: win_i686
 win_i686:
 	$(call need_tool,$(MINGW32_CC),the mingw32 toolchain)
 	$(call need_tool,$(MINGW32_WINDRES),the mingw32 resource compiler)
@@ -954,7 +954,7 @@ win_i686:
 	  CC=$(MINGW32_CC) CC_TARGET=$(MINGW32_CC) \
 	  WINDRES=$(MINGW32_WINDRES) PKG_CONFIG=$(MINGW32_PKG_CONFIG) all
 
-win64:
+win64: win_x86_64
 win_x86_64:
 	$(call need_tool,$(MINGW64_CC),the mingw-w64 toolchain)
 	$(call need_tool,$(MINGW64_WINDRES),the mingw-w64 resource compiler)
