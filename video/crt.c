@@ -143,6 +143,8 @@ static float crt_bloom_row[CRT_BLOOM_W * CRT_BLOOM_H];
 static int crt_bloom_w = 0; /* the size the spill was last worked out at */
 static int crt_bloom_h = 0;
 
+static void crt_bloom_maps(int w, int h);
+
 /* How much light each quarter-resolution cell spills, blurred. */
 void CrtBloomBuild(u2 const* const px, int const w, int const h, int const pitch)
 {
@@ -196,6 +198,7 @@ void CrtBloomBuild(u2 const* const px, int const w, int const h, int const pitch
     }
     crt_bloom_w = bw;
     crt_bloom_h = bh;
+    crt_bloom_maps(w, h);
 }
 
 /* Where each output pixel sits between the bloom cells: one pair of tables per
@@ -226,6 +229,18 @@ static void crt_bloom_map(short* const idx, float* const frac, int const n,
         if (frac[i] < 0.0f) {
             frac[i] = 0.0f;
         }
+    }
+}
+
+/* Built with the spill, so the HDR path, which never runs the 565 pass, has
+   them too. */
+static void crt_bloom_maps(int const w, int const h)
+{
+    if (crt_bmap_w != w || crt_bmap_h != h) {
+        crt_bloom_map(crt_bx0, crt_btx, w, crt_bloom_w);
+        crt_bloom_map(crt_by0, crt_bty, h, crt_bloom_h);
+        crt_bmap_w = w;
+        crt_bmap_h = h;
     }
 }
 
@@ -294,11 +309,8 @@ static void crt_shade_bloom(u2* const px, int const w, int const h, int const pi
         }
         tables = 1;
     }
-    if (spill && (crt_bmap_w != w || crt_bmap_h != h)) {
-        crt_bloom_map(crt_bx0, crt_btx, w, bw);
-        crt_bloom_map(crt_by0, crt_bty, h, bh);
-        crt_bmap_w = w;
-        crt_bmap_h = h;
+    if (spill) {
+        crt_bloom_maps(w, h);
     }
     for (y = 0; y < h; y++) {
         u2* const row = px + (size_t)y * (size_t)pitch;
