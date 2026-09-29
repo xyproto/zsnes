@@ -281,7 +281,7 @@ static int joystick_index_from_id(SDL_JoystickID id)
 
 /* MOUSE INPUT */
 static float MouseMinX = 0;
-static float MouseMaxX = 256;
+static float MouseMaxX = 255;
 static float MouseMinY = 0;
 static float MouseMaxY = 223;
 static int MouseX, MouseY;
