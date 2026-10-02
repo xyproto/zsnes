@@ -171,7 +171,7 @@ Thanks to Christoph Mallon for the commits that this fork is based on.
 
 ### List of contributors
 
-These are the contributors listed in the text files that are included with the 1.51 release of ZSNES, and on the zsnes.com webpage:
+These are the contributors listed in the text files that are included with the 1.51 release of ZSNES, and were mentioned on the [zsnes.com](https://zsnes.com/old) webpage:
 
 * `zsKnight`
 * `_Demo_`
