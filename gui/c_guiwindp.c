@@ -1157,7 +1157,7 @@ void DisplayGUIVideo(void)
                it; nothing is said about the ones that do not. The name is only
                added when the ID does not already spell it out. */
             if (VideoMonitorNameRedundant(id, name)) {
-                snprintf(line, sizeof(line), "%-10.10s%s", id, hdr);
+                snprintf(line, sizeof(line), "%s%s", id, hdr);
             } else {
                 snprintf(line, sizeof(line), "%-10.10s %.14s%s", id, name, hdr);
             }

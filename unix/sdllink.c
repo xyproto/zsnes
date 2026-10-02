@@ -101,9 +101,11 @@ char const* VideoMonitorName(u4 const i)
    losing the tail to truncation: the model number lives at the end, and it is
    what separates a KV-27 from a KV-29. A display reporting no usable name
    falls back to its position in the list. */
-#define MONITOR_ID_MAX 12
+#define MONITOR_ID_MAX 15
+/* What IDs were cut to before, so a monitor saved under one is still found. */
+#define MONITOR_ID_MAX_OLD 12
 
-void VideoMonitorID(u4 const i, char* const out, u4 const len)
+static void monitor_id(u4 const i, char* const out, u4 const len, u4 const max)
 {
     char const* name = VideoMonitorName(i);
     char full[64];
@@ -122,7 +124,7 @@ void VideoMonitorID(u4 const i, char* const out, u4 const len)
         snprintf(out, len, "%u", (unsigned)(i + 1));
         return;
     }
-    keep = len - 1 < MONITOR_ID_MAX ? len - 1 : MONITOR_ID_MAX;
+    keep = len - 1 < max ? len - 1 : max;
     if (n <= keep) {
         snprintf(out, len, "%.*s", (int)keep, full);
     } else {
@@ -131,6 +133,11 @@ void VideoMonitorID(u4 const i, char* const out, u4 const len)
 
         snprintf(out, len, "%.*s%.*s", (int)head, full, (int)tail, full + n - tail);
     }
+}
+
+void VideoMonitorID(u4 const i, char* const out, u4 const len)
+{
+    monitor_id(i, out, len, MONITOR_ID_MAX);
 }
 
 /* Which listed monitor the setting names, or the primary one when it names
@@ -145,6 +152,10 @@ u4 VideoMonitorSelected(void)
         char id[sizeof(MonitorID)];
 
         VideoMonitorID(i, id, (u4)sizeof(id));
+        if (!strcmp(id, MonitorID)) {
+            return i;
+        }
+        monitor_id(i, id, (u4)sizeof(id), MONITOR_ID_MAX_OLD);
         if (!strcmp(id, MonitorID)) {
             return i;
         }
