@@ -1,5 +1,17 @@
 .PHONY: clean debug distclean fmt info test unused portcheck asmalign
 
+# The options the last build was given, so `make install` installs that build
+# instead of relinking it against the defaults. One given again here wins.
+define newline
+
+
+endef
+BUILD_OPTIONS := WITH_OPENGL WITH_PNG WITH_SDL WITH_PIPEWIRE WITH_AO \
+                 WITH_DEBUGGER WITH_DEBUG_HOOKS EXTRA_CFLAGS EXTRA_LDFLAGS DEBUG BUILD_MODE
+ifneq ($(filter install,$(MAKECMDGOALS)),)
+-include build/options.mk
+endif
+
 # ARCH: LINUX, FREEBSD, OPENBSD, NETBSD, DARWIN, WIN
 SUPPORTED_ARCHES := LINUX FREEBSD OPENBSD NETBSD DARWIN WIN
 UNIXSDL_ARCHES := LINUX FREEBSD OPENBSD NETBSD DARWIN
@@ -811,7 +823,7 @@ BUILDSTAMP := $(BUILD_DIR)/MODE
 BUILD_TAG := $(BUILD_MODE)|$(ARCH)|$(BITS)|$(CPU)|$(CC_TARGET_TRIPLE)|\
 $(WITH_SDL)|$(WITH_OPENGL)|$(WITH_PNG)|$(WITH_AO)|$(WITH_PIPEWIRE)|\
 $(WITH_DEBUGGER)|$(WITH_DEBUG_HOOKS)|$(EXTRA_CFLAGS)|$(ARM64_CFLAGS)
-ifneq ($(filter all test,$(or $(MAKECMDGOALS),all)),)
+ifneq ($(filter all test install zsnes $(BINARY),$(or $(MAKECMDGOALS),all)),)
 PREV_BUILD_TAG := $(shell cat $(BUILDSTAMP) 2>/dev/null)
 ifneq ($(PREV_BUILD_TAG),)
 ifneq ($(PREV_BUILD_TAG),$(BUILD_TAG))
@@ -820,6 +832,10 @@ _CLEAN_SWITCH := $(shell rm -fr $(BUILD_DIR) $(BINARY) zsnes zsnes.exe)
 endif
 endif
 _WRITE_STAMP := $(shell mkdir -p $(BUILD_DIR) && printf '%s' '$(BUILD_TAG)' > $(BUILDSTAMP))
+ifeq ($(filter install,$(MAKECMDGOALS)),)
+$(file > $(BUILD_DIR)/options.mk,$(foreach v,$(BUILD_OPTIONS),$(if $(filter command line,$(origin $(v))),\
+ifneq ($$(origin $(v)),command line)$(newline)override $(v) := $(value $(v))$(newline)endif$(newline))))
+endif
 # A generated header can go stale when a checkout, an interrupted build or a
 # touch leaves its .psr older than a header built earlier: make then judges the
 # header current by mtime though the .psr contents changed. Compare by content
