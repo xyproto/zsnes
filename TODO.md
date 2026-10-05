@@ -1,10 +1,5 @@
 # TODO
 
-- [ ] Fix `make WITH_OPENGL= && make install`.
-      Install rebuilds with the default `WITH_OPENGL=yes` but only recompiles `unix/gl_draw.c`,
-      while `unix/sdllink.o` stays without `__OPENGL__`, so linking fails with undefined reference
-      `to 'gl_context'`. Install should reuse the build's options, or a changed option should
-      rebuild every object.
 - [ ] Confirm the DSP4 division table on a DSP4 cart. `floor(0x8000/n)` verified, but not the chip's rounding.
 - [ ] Fix Super Mario RPG hanging in the attract demo at frame 19956, force-blank never cleared. Needs a reference trace.
 - [ ] Carry SRAM and the host's state into a netplay session; it power-cycles both sides instead.
