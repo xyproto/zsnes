@@ -20,7 +20,7 @@ typedef union {
 } ArenaAlign;
 
 enum { ARENA_HEAD = (sizeof(ArenaBlock) + sizeof(ArenaAlign) - 1)
-        / sizeof(ArenaAlign) * sizeof(ArenaAlign) };
+    / sizeof(ArenaAlign) * sizeof(ArenaAlign) };
 
 static ArenaBlock* arena_head = NULL;
 static ArenaBlock* arena_cur = NULL;
