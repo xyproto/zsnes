@@ -172,8 +172,8 @@ GCC_ONLY_WARN_FLAGS := -Wduplicated-cond -Wduplicated-branches -Wlogical-op \
 ifeq ($(CC_IS_CLANG),yes)
 WARN_FLAGS := $(filter-out $(GCC_ONLY_WARN_FLAGS),$(WARN_FLAGS))
 endif
-# x86 uses absolute addressing; ARM, RISC-V and Darwin require PIC.
-PIC_FLAGS := $(if $(or $(filter arm64 riscv64,$(CPU)),$(filter DARWIN,$(ARCH))),,-fno-pic)
+# ARM, RISC-V and Darwin default to PIC; x86 builds a PIE.
+PIC_FLAGS := $(if $(or $(filter arm64 riscv64,$(CPU)),$(filter DARWIN,$(ARCH))),,-fPIE)
 # XSI exposes setreuid/setregid on Linux; the BSDs show everything by default.
 FEATURE_FLAGS := -D_XOPEN_SOURCE=700
 ifneq ($(filter $(ARCH),FREEBSD OPENBSD NETBSD),)
@@ -206,7 +206,7 @@ endif
 ifeq ($(ARCH),DARWIN)
 LDFLAGS += -Wl,-dead_strip -lm
 else
-LDFLAGS += -Wl,--as-needed $(if $(filter arm64 riscv64,$(CPU)),,-no-pie) -Wl,--gc-sections -lm
+LDFLAGS += -Wl,--as-needed $(if $(filter arm64 riscv64,$(CPU)),,-pie) -Wl,--gc-sections -lm
 endif
 
 WITH_OPENGL   := yes
