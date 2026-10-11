@@ -9,6 +9,8 @@ s4 GetMouseMoveY(void);
 s4 GetMouseX(void);
 s4 GetMouseY(void);
 void CheckTimers(void);
+/* Run the next frame a full period from now, owing none. */
+void ResetFrameClock(void);
 void Start36HZ(void);
 void Start60HZ(void);
 void Stop36HZ(void);

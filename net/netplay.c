@@ -18,6 +18,7 @@
 #include "../c_init.h"
 #include "../cpu/execute.h"
 #include "../gblhdr.h"
+#include "../link.h"
 #include "../types.h"
 #include "../ui.h"
 #include "../video/procvid.h"
@@ -80,6 +81,7 @@ static u4 NetplayRemoteRing[NETPLAY_RING];
 static u4 NetplayRemoteRingCrc[NETPLAY_RING];
 static u4 NetplayRemoteRingFrame[NETPLAY_RING];
 static u1 NetplayRemoteRingValid[NETPLAY_RING];
+static u4 NetplayLocalCrcRing[NETPLAY_RING];
 static u4 NetplayFrame = 0;
 static int NetplayInputQueuePos = 0;
 static int NetplayInputQueueFilled = 0;
@@ -863,8 +865,8 @@ void NetplaySyncInputs(unsigned int* joy_a, unsigned int* joy_b)
 #endif
     u4 const raw = NetplayHostRole != 0 ? (u4)*joy_a : (u4)*joy_b;
 
-    // Delay local input by NETPLAY_INPUT_DELAY frames so the peer has time to
-    // receive it before the frame executes — absorbs up to ~50ms of jitter.
+    // Local input applies NETPLAY_INPUT_DELAY frames from now, and is sent now,
+    // so the peer has that long to receive it before the frame executes.
     u4 delayed;
     if (NetplayInputQueueFilled < NETPLAY_INPUT_DELAY) {
         delayed = 0x00008000u; // neutral during warmup
@@ -882,12 +884,15 @@ void NetplaySyncInputs(unsigned int* joy_a, unsigned int* joy_b)
 
     u4 const local_crc = NetplayStateHash();
 
+    NetplayLocalCrcRing[NetplayFrame % NETPLAY_RING] = local_crc;
+
+    /* The packet for frame N carries the state hash of frame N - delay. */
     NetplayPacket local;
     local.magic = NETPLAY_MAGIC;
     local.session = NetplaySessionToken;
-    local.seq = NetplayFrame;
+    local.seq = NetplayFrame + NETPLAY_INPUT_DELAY;
     NetplayLocalSeq++;
-    local.joy = delayed;
+    local.joy = raw;
     local.crc = local_crc;
 
     int const timeout = NETPLAY_INPUT_DELAY * NETPLAY_FRAME_MS;
@@ -900,43 +905,43 @@ void NetplaySyncInputs(unsigned int* joy_a, unsigned int* joy_b)
 
     u4 remote_joy = NETPLAY_JOY_NEUTRAL;
     u4 remote_crc = 0;
-    int ok = 0;
-    if (NetplayHostRole != 0) {
-        if (NetplayHandshakePending != 0) {
-            NetplayPacket handshake;
-            if (NetplayPendingRemoteValid != 0) {
-                handshake = NetplayPendingRemote;
-                NetplayPendingRemoteValid = 0;
-                ok = 1;
-            } else {
-                ok = NetplayRecvPacket(NetplayClientSocket, &handshake, timeout);
-            }
-            if (ok == 0 || !netplay_packet_is_handshake(&handshake, NetplaySessionToken)) {
-                NetplayPeerLost("INVALID HANDSHAKE");
-                return;
-            }
-            NetplayHandshakePending = 0;
+    int ok = 1;
+    if (NetplayHostRole != 0 && NetplayHandshakePending != 0) {
+        NetplayPacket handshake;
+        if (NetplayPendingRemoteValid != 0) {
+            handshake = NetplayPendingRemote;
+            NetplayPendingRemoteValid = 0;
+        } else {
+            ok = NetplayRecvPacket(NetplayClientSocket, &handshake, timeout);
         }
+        if (ok == 0 || !netplay_packet_is_handshake(&handshake, NetplaySessionToken)) {
+            NetplayPeerLost("INVALID HANDSHAKE");
+            return;
+        }
+        NetplayHandshakePending = 0;
+    }
+    ok = NetplaySendPacket(NetplayClientSocket, &local, timeout);
+#ifdef ZSNES_DEBUG_HOOKS
+    if (ok == 0) {
+        fprintf(stderr, "NETPLAY lost: send failed, errno %d, seq %u\n",
+            errno, (unsigned)NetplayLocalSeq);
+    }
+#endif
+    /* Both pads read neutral until the first sent input comes due. */
+    if (ok != 0 && NetplayFrame >= NETPLAY_INPUT_DELAY) {
+        uint64_t const asked = net_now_ms();
+
         ok = NetplayAwaitFrame(NetplayFrame, timeout, patience, &remote_joy, &remote_crc);
-        if (ok != 0)
-            ok = NetplaySendPacket(NetplayClientSocket, &local, timeout);
-    } else {
-        ok = NetplaySendPacket(NetplayClientSocket, &local, timeout);
+        /* Catching up on the time spent waiting would keep this side ahead,
+           at the edge of the delay, waiting on every late packet. */
+        if (net_now_ms() - asked >= 2)
+            ResetFrameClock();
 #ifdef ZSNES_DEBUG_HOOKS
         if (ok == 0) {
-            fprintf(stderr, "NETPLAY lost: send failed, errno %d, seq %u\n",
-                errno, (unsigned)NetplayLocalSeq);
+            fprintf(stderr, "NETPLAY lost: no packet in %d ms, frame %u\n",
+                timeout * patience, (unsigned)NetplayFrame);
         }
 #endif
-        if (ok != 0) {
-            ok = NetplayAwaitFrame(NetplayFrame, timeout, patience, &remote_joy, &remote_crc);
-#ifdef ZSNES_DEBUG_HOOKS
-            if (ok == 0) {
-                fprintf(stderr, "NETPLAY lost: no packet in %d ms, frame %u\n",
-                    timeout * patience, (unsigned)NetplayFrame);
-            }
-#endif
-        }
     }
 
     if (ok == 0) {
@@ -944,9 +949,11 @@ void NetplaySyncInputs(unsigned int* joy_a, unsigned int* joy_b)
         return;
     }
 
-    /* Both sides now compare the checksum for the *same* frame, because the
-       packet says which frame it is for. */
-    if (local_crc != 0 && remote_crc != 0 && remote_crc != local_crc
+    /* Both sides compare the checksum for the *same* frame: the packet says
+       which frame it is for, and the hash was taken `delay` frames earlier. */
+    u4 const past_crc = NetplayLocalCrcRing[(NetplayFrame - NETPLAY_INPUT_DELAY) % NETPLAY_RING];
+
+    if (past_crc != 0 && remote_crc != 0 && remote_crc != past_crc
         && NetplayFrame > NETPLAY_INPUT_DELAY + 2)
         strcpy(NetplayLastEvent, "DESYNC DETECTED");
 

@@ -17,7 +17,7 @@ enum { NETPLAY_MAGIC = 0x4E455450u, /* "NETP" */
     /* A pad reading neutral: no buttons, and the bit the SNES always sets. */
     NETPLAY_JOY_NEUTRAL = 0x00008000u,
     /* Bump when two builds can no longer play together. */
-    NETPLAY_PROTOCOL = 2 };
+    NETPLAY_PROTOCOL = 3 };
 
 /* What a handshake says about the peer: its `joy` is NETPLAY_PROTOCOL and its
    `crc` identifies the loaded game. */

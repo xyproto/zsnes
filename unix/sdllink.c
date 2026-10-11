@@ -2122,6 +2122,11 @@ void CheckTimers(void)
     }
 }
 
+void ResetFrameClock(void)
+{
+    start = sem_GetTicks();
+}
+
 /* Pace on the blocking present when the display runs at the emulated rate;
    the timer drifts against vblank and drops or repeats frames. */
 static int VsyncPaced(void)

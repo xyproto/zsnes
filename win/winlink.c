@@ -1727,6 +1727,11 @@ void CheckTimers(void)
     }
 }
 
+void ResetFrameClock(void)
+{
+    QueryPerformanceCounter((LARGE_INTEGER*)&start);
+}
+
 void DoRumble(void)
 {
     extern u2 RumbleData;
