@@ -19,6 +19,11 @@
 #include "cfg.h"
 #include "sdllink.h"
 #include <math.h>
+#if __has_include(<vulkan/vulkan.h>)
+#include <SDL3/SDL_vulkan.h>
+#include <vulkan/vulkan.h>
+#define SR_VULKAN_PROBE 1
+#endif
 #include <stdint.h>
 
 #include "../video/ntsc.h"
@@ -115,6 +120,61 @@ static void sr_release(void);
    anyway. The trailing NULL means "whatever SDL would have chosen". */
 static char const* const sr_drivers[] = { "vulkan", "gpu", NULL };
 
+/* Whether Vulkan has a device other than the CPU. With only a software one,
+   such as lavapipe beside a GPU that has no Vulkan driver, the Vulkan
+   renderers draw every frame on the CPU while OpenGL would use the GPU. */
+static int sr_vulkan_hardware(void)
+{
+#ifdef SR_VULKAN_PROBE
+    static int known = -1;
+    PFN_vkGetInstanceProcAddr gipa;
+    PFN_vkCreateInstance create;
+    VkInstanceCreateInfo const info = { .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO };
+    VkInstance inst = VK_NULL_HANDLE;
+
+    if (known >= 0) {
+        return known;
+    }
+    known = 0;
+    if (!SDL_Vulkan_LoadLibrary(NULL)) {
+        return known;
+    }
+    gipa = (PFN_vkGetInstanceProcAddr)SDL_Vulkan_GetVkGetInstanceProcAddr();
+    create = gipa ? (PFN_vkCreateInstance)gipa(VK_NULL_HANDLE, "vkCreateInstance") : NULL;
+    if (create && create(&info, NULL, &inst) == VK_SUCCESS) {
+        PFN_vkEnumeratePhysicalDevices const enumerate
+            = (PFN_vkEnumeratePhysicalDevices)gipa(inst, "vkEnumeratePhysicalDevices");
+        PFN_vkGetPhysicalDeviceProperties const props
+            = (PFN_vkGetPhysicalDeviceProperties)gipa(inst, "vkGetPhysicalDeviceProperties");
+        PFN_vkDestroyInstance const destroy
+            = (PFN_vkDestroyInstance)gipa(inst, "vkDestroyInstance");
+        VkPhysicalDevice devs[16];
+        uint32_t n = 16;
+        uint32_t i;
+
+        if (enumerate && props && enumerate(inst, &n, devs) >= VK_SUCCESS) {
+            for (i = 0; i < n; i++) {
+                VkPhysicalDeviceProperties p;
+
+                props(devs[i], &p);
+                if (p.deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU
+                    || p.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU
+                    || p.deviceType == VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU) {
+                    known = 1;
+                }
+            }
+        }
+        if (destroy) {
+            destroy(inst, NULL);
+        }
+    }
+    SDL_Vulkan_UnloadLibrary();
+    return known;
+#else
+    return 1;
+#endif
+}
+
 /* Make a renderer for `win`, asking for linear light when `linear` is set,
    which is what SDL wants before it will hand back an HDR surface. Falls
    through the list until one takes it, so asking for HDR on a machine without
@@ -124,9 +184,13 @@ static SDL_Renderer* sr_make_renderer(SDL_Window* const win, int const linear)
     unsigned i;
 
     for (i = 0; i < sizeof(sr_drivers) / sizeof(sr_drivers[0]); i++) {
-        SDL_PropertiesID const props = SDL_CreateProperties();
+        SDL_PropertiesID props;
         SDL_Renderer* r;
 
+        if (sr_drivers[i] && !sr_vulkan_hardware()) {
+            continue;
+        }
+        props = SDL_CreateProperties();
         if (!props) {
             return NULL;
         }
@@ -229,7 +293,9 @@ int sr_start(int width, int height, int req_depth, int FullScreen)
         return false;
     }
 
-    sr_texture = SDL_CreateTexture(sr_renderer, SDL_PIXELFORMAT_RGB565,
+    /* 32-bit, which every renderer takes as it is: a 565 texture is
+       converted by SDL on each upload. */
+    sr_texture = SDL_CreateTexture(sr_renderer, SDL_PIXELFORMAT_ARGB8888,
         SDL_TEXTUREACCESS_STREAMING, SR_MAXW, SR_MAXH);
     if (!sr_texture) {
         fprintf(stderr, "Could not create texture: %s\n", SDL_GetError());
@@ -239,6 +305,25 @@ int sr_start(int width, int height, int req_depth, int FullScreen)
         sdl_window = NULL;
         sr_fullscreen = -1;
         return false;
+    }
+    SDL_SetTextureBlendMode(sr_texture, SDL_BLENDMODE_NONE);
+    {
+        /* Opaque black outside the picture, where bilinear samples reach. */
+        void* pixels;
+        int pitch;
+
+        if (SDL_LockTexture(sr_texture, NULL, &pixels, &pitch)) {
+            int x, y;
+
+            for (y = 0; y < SR_MAXH; y++) {
+                u4* const row = (u4*)((u1*)pixels + (size_t)y * pitch);
+
+                for (x = 0; x < SR_MAXW; x++) {
+                    row[x] = 0xFF000000u;
+                }
+            }
+            SDL_UnlockTexture(sr_texture);
+        }
     }
     if (VideoMonitorHDR()) {
         /* Float rather than 565, so the bloom has somewhere above white to go.
@@ -333,8 +418,10 @@ void sr_clearwin(void)
     }
 }
 
-/* One source line into the two output rows it occupies. */
-static void sr_line(unsigned short* dst, int const line)
+/* One source line into the two output rows it occupies. An interlaced line
+   leaves the other row alone unless `fill` is set, for when that row holds
+   nothing from the last field. */
+static void sr_line(unsigned short* dst, int const line, int const fill)
 {
     unsigned short const* src1
         = (unsigned short*)vidbuffer + VID_FIRST + line * VID_STRIDE;
@@ -365,6 +452,7 @@ static void sr_line(unsigned short* dst, int const line)
         /* Interlaced: this field owns one row of the pair and the other keeps
            what the last field put there, which is what interlacing is. */
         unsigned short* const row = (cfield & 1) ? dst + SR_W : dst;
+        unsigned short* const other = (cfield & 1) ? dst : dst + SR_W;
 
         if (kind & 3) {
             for (i = 0; i < 256; i++) {
@@ -375,6 +463,9 @@ static void sr_line(unsigned short* dst, int const line)
             for (i = 0; i < 256; i++) {
                 row[i * 2] = row[i * 2 + 1] = src1[i];
             }
+        }
+        if (fill) {
+            memcpy(other, row, SR_W * sizeof(unsigned short));
         }
         return;
     }
@@ -391,6 +482,101 @@ static void sr_line(unsigned short* dst, int const line)
         dst[i * 2] = dst[i * 2 + 1] = src1[i];
     }
     memcpy(dst + SR_W, dst, SR_W * sizeof(unsigned short));
+}
+
+/* 565 to ARGB8888 a byte at a time, widening each channel the way SDL does. */
+static u4 sr_lo32[256];
+static u4 sr_hi32[256];
+
+static void sr_build_rgb32(void)
+{
+    unsigned i;
+
+    for (i = 0; i < 256; i++) {
+        unsigned const b = i & 31, gl = i >> 5;
+        unsigned const gh = i & 7, r = i >> 3;
+
+        sr_lo32[i] = (gl << 10) | (b << 3) | (b >> 2);
+        sr_hi32[i] = 0xFF000000u | (((r << 3) | (r >> 2)) << 16)
+            | (((gh << 5) | (gh >> 1)) << 8);
+    }
+}
+
+static inline u4 sr_rgb32(unsigned const p)
+{
+    return sr_lo32[p & 0xFF] + sr_hi32[p >> 8];
+}
+
+static void sr_upload(SDL_Texture* const tex, int const w, int const h)
+{
+    SDL_Rect const r = { 0, 0, w, h };
+    void* pixels;
+    int pitch;
+    int x, y;
+
+    if (!SDL_LockTexture(tex, &r, &pixels, &pitch)) {
+        return;
+    }
+    for (y = 0; y < h; y++) {
+        unsigned short const* const s = sr_pixels + (size_t)y * w;
+        u4* const d = (u4*)((u1*)pixels + (size_t)y * pitch);
+
+        for (x = 0; x < w; x++) {
+            d[x] = sr_rgb32(s[x]);
+        }
+    }
+    SDL_UnlockTexture(tex);
+}
+
+/* Nothing on screen that needs the doubled rows: each scanline goes to the
+   texture once, 256 wide unless a line is hi-res, and nearest scaling makes
+   it the same picture. Returns the width, or 0 when the frame needs rows. */
+static int sr_direct(void)
+{
+    u1 const* const kinds
+        = (GUIOn == 1 || newengen == 0) ? hirestiledat : SpecialLine;
+    int hires = 0;
+    int line, i, pitch;
+    void* pixels;
+
+    for (line = 0; line < 224; line++) {
+        int const kind = kinds[line + 1];
+
+        if ((kind & 4) || (kind & 3) == 3) {
+            return 0;
+        }
+        hires |= kind & 3;
+    }
+    {
+        SDL_Rect const r = { 0, 0, hires ? 512 : 256, 224 };
+
+        if (!SDL_LockTexture(sr_texture, &r, &pixels, &pitch)) {
+            return 0;
+        }
+    }
+    for (line = 0; line < 224; line++) {
+        unsigned short const* const src1
+            = (unsigned short*)vidbuffer + VID_FIRST + line * VID_STRIDE;
+        unsigned short const* const src2 = src1 + SR_FIELD2;
+        u4* const d = (u4*)((u1*)pixels + (size_t)line * pitch);
+
+        if (!hires) {
+            for (i = 0; i < 256; i++) {
+                d[i] = sr_rgb32(src1[i]);
+            }
+        } else if (kinds[line + 1] & 3) {
+            for (i = 0; i < 256; i++) {
+                d[i * 2] = sr_rgb32(src1[i]);
+                d[i * 2 + 1] = sr_rgb32(src2[i]);
+            }
+        } else {
+            for (i = 0; i < 256; i++) {
+                d[i * 2] = d[i * 2 + 1] = sr_rgb32(src1[i]);
+            }
+        }
+    }
+    SDL_UnlockTexture(sr_texture);
+    return hires ? 512 : 256;
 }
 
 /* 565 holds gamma-encoded sRGB; a linear float texture holds light. Writing
@@ -451,15 +637,37 @@ static void sr_to_hdr(int const w, int const h)
     }
 }
 
+static void sr_show(SDL_Texture* const tex, int const w, int const h)
+{
+    SDL_FRect const src = { 0.0f, 0.0f, (float)w, (float)h };
+
+    SDL_RenderClear(sr_renderer);
+    SDL_RenderTexture(sr_renderer, tex, &src, NULL);
+#ifdef ZSNES_DEBUG_HOOKS
+    /* Read back before presenting: afterwards the back buffer is the
+       driver's business, not ours. */
+    if (ZSnesFrameDumpWanted()) {
+        SDL_Surface* const shot = SDL_RenderReadPixels(sr_renderer, NULL);
+
+        ZSnesFrameDumpSurface(shot, "sr");
+        SDL_DestroySurface(shot);
+    }
+#endif
+    SDL_RenderPresent(sr_renderer);
+}
+
 void sr_drawwin(void)
 {
     int line;
     /* What this frame ends up filling, which the upload and the draw follow. */
-    int w = SR_W, h = SR_H, dst_pitch = SR_W * 2;
+    int w = SR_W, h = SR_H;
     /* Output rows per source scanline, which is what the scanline pass steps
        by. The unfiltered path below doubles, whatever `resolutn` is. */
     int vscale = 2;
     int ntsc_drawn = 0;
+    /* Whether sr_pixels holds the last frame's rows, which an interlaced
+       field leaves in place. */
+    static int rows_valid = 0;
 
     NGNoTransp = 0; // Set this value to 1 within the appropriate
     // Where a custom or hardware transparency routine would go. Only reachable
@@ -469,6 +677,20 @@ void sr_drawwin(void)
         return;
     }
     sr_apply_settings();
+    if (!sr_lo32[255]) {
+        sr_build_rgb32();
+    }
+    sr_hdr_refresh();
+    if (!sr_hdr_active && !sr_linear && !BloomLevel && !sl_intensity && !sl_vibrancy
+        && VideoFilterGet() == VFILTER_NONE) {
+        int const dw = sr_direct();
+
+        if (dw) {
+            rows_valid = 0;
+            sr_show(sr_texture, dw, 224);
+            return;
+        }
+    }
 
     /* Whichever filter is on draws at its own size, whatever the window is:
        the renderer scales the result out, so the filter picked is the filter
@@ -481,13 +703,14 @@ void sr_drawwin(void)
                 (size_t)SR_MAXW * SR_MAXH * sizeof(*sr_pixels))) {
             w = pic.w;
             h = pic.h;
-            dst_pitch = pic.w * 2;
+            rows_valid = 0;
             vscale = pic.scale;
             ntsc_drawn = filter == VFILTER_NTSC;
         } else {
             for (line = 0; line < 224; line++) {
-                sr_line(sr_pixels + line * 2 * SR_W, line);
+                sr_line(sr_pixels + line * 2 * SR_W, line, !rows_valid);
             }
+            rows_valid = 1;
         }
     }
 
@@ -501,7 +724,6 @@ void sr_drawwin(void)
         CrtBloomBuild(sr_pixels, w, h, w);
     }
 
-    sr_hdr_refresh();
     {
         int const scanlines = (sl_intensity != 0 && !ntsc_drawn);
 
@@ -517,27 +739,14 @@ void sr_drawwin(void)
 
     {
         SDL_Rect const dirty = { 0, 0, w, h };
-        SDL_FRect const src = { 0.0f, 0.0f, (float)w, (float)h };
         SDL_Texture* const tex = sr_hdr_active ? sr_hdr_texture : sr_texture;
 
         if (sr_hdr_active) {
             sr_to_hdr(w, h);
             SDL_UpdateTexture(tex, &dirty, sr_hdr, w * 4 * (int)sizeof(float));
         } else {
-            SDL_UpdateTexture(tex, &dirty, sr_pixels, dst_pitch);
+            sr_upload(tex, w, h);
         }
-        SDL_RenderClear(sr_renderer);
-        SDL_RenderTexture(sr_renderer, tex, &src, NULL);
-#ifdef ZSNES_DEBUG_HOOKS
-        /* Read back before presenting: afterwards the back buffer is the
-           driver's business, not ours. */
-        if (ZSnesFrameDumpWanted()) {
-            SDL_Surface* const shot = SDL_RenderReadPixels(sr_renderer, NULL);
-
-            ZSnesFrameDumpSurface(shot, "sr");
-            SDL_DestroySurface(shot);
-        }
-#endif
-        SDL_RenderPresent(sr_renderer);
+        sr_show(tex, w, h);
     }
 }
