@@ -172,8 +172,10 @@ GCC_ONLY_WARN_FLAGS := -Wduplicated-cond -Wduplicated-branches -Wlogical-op \
 ifeq ($(CC_IS_CLANG),yes)
 WARN_FLAGS := $(filter-out $(GCC_ONLY_WARN_FLAGS),$(WARN_FLAGS))
 endif
-# ARM, RISC-V and Darwin default to PIC; x86 builds a PIE.
-PIC_FLAGS := $(if $(or $(filter arm64 riscv64,$(CPU)),$(filter DARWIN,$(ARCH))),,-fPIE)
+# ARM, RISC-V and Darwin default to PIC; 64-bit x86 builds a PIE. 32-bit x86
+# stays absolute: PIE there costs a GOT register in every function, ~20%.
+X86_32 := $(if $(filter x86/32,$(CPU)/$(BITS)),yes)
+PIC_FLAGS := $(if $(or $(filter arm64 riscv64,$(CPU)),$(filter DARWIN,$(ARCH))),,$(if $(X86_32),-fno-pic,-fPIE))
 # XSI exposes setreuid/setregid on Linux; the BSDs show everything by default.
 FEATURE_FLAGS := -D_XOPEN_SOURCE=700
 ifneq ($(filter $(ARCH),FREEBSD OPENBSD NETBSD),)
@@ -206,7 +208,7 @@ endif
 ifeq ($(ARCH),DARWIN)
 LDFLAGS += -Wl,-dead_strip -lm
 else
-LDFLAGS += -Wl,--as-needed $(if $(filter arm64 riscv64,$(CPU)),,-pie) -Wl,--gc-sections -lm
+LDFLAGS += -Wl,--as-needed $(if $(filter arm64 riscv64,$(CPU)),,$(if $(X86_32),-no-pie,-pie)) -Wl,--gc-sections -lm
 endif
 
 WITH_OPENGL   := yes
