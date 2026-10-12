@@ -53,7 +53,7 @@ for f in "$fixtures"/*.zst; do
 
     home=$tmp/home; rm -rf "$home"; mkdir -p "$home"
     cp "$f" "$tmp/zsnes_zst_a.zst"
-    out=$(env HOME="$home" TMPDIR="$tmp" SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy \
+    out=$(env HOME="$home" XDG_CONFIG_HOME="$home/.config" TMPDIR="$tmp" SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy \
         ASAN_OPTIONS=detect_leaks=0 ZST_ROUNDTRIP=60 ZST_LOADONLY=1 ZSNES_STATE_HASH=61 \
         timeout -k 5 60 "$BIN" -v 0 -m -ds "$rom" 2>&1)
 

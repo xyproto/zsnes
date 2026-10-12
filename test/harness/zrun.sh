@@ -81,7 +81,7 @@ run_capped()
 
 TIMEOUT_BIN=$(command -v timeout || command -v gtimeout || true)
 
-run_capped env HOME="$RUNHOME" PPU_STATE_LOG=1 \
+run_capped env HOME="$RUNHOME" XDG_CONFIG_HOME="$RUNHOME/.config" PPU_STATE_LOG=1 \
     ${ASCII:+ASCII_SCREENSHOT_EVERY_FIVE=1 ASCII_SCREENSHOT_BURST=3} \
     ${PNGEVERY:+PNG_SCREENSHOT_EVERY_N=$PNGEVERY} \
     ${INPUT:+DEBUG_INPUT_SCRIPT=$INPUT} \
