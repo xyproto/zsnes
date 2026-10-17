@@ -193,7 +193,7 @@ BUILD_MODE ?= release
 ifeq ($(BUILD_MODE),debug)
 OPT_FLAGS := -Og -g3 -fno-omit-frame-pointer
 else
-OPT_FLAGS := -O3
+OPT_FLAGS := -O3 -flto
 endif
 COMMON_FLAGS = $(ARCH_CFLAGS) -pthread $(PIC_FLAGS) -std=c11 $(FEATURE_FLAGS) $(OPT_FLAGS) -D_FORTIFY_SOURCE=2 -ffunction-sections -fdata-sections -fno-common -Wfatal-errors $(WARN_FLAGS)
 
