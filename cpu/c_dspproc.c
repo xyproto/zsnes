@@ -1266,22 +1266,23 @@ static void ProcessVoiceStuff(u4 const p1)
 
     u4 esi = 0;
 
-SkipProcess2: {
-    u1 const al = VolumeTableD[DSPMem[16 * p1 + 0]];
-    u1 const bl = VolumeTableD[DSPMem[16 * p1 + 1]];
-    Voice0VolumeRe[p1] = al;
-    Voice0VolumeLe[p1] = bl;
-    u1 ah = al;
-    u1 bh = bl;
-    if (ah & 0x80)
-        ah = -ah;
-    if (bh & 0x80)
-        bh = -bh;
-    ah = (u1)(ah + bh) >> 1;
-    if (al & 0x80 || bl & 0x80)
-        ah = -ah;
-    Voice0Volumee[p1] = ah;
-}
+SkipProcess2:
+    {
+        u1 const al = VolumeTableD[DSPMem[16 * p1 + 0]];
+        u1 const bl = VolumeTableD[DSPMem[16 * p1 + 1]];
+        Voice0VolumeRe[p1] = al;
+        Voice0VolumeLe[p1] = bl;
+        u1 ah = al;
+        u1 bh = bl;
+        if (ah & 0x80)
+            ah = -ah;
+        if (bh & 0x80)
+            bh = -bh;
+        ah = (u1)(ah + bh) >> 1;
+        if (al & 0x80 || bl & 0x80)
+            ah = -ah;
+        Voice0Volumee[p1] = ah;
+    }
 
     {
         u2 const ax = GlobalVL << 8 | VolumeTableD[DSPMem[16 * p1 + 0]];
