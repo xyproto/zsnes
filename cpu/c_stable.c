@@ -1,11 +1,6 @@
 #include "c_stable.h"
 #include "../endmem.h"
-#ifndef lengthof
-#define lengthof(x) (sizeof(x) / sizeof *(x))
-#endif
-#ifndef endof
-#define endof(x) ((x) + lengthof(x))
-#endif
+#include "../length.h"
 #include "../video/newgfx.h"
 #include "../video/newgfx16.h"
 #include "c_ops65816_sa1.h"

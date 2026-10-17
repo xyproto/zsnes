@@ -1,9 +1,3 @@
-#ifndef lengthof
-#define lengthof(x) (sizeof(x) / sizeof *(x))
-#endif
-#ifndef endof
-#define endof(x) ((x) + lengthof(x))
-#endif
 #include <stdarg.h>
 #include <stdbool.h>
 #include <string.h>
@@ -12,6 +6,7 @@
 #include "../c_intrf.h"
 #include "../cpu/execute.h"
 #include "../cpu/regs.h"
+#include "../length.h"
 #include "../link.h"
 #include "../types.h"
 #include "../video/filter.h"

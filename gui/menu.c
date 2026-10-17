@@ -1,6 +1,3 @@
-#ifndef lengthof
-#define lengthof(x) (sizeof(x) / sizeof *(x))
-#endif
 #include <string.h>
 
 #include "../c_intrf.h"
@@ -17,6 +14,7 @@
 #include "../endmem.h"
 #include "../init.h"
 #include "../initc.h"
+#include "../length.h"
 #include "../types.h"
 #include "../ui.h"
 #include "../vcache.h"

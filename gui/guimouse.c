@@ -10,15 +10,8 @@
 #include "../cpu/execute.h"
 #include "../cpu/regs.h"
 #include "../gblvars.h"
+#include "../length.h"
 #include "../link.h"
-#include "cfg.h"
-#include "input.h"
-#ifndef lengthof
-#define lengthof(x) (sizeof(x) / sizeof *(x))
-#endif
-#ifndef endof
-#define endof(x) ((x) + lengthof(x))
-#endif
 #include "../ui.h"
 #include "../vcache.h"
 #include "../video/procvid.h"
@@ -27,6 +20,7 @@
 #include "../zstate.h"
 #include "c_gui.h"
 #include "c_guiwindp.h"
+#include "cfg.h"
 #include "gui.h"
 #include "guicheat.h"
 #include "guicombo.h"
@@ -35,6 +29,7 @@
 #include "guimisc.h"
 #include "guimouse.h"
 #include "guiwindp.h"
+#include "input.h"
 
 #include "../video/filter.h"
 #include "../video/ntsc.h"

@@ -15,15 +15,9 @@
 #include "../gui/menu.h"
 #include "../init.h"
 #include "../initc.h"
-#include "../types.h"
-#include "cfg.h"
-#ifndef lengthof
-#define lengthof(x) (sizeof(x) / sizeof *(x))
-#endif
-#ifndef endof
-#define endof(x) ((x) + lengthof(x))
-#endif
+#include "../length.h"
 #include "../net/netplay.h"
+#include "../types.h"
 #include "../ui.h"
 #include "../vcache.h"
 #include "../video/c_mode716.h"
@@ -35,6 +29,7 @@
 #include "c_execloop.h"
 #include "c_execute.h"
 #include "c_memory.h"
+#include "cfg.h"
 #include "execute.h"
 #include "memory.h"
 #include "memtable.h"

@@ -1,12 +1,7 @@
 #include "c_table.h"
 #include "c_ops65816.h"
 #include "../endmem.h"
-#ifndef lengthof
-#define lengthof(x) (sizeof(x) / sizeof *(x))
-#endif
-#ifndef endof
-#define endof(x) ((x) + lengthof(x))
-#endif
+#include "../length.h"
 #include "../video/newgfx.h"
 #include "../video/newgfx16.h"
 #include "table.h"

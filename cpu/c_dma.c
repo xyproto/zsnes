@@ -1,8 +1,6 @@
-#ifndef lengthof
-#define lengthof(x) (sizeof(x) / sizeof *(x))
-#endif
 #include "c_dma.h"
 #include "../initc.h"
+#include "../length.h"
 #include "../ui.h"
 #include "memseam.h"
 #include "memtable.h"

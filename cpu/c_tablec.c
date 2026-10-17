@@ -1,11 +1,6 @@
 #include "c_tablec.h"
 #include "../endmem.h"
-#ifndef lengthof
-#define lengthof(x) (sizeof(x) / sizeof *(x))
-#endif
-#ifndef endof
-#define endof(x) ((x) + lengthof(x))
-#endif
+#include "../length.h"
 #include "c_ops65816_dbg.h"
 #include "table.h"
 

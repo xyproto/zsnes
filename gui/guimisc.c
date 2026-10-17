@@ -7,10 +7,7 @@
 #include "../cpu/spc700.h"
 #include "../gblvars.h"
 #include "../initc.h"
-#include "input.h"
-#ifndef lengthof
-#define lengthof(x) (sizeof(x) / sizeof *(x))
-#endif
+#include "../length.h"
 #include "../video/procvidc.h"
 #include "../zmovie.h"
 #include "../zstate.h"
@@ -20,6 +17,7 @@
 #include "guikeys.h"
 #include "guimisc.h"
 #include "guimouse.h"
+#include "input.h"
 
 #define ConfigureKey2(i, player)            \
     do {                                    \

@@ -11,13 +11,7 @@
 #include "../effects/smoke.h"
 #include "../effects/water.h"
 #include "../endmem.h"
-#include "cfg.h"
-#ifndef lengthof
-#define lengthof(x) (sizeof(x) / sizeof *(x))
-#endif
-#ifndef endof
-#define endof(x) ((x) + lengthof(x))
-#endif
+#include "../length.h"
 #include "../types.h"
 #include "../ui.h"
 #include "../vcache.h"
@@ -30,6 +24,7 @@
 #include "../ztimec.h"
 #include "c_gui.h"
 #include "c_guiwindp.h"
+#include "cfg.h"
 #include "gui.h"
 #include "guicheat.h"
 #include "guifuncs.h"

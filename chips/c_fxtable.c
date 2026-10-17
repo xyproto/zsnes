@@ -15,6 +15,7 @@
 #include <string.h>
 
 #include "../endmem.h"
+#include "../length.h"
 #include "../types.h"
 #include "../ui.h" /* romdata, sfxramdata */
 #include "fxtable.h"
@@ -1194,7 +1195,6 @@ char const sfxnametab[1024][9] = {
 };
 
 #define A(x) ((zreg)(uintptr_t)(x))
-#define lengthof(x) (sizeof(x) / sizeof *(x))
 
 static void fill(zreg* const dst, fxop* const* const src, u4 const n)
 {

@@ -6,15 +6,10 @@
 #include "../gblvars.h"
 #include "../init.h"
 #include "../initc.h"
-#include "cfg.h"
-#ifndef lengthof
-#define lengthof(x) (sizeof(x) / sizeof *(x))
-#endif
-#ifndef endof
-#define endof(x) ((x) + lengthof(x))
-#endif
+#include "../length.h"
 #include "../ui.h"
 #include "c_dspproc.h"
+#include "cfg.h"
 #include "dspproc.h"
 #include "firtable.h"
 #include "regs.h"
