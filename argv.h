@@ -5,12 +5,10 @@ static char* decode_string(char* str)
 {
     size_t str_len = strlen(str), i = 0;
     char* dest = str;
-
     if ((str_len > 1) && ((*str == '\"') || (*str == '\'')) && (str[str_len - 1] == *str)) {
         memmove(str, str + 1, str_len - 2);
         str[str_len - 2] = 0;
     }
-
     while (*str) {
         if (*str == '\\') {
             str++;
@@ -18,13 +16,12 @@ static char* decode_string(char* str)
         dest[i++] = *str++;
     }
     dest[i] = 0;
-    return (dest);
+    return dest;
 }
 
 static char* find_next_match(char* str, char match_char)
 {
     char* pos = 0;
-
     while (*str) {
         if (*str == match_char) {
             pos = str;
@@ -39,19 +36,16 @@ static char* find_next_match(char* str, char match_char)
         }
         str++;
     }
-    return (pos);
+    return pos;
 }
 
 static char* get_param(char* str)
 {
     static char* pos = 0;
     char* token = 0;
-
-    if (str) // Start a new string?
-    {
+    if (str) { // Start a new string?
         pos = str;
     }
-
     if (pos) {
         // Skip delimiters
         while (*pos == ' ') {
@@ -59,7 +53,6 @@ static char* get_param(char* str)
         }
         if (*pos) {
             token = pos;
-
             // Skip non-delimiters
             while (*pos && (*pos != ' ')) {
                 // Skip quoted characters
@@ -83,13 +76,12 @@ static char* get_param(char* str)
             }
         }
     }
-    return (token);
+    return token;
 }
 
 static size_t count_param(char* str)
 {
     size_t i = 0;
-
     while (*str) {
         // Skip delimiters
         while (*str == ' ') {
@@ -112,23 +104,22 @@ static size_t count_param(char* str)
         }
         i++;
     }
-    return (i);
+    return i;
 }
 
 static char** build_argv(char* str)
 {
     size_t argc = count_param(str);
     char** argv = (char**)malloc(sizeof(char*) * (argc + 1));
-
-    if (argv) {
-        char *p, **argp = argv;
-        for (p = get_param(str); p; p = get_param(0), argp++) {
-            *argp = decode_string(p);
-        }
-        *argp = 0;
-        return (argv);
+    if (!argv) {
+        return 0;
     }
-    return (0);
+    char *p, **argp = argv;
+    for (p = get_param(str); p; p = get_param(0), argp++) {
+        *argp = decode_string(p);
+    }
+    *argp = 0;
+    return argv;
 }
 
 #endif
