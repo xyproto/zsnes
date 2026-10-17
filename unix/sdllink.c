@@ -2426,10 +2426,6 @@ void UpdateVFrame(void)
     } else {
         SDL_RumbleJoystick(JoystickInput[0], 0, 0, 1); // Stop vibration
     }
-
-    if (sound_sdl) {
-        SoundWrite_sdl();
-    }
 }
 
 void clearwin(void)
@@ -2523,22 +2519,22 @@ void ZSnesFrameDumpSurface(SDL_Surface* const s, char const* const tag)
 
 void drawscreenwin(void)
 {
-#if defined(__LIBAO__) || defined(__PIPEWIRE__)
     extern bool RawDumpInProgress;
-    if (!sound_sdl && !GUIOn2 && !GUIOn && !EMUPause && !RawDumpInProgress) {
+    if (!GUIOn2 && !GUIOn && !EMUPause && !RawDumpInProgress) {
+        if (sound_sdl) {
+            SoundWrite_sdl();
+        }
 #ifdef __PIPEWIRE__
-        if (sound_pipewire) {
+        else if (sound_pipewire) {
             SoundWrite_pipewire();
         }
 #endif
 #ifdef __LIBAO__
-#ifdef __PIPEWIRE__
-        else
-#endif
+        else {
             SoundWrite_ao();
+        }
 #endif
     }
-#endif
 
     /* Just in case - DDOI */
     if (sdl_state == vid_none) {

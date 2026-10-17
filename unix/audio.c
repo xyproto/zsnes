@@ -97,6 +97,8 @@ bool sound_sdl = false;
 static bool sdl_audio_subsystem = false;
 static char sdl_audio_last_error[256];
 static SDL_AudioStream* sdl_audio_stream = NULL;
+static int sdl_audio_target = 0;
+static float sdl_audio_backlog = -1.0f;
 /* Half a percent: enough to absorb the drift between two free-running clocks,
    about nine cents of pitch, which is below what anyone picks out. */
 #define SDL_AUDIO_DRIFT_MAX 0.005f
@@ -1211,13 +1213,18 @@ static int SoundInit_pipewire(void)
    rather than papering over it once it has become audible. */
 static void SDLAudioDriftControl(int const queued)
 {
-    float const target = (float)sdl_audio_buffer_len * 0.5f;
+    float const target = (float)sdl_audio_target;
     float ratio;
 
     if (target <= 0.0f) {
         return;
     }
-    ratio = 1.0f + SDL_AUDIO_DRIFT_MAX * ((float)queued - target) / target;
+    if (sdl_audio_backlog < 0.0f) {
+        sdl_audio_backlog = (float)queued;
+    } else {
+        sdl_audio_backlog += ((float)queued - sdl_audio_backlog) * (1.0f / 16.0f);
+    }
+    ratio = 1.0f + SDL_AUDIO_DRIFT_MAX * (sdl_audio_backlog - target) / target;
     if (ratio < 1.0f - SDL_AUDIO_DRIFT_MAX) {
         ratio = 1.0f - SDL_AUDIO_DRIFT_MAX;
     } else if (ratio > 1.0f + SDL_AUDIO_DRIFT_MAX) {
@@ -1237,6 +1244,21 @@ void SoundWrite_sdl(void)
     /* Before topping up: what the device has left to play, which is what says
        whether the emulator is running ahead of it or behind. */
     backlog = SDL_GetAudioStreamQueued(sdl_audio_stream);
+    if (backlog == 0 && sdl_audio_target > 0) {
+        static uint8_t const silence[4096];
+        int pad = sdl_audio_target;
+
+        while (pad > 0) {
+            int const n = pad > (int)sizeof(silence) ? (int)sizeof(silence) : pad;
+
+            if (!SDL_PutAudioStreamData(sdl_audio_stream, silence, n)) {
+                break;
+            }
+            pad -= n;
+        }
+        backlog = SDL_GetAudioStreamQueued(sdl_audio_stream);
+        sdl_audio_backlog = (float)sdl_audio_target;
+    }
     if (backlog >= 0) {
         SDLAudioDriftControl(backlog);
     }
@@ -1311,7 +1333,10 @@ static void SaveSDLError(void)
 
 static int SoundInit_sdl_once(void)
 {
-    const int samptab[7] = { 1, 1, 2, 4, 2, 4, 4 };
+    SDL_AudioSpec device_spec;
+    int device_frames = 0;
+    int frame_bytes;
+    int period_bytes;
 
     if (!EnsureSDLAudioSubsystem()) {
         SaveSDLError();
@@ -1352,13 +1377,22 @@ static int SoundInit_sdl_once(void)
         return false;
     }
 
-    sdl_audio_buffer_len = (samptab[5] * 128 * wanted.channels * 4 + 255) & ~255;
-    if (sdl_audio_buffer_len < 512) {
-        sdl_audio_buffer_len = 512;
+    frame_bytes = RATE / 50 * wanted.channels * (int)sizeof(int16_t);
+    if (!SDL_GetAudioDeviceFormat(SDL_GetAudioStreamDevice(sdl_audio_stream), &device_spec,
+            &device_frames)
+        || device_frames <= 0 || device_spec.freq <= 0) {
+        device_spec.freq = 48000;
+        device_frames = 1024;
     }
+    period_bytes = (int)(((int64_t)device_frames * RATE + device_spec.freq - 1) / device_spec.freq)
+        * wanted.channels * (int)sizeof(int16_t);
+    sdl_audio_target = period_bytes + 2 * frame_bytes;
+    sdl_audio_buffer_len = 2 * sdl_audio_target;
+    sdl_audio_backlog = -1.0f;
 
     sound_sdl = true;
-    printf("SDL audio: %u channels, %u Hz\n", wanted.channels, wanted.freq);
+    printf("SDL audio (%s): %u channels, %u Hz, device %d Hz / %d frames\n",
+        SDL_GetCurrentAudioDriver(), wanted.channels, wanted.freq, device_spec.freq, device_frames);
     return true;
 }
 
@@ -1384,7 +1418,7 @@ static int SoundInit_sdl(void)
     for (i = 0; i < num_drivers; ++i) {
         char const* driver = SDL_GetAudioDriver(i);
 
-        if (!driver || !*driver) {
+        if (!driver || !*driver || !strcmp(driver, "disk") || !strcmp(driver, "dummy")) {
             continue;
         }
         SDL_SetHint(SDL_HINT_AUDIO_DRIVER, driver);
