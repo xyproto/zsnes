@@ -12,6 +12,8 @@ int VsyncPacedFrame(void);
 /* Monitors, as SDL lists them this run. MonitorID names one by a short ID
    taken from its name, which survives the renumbering SDL does each run. */
 struct SDL_Window;
+
+#define MONITOR_ID_MAX_OLD 12
 /* The monitor queries themselves are declared in c_intrf.h: every port
    answers them. This one is SDL's own. */
 void PlaceWindowOnMonitor(struct SDL_Window* win);
@@ -36,6 +38,8 @@ void SetMouseMinY(int MinY);
 void SetMouseMaxY(int MaxY);
 void SetMouseX(int X);
 void SetMouseY(int Y);
+
+extern char MonitorID[16];
 
 extern uint32_t numlockptr;
 
