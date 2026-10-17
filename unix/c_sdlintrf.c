@@ -18,10 +18,8 @@ u4 volatile CurKeyPos = 0;
 u4 CurKeyReadPos = 0;
 u4 KeyBuffer[16] = { 0 };
 u4 converta = 0;
+#include "../length.h"
 #include "../link.h"
-#ifndef lengthof
-#define lengthof(x) (sizeof(x) / sizeof *(x))
-#endif
 #include "../ui.h"
 #include "../vcache.h"
 #include "../video/c_2xsaiw.h"

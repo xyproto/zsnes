@@ -10,20 +10,15 @@
 #include "../gui/gui.h"
 #include "../init.h"
 #include "../initc.h"
-#include "cfg.h"
-#include "input.h"
-#ifndef lengthof
-#define lengthof(x) (sizeof(x) / sizeof *(x))
-#endif
-#ifndef endof
-#define endof(x) ((x) + lengthof(x))
-#endif
+#include "../length.h"
 #include "../types.h"
 #include "../ui.h"
 #include "../vcache.h"
 #include "../zmovie.h"
 #include "../zstate.h"
 #include "../ztimec.h"
+#include "cfg.h"
+#include "input.h"
 #include "newgfx16.h"
 #include "procvid.h"
 #include "procvidc.h"
