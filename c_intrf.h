@@ -149,10 +149,7 @@ static inline int VideoMonitorNameRedundant(char const* id, char const* name)
 {
     u4 k = 0;
     int any = 0;
-
-    for (; *name; ++name) {
-        char c = *name;
-
+    for (char c = *name; *name; ++name) {
         if (c >= 'a' && c <= 'z') {
             c = (char)(c - 'a' + 'A');
         }
