@@ -396,7 +396,6 @@ void zstart(void)
 {
     uintptr_t ptr;
 
-    CPUFeatureCheck();
     StartUp();
 
 #ifdef __UNIXSDL__

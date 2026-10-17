@@ -66,8 +66,8 @@ static u4 const* CombCont[5];
 void init(void)
 {
     // Initialize snow stuff
-    for (u4 i = 0; i != 400; ++i) // XXX Why only 400 of 800?
-    {
+    // TODO: Figure out why it should be 400 instead of ie. 800
+    for (u4 i = 0; i != 400; ++i) {
         SnowData[i] <<= 8;
         SnowVelDist[i] &= 0xF7;
         if (SnowTimer == 0)
@@ -102,8 +102,9 @@ void init(void)
         romloadskip = 0;
         loadfileGUI();
         SetupROM();
-        if (DisplayInfo != 0)
+        if (DisplayInfo != 0) {
             showinfogui();
+        }
     }
 
     UpdateDevices();
@@ -115,8 +116,9 @@ void init(void)
     u4 const vol = MusicRelVol * 128 * 0xA3D70A3DULL >> 38;
     MusicVol = vol < 127 ? vol : 127;
 
-    if (AutoState == 1)
+    if (AutoState == 1) {
         LoadSecondState();
+    }
 
     // FIX STATMAT
     // Here's the auto-load ZST file stuff
@@ -128,7 +130,6 @@ void init(void)
 
     if (1 <= autoloadmovie && autoloadmovie <= 10) {
         CMovieExt = autoloadmovie != 1 ? '0' + (autoloadmovie - 1) : 'v';
-
         if (ZMVRawDump != 0) {
             MovieDumpRaw();
         } else {
@@ -136,8 +137,9 @@ void init(void)
         }
     }
 
-    if (yesoutofmemory == 1)
+    if (yesoutofmemory == 1) {
         outofmemfix();
+    }
 
 #ifndef NO_DEBUGGER
     if (debugger != 0 && romloadskip != 1) {
@@ -160,26 +162,31 @@ void init(void)
 
 static inline void PlayerDeviceHelp(u4 const key, u4* const device, u4 const bits)
 {
-    if (pressed[key] == 1)
+    if (pressed[key] == 1) {
         *device |= bits;
+    }
 }
 
 static void ProcSNESMouse(u4* const device)
 {
     u4 d = *device;
-    if (mousebuttons & 0x02)
+    if (mousebuttons & 0x02) {
         d |= 0x00100000;
-    if (mousebuttons & 0x01)
+    }
+    if (mousebuttons & 0x01) {
         d |= 0x00400000;
+    }
     /* The SNES mouse saturates at its top speed rather than wrapping, so clamp
        the per-frame magnitude to the 7-bit field instead of masking it. */
     u4 const mx = mousexpos > 0x7F ? 0x7F : mousexpos;
     u4 const my = mouseypos > 0x7F ? 0x7F : mouseypos;
     d = (d & 0xFFFF0000) | 0x00010000 | (my << 8) | mx;
-    if (mouseydir & 0x01)
+    if (mouseydir & 0x01) {
         d |= 0x00008000;
-    if (mousexdir & 0x01)
+    }
+    if (mousexdir & 0x01) {
         d |= 0x00000080;
+    }
     *device = d;
 }
 
@@ -191,8 +198,9 @@ static u4 ProcessCombo(u4 const i)
         u4 KeyLPress = 0;
         for (;;) {
             u4 ebx = *eax;
-            if (ebx == 0)
+            if (ebx == 0) {
                 goto finish;
+            }
             if (ebx < 37) {
                 if (KeyLPress == 0) {
                     PressComb[i] = 0;
@@ -209,15 +217,18 @@ static u4 ProcessCombo(u4 const i)
                     PressComb[i] &= x; // <- buxfix from Maxim
                 }
                 ++eax;
-                if (++ComboPtr[i] == 42)
+                if (++ComboPtr[i] == 42) {
                     goto finish;
+                }
             } else {
-                if (ebx > 48)
+                if (ebx > 48) {
                     goto finish;
+                }
                 CombDelay[i] = (romispal != 0 ? CombTDelP : CombTDelN)[ebx - 37];
                 ++eax;
-                if (++ComboPtr[i] == 42)
+                if (++ComboPtr[i] == 42) {
                     goto finish;
+                }
                 break;
             }
         }
@@ -231,13 +242,16 @@ finish:
 
 static void ProcessKeyComb(u4 const id, u4* const device)
 {
-    if (NumCombo == 0)
+    if (NumCombo == 0) {
         return;
+    }
     if (ComboProg[id] == 0) {
-        if (*device & 0x01000000)
+        if (*device & 0x01000000) {
             CombDirSwap = 0;
-        if (*device & 0x02000000)
+        }
+        if (*device & 0x02000000) {
             CombDirSwap = 1;
+        }
         ComboData* eax = GUIComboGameSpec != 0 ? CombinDataLocl : CombinDataGlob;
         u4 n = NumCombo;
         for (;; ++eax) {
@@ -253,24 +267,29 @@ static void ProcessKeyComb(u4 const id, u4* const device)
                 StartComb[id] = eax->combo;
                 break;
             }
-            if (--n == 0)
+            if (--n == 0) {
                 return;
+            }
         }
     }
-    if (ProcessCombo(id) != 0)
+    if (ProcessCombo(id) != 0) {
         ComboProg[id] = 0;
+    }
     *device = HoldComb[id] | PressComb[id];
 }
 
 static void PlayerDeviceFix(u4* const device)
 {
-    if (AllowUDLR == 1)
+    if (AllowUDLR == 1) {
         return;
+    }
     u4 d = *device;
-    if ((d & 0x0C000000) == 0x0C000000)
+    if ((d & 0x0C000000) == 0x0C000000) {
         d &= 0xF3FFFFFF;
-    if ((d & 0x03000000) == 0x03000000)
+    }
+    if ((d & 0x03000000) == 0x03000000) {
         d &= 0xFCFFFFFF;
+    }
     *device = d;
 }
 
@@ -289,9 +308,11 @@ static u4 DebugInputButtonMask(const char* name, size_t len)
         { "left", 0x02000000 }, { "right", 0x01000000 }, { "a", 0x00800000 },
         { "x", 0x00400000 }, { "l", 0x00200000 }, { "r", 0x00100000 }
     };
-    for (size_t i = 0; i < sizeof(tbl) / sizeof(tbl[0]); i++)
-        if (strlen(tbl[i].n) == len && !strncasecmp(tbl[i].n, name, len))
+    for (size_t i = 0; i < sizeof(tbl) / sizeof(tbl[0]); i++) {
+        if (strlen(tbl[i].n) == len && !strncasecmp(tbl[i].n, name, len)) {
             return tbl[i].mask;
+        }
+    }
     return 0;
 }
 
@@ -309,36 +330,41 @@ static void DebugHotkeyScript(void)
         u1 key; /* 0 save, 1 load, 2 rewind */
         u1 done;
     } steps[16];
+
     static u4 nsteps = 0;
     static int inited = 0;
     u4 i;
-
     if (!inited) {
         char const* s = getenv("ZSNES_HOTKEY");
-
         inited = 1;
+
         while (s && *s && nsteps < 16) {
             u1 const key = strncasecmp(s, "load", 4) == 0 ? 1
                 : strncasecmp(s, "rewind", 6) == 0        ? 2
                                                           : 0;
 
-            while (*s && *s != ':')
+            while (*s && *s != ':') {
                 s++;
-            if (*s == ':')
+            }
+            if (*s == ':') {
                 s++;
+            }
             steps[nsteps].frame = 0;
-            while (*s >= '0' && *s <= '9')
+            while (*s >= '0' && *s <= '9') {
                 steps[nsteps].frame = steps[nsteps].frame * 10 + (u4)(*s++ - '0');
+            }
             steps[nsteps].key = key;
             nsteps++;
-            if (*s == ',')
+            if (*s == ',') {
                 s++;
+            }
         }
     }
 
     for (i = 0; i < nsteps; i++) {
-        if (steps[i].done || steps[i].frame != zsnes_emulated_frame)
+        if (steps[i].done || steps[i].frame != zsnes_emulated_frame) {
             continue;
+        }
         u4 const key = steps[i].key == 2 ? KeyRewind : steps[i].key == 1 ? KeyLoadState
                                                                          : KeySaveState;
 
@@ -358,6 +384,7 @@ static u4 DebugInputScript(void)
         u4 mask;
         u4 frames;
     } steps[1024];
+
     static u4 nsteps = 0;
     static u4 step = 0, left = 0;
     static int inited = 0;
@@ -367,19 +394,24 @@ static u4 DebugInputScript(void)
         const char* s = getenv("DEBUG_INPUT_SCRIPT");
         while (s && *s && nsteps < 1024) {
             const char* tok = s;
-            while (*s && *s != ',')
+            while (*s && *s != ',') {
                 s++;
+            }
             u4 mask = DebugInputButtonMask(tok, (size_t)(s - tok));
-            if (*s == ',')
+            if (*s == ',') {
                 s++;
+            }
             u4 ms = 0;
-            while (*s >= '0' && *s <= '9')
+            while (*s >= '0' && *s <= '9') {
                 ms = ms * 10 + (u4)(*s++ - '0');
-            if (*s == ',')
+            }
+            if (*s == ',') {
                 s++;
+            }
             u4 frames = (ms * 60 + 500) / 1000;
-            if (frames == 0)
+            if (frames == 0) {
                 frames = 1;
+            }
             steps[nsteps].mask = mask;
             steps[nsteps].frames = frames;
             nsteps++;
@@ -390,11 +422,13 @@ static u4 DebugInputScript(void)
         }
     }
 
-    if (step >= nsteps)
+    if (step >= nsteps) {
         return 0;
+    }
     u4 mask = steps[step].mask;
-    if (--left == 0 && ++step < nsteps)
+    if (--left == 0 && ++step < nsteps) {
         left = steps[step].frames;
+    }
     return mask;
 }
 
@@ -403,9 +437,12 @@ void ReadInputDevice(void)
 {
     WhichSW = 1;
     ++TurboSw;
+
     u1 const TurboCB = Turbo30hz != 0 ? 0x02 : 0x01;
+
     // Read External Devices (Joystick, PPort, etc.)
     JoyRead();
+
     // Process Data
     JoyAOrig = 0;
     JoyBOrig = 0;
@@ -445,8 +482,9 @@ void ReadInputDevice(void)
         ProcessKeyComb(0, &JoyAOrig);
         JoyAOrig |= 0x00008000; // Joystick Enable
         if (GUIDelayB == 1) {
-            if (JoyAOrig & 0x80000000)
+            if (JoyAOrig & 0x80000000) {
                 goto inputbdcb;
+            }
             --GUIDelayB;
         } else if (GUIDelayB != 0) {
             --GUIDelayB;
@@ -461,12 +499,15 @@ void ReadInputDevice(void)
     } else if (device2 == 2) {
         processmouse2();
         u4 j = (JoyBOrig & 0x0000FFFF) | 0x00FF0000 | ssautosw << 24;
-        if (mousebuttons & 0x01)
+        if (mousebuttons & 0x01) {
             j |= 0x80000000;
-        if (pressed[SSPause] != 0)
+        }
+        if (pressed[SSPause] != 0) {
             j |= 0x10000000;
-        if (mousebuttons & 0x02)
+        }
+        if (mousebuttons & 0x02) {
             j |= 0x40000000;
+        }
         JoyBOrig = j;
     } else if (device2 == 3) {
         processmouse2();
@@ -478,10 +519,12 @@ void ReadInputDevice(void)
             }
         }
         // JoyBOrig = JoyBOrig & 0x0000FFFF | 0x000E0000;
-        if (mousebuttons & 0x01)
+        if (mousebuttons & 0x01) {
             JoyAOrig |= 0x80000000;
-        if (mousebuttons & 0x02)
+        }
+        if (mousebuttons & 0x02) {
             JoyAOrig |= 0x00800000;
+        }
     } else if (pl2contrl != 0) { // Get Player2 input device
         PlayerDeviceHelp(pl2Bk, &JoyBOrig, 0x80000000);
         PlayerDeviceHelp(pl2Yk, &JoyBOrig, 0x40000000);
@@ -610,10 +653,12 @@ void ReadInputDevice(void)
     }
 
     if (pl12s34 == 1) {
-        if (device1 == 0)
+        if (device1 == 0) {
             JoyAOrig = JoyCOrig;
-        if (device2 == 0)
+        }
+        if (device2 == 0) {
             JoyBOrig = JoyDOrig;
+        }
     }
 
 #ifdef ZSNES_DEBUG_HOOKS
@@ -622,8 +667,9 @@ void ReadInputDevice(void)
 
     // Debug scripted input (DEBUG_INPUT_SCRIPT) overrides player-1 buttons.
     u4 scripted = DebugInputScript();
-    if (scripted)
+    if (scripted) {
         JoyAOrig = (JoyAOrig & ~0xFFF00000u) | scripted | 0x00008000;
+    }
 
     // Netplay lockstep is applied after local device mapping so each peer gets
     // one local pad and one synchronized remote pad.
@@ -633,21 +679,18 @@ void ReadInputDevice(void)
 // Terminate Program
 _Noreturn void DosExit(void)
 {
-    if (AutoState == 1)
+    if (AutoState == 1) {
         SaveSecondState();
+    }
     zexit();
-}
-
-void CPUFeatureCheck(void)
-{
-    // CPU feature probing is not required.
 }
 
 void outofmemfix(void)
 {
     u1* rom = romdata;
-    if (romtype == 2)
+    if (romtype == 2) {
         rom += 0x8000; // hirom
+    }
     rom[0] = 0x58;
     rom[1] = 0x80;
     rom[2] = 0xFE;
@@ -674,7 +717,7 @@ void idledetectspc(void)
 void printhex(u2 ax)
 {
     u4 n = 4;
-    do
+    do {
         PrintChar("0123456789ABCDEF"[ax >> 12]);
-    while (ax <<= 4, --n != 0);
+    } while (ax <<= 4, --n != 0);
 }
