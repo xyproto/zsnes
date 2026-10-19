@@ -1052,7 +1052,7 @@ $(BUILD_DIR)/%.h $(BUILD_DIR)/%.o: %.psr $(PSR)
 
 clean distclean:
 	@echo '===> CLEAN'
-	$(Q)rm -fr $(BUILD_DIR) $(BINARY) zsnes zsnes.exe
+	$(Q)rm -fr $(BUILD_DIR) $(BUILD_DIR)-align $(BINARY) zsnes zsnes.exe
 
 info:
 	@echo "ARCH          = $(ARCH)"
@@ -1087,8 +1087,9 @@ fmt:
 test: $(BINARY)
 	$(MAKE) -C test run
 
-asmalign: $(BINARY)
-	$(PYTHON) tools/asmalign.py $(BUILD_DIR)
+asmalign:
+	$(Q)$(MAKE) BUILD_DIR=$(BUILD_DIR)-align OPT_FLAGS='$(OPT_FLAGS) -ffat-lto-objects' $(addprefix $(BUILD_DIR)-align/,$(OBJ_NAMES))
+	$(PYTHON) tools/asmalign.py $(BUILD_DIR)-align
 
 # The netplay relay (server/, Go): pairs two clients by room code and forwards
 # their input frames. Not part of `all`.
