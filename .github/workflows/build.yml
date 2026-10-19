@@ -24,6 +24,27 @@ on:
   workflow_dispatch:
 
 jobs:
+  # Optional (continue-on-error): clang-format moves fast and the tree is kept
+  # formatted with whatever version Arch ships, so this reports drift without
+  # gating the build.
+  formatting:
+    runs-on: ubuntu-26.04
+    continue-on-error: true
+    container: archlinux:latest
+    steps:
+      - name: Install clang-format
+        run: pacman -Syu --noconfirm --needed clang make git
+      - uses: actions/checkout@v6
+      - name: Check formatting
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          clang-format --version
+          make fmt
+          if ! git diff --quiet; then
+            git --no-pager diff --name-only
+            exit 1
+          fi
+
   linux_i686:
     runs-on: ubuntu-26.04
     env:
@@ -117,18 +138,9 @@ jobs:
           sudo apt-get $APT_OPTS update
           sudo apt-get $APT_OPTS install -y --no-install-recommends \
             build-essential make python3 pkg-config git xvfb \
-            clang-format-19 \
             gcc-aarch64-linux-gnu libc6-dev-arm64-cross \
             libsdl3-dev libgl1-mesa-dev libpng-dev zlib1g-dev \
             libao-dev libpipewire-0.3-dev libncurses-dev
-          sudo ln -sf /usr/bin/clang-format-19 /usr/local/bin/clang-format
-      - name: Check formatting
-        run: |
-          make fmt
-          if ! git diff --quiet; then
-            git --no-pager diff --name-only
-            exit 1
-          fi
       - name: Build and run 64-bit
         run: |
           make clean
