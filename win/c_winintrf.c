@@ -10,6 +10,7 @@
 #include "../gblvars.h"
 #include "../gui/c_gui.h"
 #include "../intrf.h"
+#include "../length.h"
 #include "../link.h"
 #include "../ui.h"
 #include "../vcache.h"
@@ -18,7 +19,6 @@
 #include "c_winintrf.h"
 #include "cfg.h"
 #include "input.h"
-#include "length.h"
 
 #ifndef __RELEASE__
 #include "winlink.h"
