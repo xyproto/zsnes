@@ -1,8 +1,12 @@
 *.[do]
 *.log
+*.o
 *.raw
+*.swp
+*.tmp
 *.wav
 .vscode/
+build-align/
 build/
 config.default
 include.txt
