@@ -193,7 +193,12 @@ BUILD_MODE ?= release
 ifeq ($(BUILD_MODE),debug)
 OPT_FLAGS := -Og -g3 -fno-omit-frame-pointer
 else
-OPT_FLAGS := -O3 -flto
+OPT_FLAGS := -O3
+# LTO is skipped on macOS and FreeBSD, where the host toolchain's LTO plugin
+# is unreliable for this tree.
+ifeq ($(filter DARWIN FREEBSD,$(ARCH)),)
+OPT_FLAGS += -flto
+endif
 endif
 COMMON_FLAGS = $(ARCH_CFLAGS) -pthread $(PIC_FLAGS) -std=c11 $(FEATURE_FLAGS) $(OPT_FLAGS) -D_FORTIFY_SOURCE=2 -ffunction-sections -fdata-sections -fno-common -Wfatal-errors $(WARN_FLAGS)
 

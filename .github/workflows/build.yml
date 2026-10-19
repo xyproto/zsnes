@@ -39,14 +39,12 @@ jobs:
           sudo apt-get $APT_OPTS update
           sudo apt-get $APT_OPTS install -y --no-install-recommends \
             build-essential cmake ninja-build git make python3 pkg-config \
-            clang-format-19 \
             gcc-multilib g++-multilib libc6-dev-i386 \
             libx11-dev:i386 libxcursor-dev:i386 libxi-dev:i386 \
             libxinerama-dev:i386 libxfixes-dev:i386 libxrandr-dev:i386 \
             libgl1-mesa-dev:i386 zlib1g-dev:i386 libpng-dev:i386 \
             libao-dev:i386 libpipewire-0.3-dev:i386 \
             xvfb curl
-          sudo ln -sf /usr/bin/clang-format-19 /usr/local/bin/clang-format
       - name: Install SDL3 (i386)
         run: |
           if apt-cache show libsdl3-dev:i386 >/dev/null 2>&1; then
@@ -69,13 +67,6 @@ jobs:
             echo '/usr/local/lib' | sudo tee /etc/ld.so.conf.d/zsnes-ci-sdl3.conf
             sudo ldconfig
             echo 'PKG_CONFIG_PATH=/usr/local/lib/pkgconfig' >> "$GITHUB_ENV"
-          fi
-      - name: Check formatting
-        run: |
-          make fmt
-          if ! git diff --quiet; then
-            git --no-pager diff --name-only
-            exit 1
           fi
       - name: Build
         run: |
@@ -126,9 +117,18 @@ jobs:
           sudo apt-get $APT_OPTS update
           sudo apt-get $APT_OPTS install -y --no-install-recommends \
             build-essential make python3 pkg-config git xvfb \
+            clang-format-19 \
             gcc-aarch64-linux-gnu libc6-dev-arm64-cross \
             libsdl3-dev libgl1-mesa-dev libpng-dev zlib1g-dev \
             libao-dev libpipewire-0.3-dev libncurses-dev
+          sudo ln -sf /usr/bin/clang-format-19 /usr/local/bin/clang-format
+      - name: Check formatting
+        run: |
+          make fmt
+          if ! git diff --quiet; then
+            git --no-pager diff --name-only
+            exit 1
+          fi
       - name: Build and run 64-bit
         run: |
           make clean
