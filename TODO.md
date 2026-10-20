@@ -1,5 +1,6 @@
 # TODO
 
+- [ ] When pressing Tab in the "input device" window, go to the "SET" and then the "SET KEYS" button instead of to tab #1, #2, #3 etc.
 - [ ] Confirm the DSP4 division table on a DSP4 cart. `floor(0x8000/n)` verified, but not the chip's rounding.
 - [ ] Fix Super Mario RPG hanging in the attract demo at frame 19956, force-blank never cleared. Needs a reference trace.
 - [ ] Carry SRAM and the host's state into a netplay session; it power-cycles both sides instead.
