@@ -24,6 +24,7 @@ extern u1 gammalevel16b; // gamma level (16-bit engine)
 extern u1 mode7tab[65536];
 extern u1 newgfx16b;
 extern u1 romispal; // 0 = NTSC, 1 = PAL
+extern u1 verbose_mode;
 extern u1* romdata; // rom data  (4MB = 4194304)
 extern u1* sfxramdata; // SuperFX Ram Data
 extern u1* spcBuffera;

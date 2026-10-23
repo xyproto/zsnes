@@ -26,6 +26,7 @@
 #include "../cpu/execute.h"
 #include "../gui/gui.h"
 #include "../link.h"
+#include "../ui.h"
 #include "../zmovie.h"
 #include "cfg.h"
 
@@ -369,7 +370,9 @@ static int SoundInit_ao_driver(const char* driver_name)
 
     {
         ao_info* di = ao_driver_info(driver_id);
-        printf("%s: %u channels, %u Hz\n", di->name, driver_format.channels, driver_format.rate);
+        if (verbose_mode) {
+            printf("%s: %u channels, %u Hz\n", di->name, driver_format.channels, driver_format.rate);
+        }
     }
     return true;
 }
@@ -875,7 +878,9 @@ static void PipeWireParamChanged(void* userdata, uint32_t id, const struct spa_p
 
     if (!pw_banner_shown) {
         pw_banner_shown = 1;
-        printf("PipeWire audio: %u ch, %u Hz\n", channels, rate);
+        if (verbose_mode) {
+            printf("PipeWire audio: %u ch, %u Hz\n", channels, rate);
+        }
     }
 
     pthread_mutex_lock(&pw_audio_mutex);
@@ -1391,8 +1396,10 @@ static int SoundInit_sdl_once(void)
     sdl_audio_backlog = -1.0f;
 
     sound_sdl = true;
-    printf("SDL audio (%s): %u channels, %u Hz, device %d Hz / %d frames\n",
-        SDL_GetCurrentAudioDriver(), wanted.channels, wanted.freq, device_spec.freq, device_frames);
+    if (verbose_mode) {
+        printf("SDL audio (%s): %u channels, %u Hz, device %d Hz / %d frames\n",
+            SDL_GetCurrentAudioDriver(), wanted.channels, wanted.freq, device_spec.freq, device_frames);
+    }
     return true;
 }
 

@@ -159,6 +159,7 @@ static void display_help(void)
     put_line("  -sa     Show all files in GUI (*.*)");
     put_line("  -t      Force NTSC timing");
     put_line("  -u      Force PAL timing");
+    put_line("  -V      Output status messages (joysticks, mice, audio)");
     put_line("  -v  #    Select video mode :");
 #ifdef __WIN32__
 #define VIDEO_MODE_COUNT 59
@@ -213,6 +214,7 @@ static void display_help(void)
     put_line("  -zm #     Auto load specified movie slot on startup [0..9]");
     put_line("  -zs #     Auto load specified save state slot on startup [0..99]");
 #ifdef __UNIXSDL__
+    put_line("  --verbose Same as -V");
     put_line("  --version Output version information");
 #endif
     put_line("");
@@ -499,6 +501,8 @@ static void handle_params(int argc, char* argv[])
             if (!argv[i][1] || !strcmp(argv[i], "-?")
                 || !strcmp(argv[i], "-help") || !strcmp(argv[i], "--help")) {
                 display_help();
+            } else if (!strcmp(argv[i], "-V") || !strcmp(argv[i], "/V")) {
+                verbose_mode = 1;
             } else if (!argv[i][2]) //- followed by a single letter
             {
                 switch (tolower(argv[i][1])) {
@@ -860,9 +864,10 @@ static void handle_params(int argc, char* argv[])
                 }
             } else //- followed by more than 2 letters
             {
-                if (tolower(argv[i][1]) == '-' && tolower(argv[i][2]) == 'v') // --version
-                {
+                if (!strcmp(argv[i], "--version")) {
                     display_version();
+                } else if (!strcmp(argv[i], "--verbose")) {
+                    verbose_mode = 1;
                 } else {
                     display_help();
                 }

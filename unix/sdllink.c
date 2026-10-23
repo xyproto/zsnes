@@ -1519,7 +1519,9 @@ BOOL InitJoystickInput(void)
     SDL_InitSubSystem(SDL_INIT_GAMEPAD);
     ids = SDL_GetJoysticks(&num_joysticks);
     if (!ids || num_joysticks <= 0) {
-        printf("No joysticks found.\n");
+        if (verbose_mode) {
+            printf("No joysticks found.\n");
+        }
         SDL_free(ids);
         /* The subsystem stays up: it is what reports a pad plugged in later. */
         return FALSE;
@@ -1540,7 +1542,9 @@ BOOL InitJoystickInput(void)
                 continue;
             }
             JoystickID[i] = ids[i];
-            printf("Device %i %s (gamepad)\n", i, SDL_GetGamepadName(GamepadInput[i]));
+            if (verbose_mode) {
+                printf("Device %i %s (gamepad)\n", i, SDL_GetGamepadName(GamepadInput[i]));
+            }
             continue;
         }
 
@@ -1553,8 +1557,10 @@ BOOL InitJoystickInput(void)
         num_axes = SDL_GetNumJoystickAxes(JoystickInput[i]);
         num_buttons = SDL_GetNumJoystickButtons(JoystickInput[i]);
         num_hats = SDL_GetNumJoystickHats(JoystickInput[i]);
-        printf("Device %i %s\n", i, SDL_GetJoystickName(JoystickInput[i]));
-        printf("  %i axis, %i buttons, %i hats\n", num_axes, num_buttons, num_hats);
+        if (verbose_mode) {
+            printf("Device %i %s\n", i, SDL_GetJoystickName(JoystickInput[i]));
+            printf("  %i axis, %i buttons, %i hats\n", num_axes, num_buttons, num_hats);
+        }
 
         if (next_offset >= 448) {
             printf("Warning: Joystick won't work.\n");

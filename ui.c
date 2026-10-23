@@ -70,6 +70,7 @@ unsigned char opexec268cphb = 42; // # of opcodes/hblank in 2.68Mhz mode
 unsigned char opexec358cphb = 45; // # of opcodes/hblank in 3.58Mhz mode (56/50)
 u1 debugdisble = 1;
 u1 gammalevel16b = 0;
+u1 verbose_mode = 0;
 unsigned char AddSub256 = 0; // screen add/sub in 256 colors
 unsigned char dmadeddis = 0; // DMA deduction
 unsigned char OldStyle = 1; // Old style joystick on
@@ -555,7 +556,7 @@ void MultiMouseInit(void)
     }
 #endif
     MouseCount = ManyMouse_Init();
-    if (MouseCount > 0) {
+    if (MouseCount > 0 && verbose_mode) {
         printf("ManyMouse: %d mice detected.\n", MouseCount);
     }
 
@@ -566,7 +567,9 @@ void MultiMouseInit(void)
         MouseWaiting[0] = MouseWaiting[1] = false;
         atexit(MultiMouseShutdown);
 
-        printf("Using ManyMouse for:\nMouse 0: %s\nMouse 1: %s\n", ManyMouse_DeviceName(0), ManyMouse_DeviceName(1));
+        if (verbose_mode) {
+            printf("Using ManyMouse for:\nMouse 0: %s\nMouse 1: %s\n", ManyMouse_DeviceName(0), ManyMouse_DeviceName(1));
+        }
     } else {
         strcpy(CSStatus, "Dual mice not detected");
         strcpy(CSStatus2, "");

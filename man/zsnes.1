@@ -4,7 +4,7 @@
 ZSNES - Super Nintendo console emulator
 .SH SYNOPSIS
 .B ZSNES
-[- | -? | --help] [-1 #] [-2 #] [-ad driver] [-dd] [-dh] [-ds] [-f #] [-g #] [-h | -l] [-j] [-js #] [-k #] [-m] [-mc] [-md] [-ml #] [-mo ID] [-n #] [-p #] [-r #] [-s] [-sa] [-t | -u] [-v #] [-v8] [-y] [-z] [-zm #] [-zs #] [romname]
+[- | -? | --help] [-1 #] [-2 #] [-ad driver] [-dd] [-dh] [-ds] [-f #] [-g #] [-h | -l] [-j] [-js #] [-k #] [-m] [-mc] [-md] [-ml #] [-mo ID] [-n #] [-p #] [-r #] [-s] [-sa] [-t | -u] [-V] [--verbose] [-v #] [-v8] [-y] [-z] [-zm #] [-zs #] [romname]
 
 .SH DESCRIPTION
 .B ZSNES
@@ -112,6 +112,10 @@ Force NTSC (60 Hz) timing. Cannot be used with \fB-u\fP
 .TP
 .B -u
 Force PAL (50 Hz) timing. Cannot be used with \fB-t\fP
+.TP
+.B -V | --verbose
+Print status messages: the joysticks found, the audio backend in use and how
+many mice ManyMouse detected. Warnings and error messages print regardless.
 .TP
 .B -v8
 Grayscale mode
