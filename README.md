@@ -70,8 +70,7 @@ Build `zsnes` with debug symbols and debugger-friendly optimization:
 
     make debug
 
-The build-mode stamp automatically replaces incompatible release objects. To
-run the same ROM under GDB:
+For runnin `zsnes` with the same ROM, under GDB:
 
 ```sh
 gdb --args ./zsnes ~/roms/snes/example.sfc
