@@ -283,7 +283,11 @@ static int joystick_index_from_id(SDL_JoystickID id)
 {
     int i;
     for (i = 0; i < 5; i++) {
-        if (JoystickInput[i] && JoystickID[i] == id) {
+        /* A slot is occupied by either a raw joystick or a gamepad; both keep
+           their id in JoystickID. Checking only JoystickInput missed gamepad
+           slots, so a gamepad looked unknown: every re-announce re-ran init
+           (the repeated "Device 0" churn) and an unplug was never cleaned up. */
+        if ((JoystickInput[i] || GamepadInput[i]) && JoystickID[i] == id) {
             return i;
         }
     }
