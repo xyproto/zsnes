@@ -317,6 +317,8 @@ static uint8_t IsActivated = 1;
 #define UPDATE_TICKS_GAMEPAL (20.0)
 #define UPDATE_TICKS_GUI (1000.0 / 36.0)
 #define UPDATE_TICKS_UDP (1000.0 / 60.0)
+#define GAMEPAD_BINDING_BANK_SIZE 32
+#define GAMEPAD_BUTTON_BINDING_COUNT 20
 
 static int T60HZEnabled = 0;
 u1 T36HZEnabled = 0;
@@ -765,6 +767,56 @@ int Main_Proc(void)
             pressed[offset] = 0;
             break;
         }
+        case SDL_EVENT_GAMEPAD_BUTTON_DOWN: {
+            int idx = joystick_index_from_id(event.gbutton.which);
+            if (idx < 0 || !GamepadInput[idx]
+                || event.gbutton.button >= GAMEPAD_BUTTON_BINDING_COUNT) {
+                break;
+            }
+            offset = ButtonOffset[idx] + event.gbutton.button;
+            if (offset >= (256 + 128 + 64)) {
+                break;
+            }
+            pressed[offset] = 1;
+            break;
+        }
+
+        case SDL_EVENT_GAMEPAD_BUTTON_UP: {
+            int idx = joystick_index_from_id(event.gbutton.which);
+            if (idx < 0 || !GamepadInput[idx]
+                || event.gbutton.button >= GAMEPAD_BUTTON_BINDING_COUNT) {
+                break;
+            }
+            offset = ButtonOffset[idx] + event.gbutton.button;
+            if (offset >= (256 + 128 + 64)) {
+                break;
+            }
+            pressed[offset] = 0;
+            break;
+        }
+
+        case SDL_EVENT_GAMEPAD_AXIS_MOTION: {
+            int idx = joystick_index_from_id(event.gaxis.which);
+            if (idx < 0 || !GamepadInput[idx]) {
+                break;
+            }
+            offset = AxisOffset[idx] + event.gaxis.axis * 2;
+            if (offset + 2 > (256 + 128 + 64)) {
+                break;
+            }
+            if (event.gaxis.value < -(joy_sensitivity)) {
+                pressed[offset + 1] = 1;
+                pressed[offset] = 0;
+            } else if (event.gaxis.value > joy_sensitivity) {
+                pressed[offset] = 1;
+                pressed[offset + 1] = 0;
+            } else {
+                pressed[offset] = 0;
+                pressed[offset + 1] = 0;
+            }
+            break;
+        }
+
         case SDL_EVENT_JOYSTICK_ADDED:
             /* SDL announces the pads that were already there when the
                subsystem came up; only a genuinely new one needs the slots
@@ -1535,10 +1587,24 @@ BOOL InitJoystickInput(void)
 
     max_num_joysticks = num_joysticks > 5 ? 5 : num_joysticks;
 
+    /* Each gamepad owns a stable 32-entry binding bank: buttons then axis
+       directions. Keep raw joystick offsets beyond every bank. */
     for (i = 0; i < max_num_joysticks; i++) {
-        /* A recognised gamepad goes through the Gamepad API and drives the
-           SNES directly; only its slot number matters, not raw axis/button
-           counts, so there are no offsets to work out. */
+        if (SDL_IsGamepad(ids[i])) {
+            next_offset = 256 + (i + 1) * GAMEPAD_BINDING_BANK_SIZE;
+        }
+    }
+
+    for (i = 0; i < max_num_joysticks; i++) {
+        if (verbose_mode) {
+            char const* const name = SDL_GetJoystickNameForID(ids[i]);
+            printf("Controller device %d: id=%u type=%s name=%s\n", i,
+                (unsigned)ids[i], SDL_IsGamepad(ids[i]) ? "gamepad" : "joystick",
+                name ? name : "(unknown)");
+        }
+
+        /* A recognised gamepad uses the standard Gamepad API mapping for
+           gameplay; its binding ranges are fixed by device slot. */
         if (SDL_IsGamepad(ids[i])) {
             GamepadInput[i] = SDL_OpenGamepad(ids[i]);
             if (!GamepadInput[i]) {
@@ -1549,6 +1615,8 @@ BOOL InitJoystickInput(void)
             if (verbose_mode) {
                 printf("Device %i %s (gamepad)\n", i, SDL_GetGamepadName(GamepadInput[i]));
             }
+            ButtonOffset[i] = 256 + i * GAMEPAD_BINDING_BANK_SIZE;
+            AxisOffset[i] = ButtonOffset[i] + GAMEPAD_BUTTON_BINDING_COUNT;
             continue;
         }
 
