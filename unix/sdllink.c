@@ -1596,13 +1596,6 @@ BOOL InitJoystickInput(void)
     }
 
     for (i = 0; i < max_num_joysticks; i++) {
-        if (verbose_mode) {
-            char const* const name = SDL_GetJoystickNameForID(ids[i]);
-            printf("Controller device %d: id=%u type=%s name=%s\n", i,
-                (unsigned)ids[i], SDL_IsGamepad(ids[i]) ? "gamepad" : "joystick",
-                name ? name : "(unknown)");
-        }
-
         /* A recognised gamepad uses the standard Gamepad API mapping for
            gameplay; its binding ranges are fixed by device slot. */
         if (SDL_IsGamepad(ids[i])) {
