@@ -365,7 +365,7 @@ static void GUIInputKeys(char dh)
     GUIKeyCheckbox(&Turbo30hz, 'T', dh);
     if (dh == 'U') {
         pl12s34 ^= 1;
-        MultiTap = pl12s34 != 1 && (pl3contrl != 0 || pl4contrl != 0 || pl5contrl != 0);
+        MultiTap = pl12s34 != 1 && (pl3contrl != 0 || pl4contrl != 0 || pl5contrl != 0 || GamepadCount() >= 3);
     }
 }
 

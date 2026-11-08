@@ -525,7 +525,7 @@ void ReadInputDevice(void)
         if (mousebuttons & 0x02) {
             JoyAOrig |= 0x00800000;
         }
-    } else if (pl2contrl != 0) { // Get Player2 input device
+    } else if (pl2contrl != 0 || GamepadCount() >= 2) { // Get Player2 input device
         PlayerDeviceHelp(pl2Bk, &JoyBOrig, 0x80000000);
         PlayerDeviceHelp(pl2Yk, &JoyBOrig, 0x40000000);
         PlayerDeviceHelp(pl2selk, &JoyBOrig, 0x20000000);
@@ -557,7 +557,7 @@ void ReadInputDevice(void)
     }
 
     JoyCOrig = 0;
-    if (pl3contrl != 0) { // Get Player3 input device
+    if (pl3contrl != 0 || GamepadCount() >= 3) { // Get Player3 input device
         PlayerDeviceHelp(pl3Bk, &JoyCOrig, 0x80000000);
         PlayerDeviceHelp(pl3Yk, &JoyCOrig, 0x40000000);
         PlayerDeviceHelp(pl3selk, &JoyCOrig, 0x20000000);
@@ -589,7 +589,7 @@ void ReadInputDevice(void)
     }
 
     JoyDOrig = 0;
-    if (pl4contrl != 0) { // Get Player4 input device
+    if (pl4contrl != 0 || GamepadCount() >= 4) { // Get Player4 input device
         PlayerDeviceHelp(pl4Bk, &JoyDOrig, 0x80000000);
         PlayerDeviceHelp(pl4Yk, &JoyDOrig, 0x40000000);
         PlayerDeviceHelp(pl4selk, &JoyDOrig, 0x20000000);
@@ -621,7 +621,7 @@ void ReadInputDevice(void)
     }
 
     JoyEOrig = 0;
-    if (pl5contrl != 0) { // Get Player5 input device
+    if (pl5contrl != 0 || GamepadCount() >= 5) { // Get Player5 input device
         PlayerDeviceHelp(pl5Bk, &JoyEOrig, 0x80000000);
         PlayerDeviceHelp(pl5Yk, &JoyEOrig, 0x40000000);
         PlayerDeviceHelp(pl5selk, &JoyEOrig, 0x20000000);

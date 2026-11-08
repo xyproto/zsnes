@@ -146,7 +146,7 @@ void SetDevice(void)
         SetInputDevice(contrl, player);
     }
     UpdateDevices();
-    MultiTap = SFXEnable != 1 && (pl3contrl != 0 || pl4contrl != 0 || pl5contrl != 0);
+    MultiTap = SFXEnable != 1 && (pl3contrl != 0 || pl4contrl != 0 || pl5contrl != 0 || GamepadCount() >= 3);
 }
 
 void GUIDoReset(void)

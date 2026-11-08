@@ -64,9 +64,11 @@ void UpdateDevices(void);
 
 void JoyRead(void);
 
-/* SNES pad bits for a player driven straight from a recognised gamepad in that
-   slot, or 0 when there is none. Ports without gamepad support return 0. */
+/* SNES pad bits for a player driven straight from the player-th recognised
+   gamepad, or 0 when there is none. Ports without gamepad support return 0. */
 u4 GamepadReadPlayer(u4 player);
+
+u4 GamepadCount(void);
 
 // Sets keys according to input device selected
 void SetInputDevice(u1 device, u1 player);

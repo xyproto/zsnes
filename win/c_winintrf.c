@@ -328,6 +328,11 @@ u4 GamepadReadPlayer(u4 const player)
     return 0;
 }
 
+u4 GamepadCount(void)
+{
+    return 0;
+}
+
 #define SetDefaultKey2(player, k)           \
     player##upk = k[2], /* Up     */        \
         player##downk = k[3], /* Down   */  \

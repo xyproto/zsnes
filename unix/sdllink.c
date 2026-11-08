@@ -21,6 +21,7 @@
 #include "../video/filter.h"
 #include "../video/procvidc.h"
 #include "../zip/zpng.h"
+#include "../zmovie.h"
 #include "../zstate.h"
 #include "audio.h"
 #include "cfg.h"
@@ -292,6 +293,18 @@ static int joystick_index_from_id(SDL_JoystickID id)
         }
     }
     return -1;
+}
+
+static SDL_Gamepad* gamepad_for_player(u4 const player)
+{
+    u4 n = 0;
+    int i;
+    for (i = 0; i < 5; i++) {
+        if (GamepadInput[i] && ++n == player) {
+            return GamepadInput[i];
+        }
+    }
+    return NULL;
 }
 
 /* MOUSE INPUT */
@@ -1562,6 +1575,32 @@ static void CloseJoystickInput(void)
     memset(pressed + 256, 0, 128 + 64);
 }
 
+u4 GamepadCount(void)
+{
+    u4 n = 0;
+    int i;
+
+    if (MovieProcessing) {
+        return 0;
+    }
+    for (i = 0; i < 5; i++) {
+        if (GamepadInput[i]) {
+            n++;
+        }
+    }
+    return n;
+}
+
+static void UpdateGamepadMultiTap(void)
+{
+    extern u1 MultiTap;
+    extern bool BSEnable;
+
+    if (!BSEnable) {
+        MultiTap = pl12s34 != 1 && (pl3contrl != 0 || pl4contrl != 0 || pl5contrl != 0 || GamepadCount() >= 3);
+    }
+}
+
 BOOL InitJoystickInput(void)
 {
     int i, max_num_joysticks, num_joysticks = 0;
@@ -1579,6 +1618,7 @@ BOOL InitJoystickInput(void)
             printf("No joysticks found.\n");
         }
         SDL_free(ids);
+        UpdateGamepadMultiTap();
         /* The subsystem stays up: it is what reports a pad plugged in later. */
         return FALSE;
     }
@@ -1643,12 +1683,13 @@ BOOL InitJoystickInput(void)
         }
     }
     SDL_free(ids);
+    UpdateGamepadMultiTap();
 
     return TRUE;
 }
 
-/* The SNES pad bits for a player, read straight from its gamepad (slot
-   player-1). Returns 0 when that slot holds no gamepad, so callers can OR it in
+/* The SNES pad bits for a player, read straight from the player-th open
+   gamepad. Returns 0 when there is no such gamepad, so callers can OR it in
    unconditionally. The layout is the one every SNES emulator uses: the face
    buttons by position, shoulders and triggers both reaching L and R, and the
    left stick standing in for the D-pad. */
@@ -1661,7 +1702,7 @@ u4 GamepadReadPlayer(u4 const player)
     if (player < 1 || player > 5) {
         return 0;
     }
-    gp = GamepadInput[player - 1];
+    gp = gamepad_for_player(player);
     if (!gp || !SDL_GamepadConnected(gp)) {
         return 0;
     }
@@ -2288,9 +2329,9 @@ void DoRumble(void)
     if ((RumbleData & 0xFF00) == 0x7200) {
         u2 RumbleLeft = ((RumbleData & 0x000F) * 4369);
         u2 RumbleRight = (((RumbleData & 0x00F0) >> 4) * 4369);
-        if (GamepadInput[0]) {
-            SDL_RumbleGamepad(GamepadInput[0], RumbleLeft, RumbleRight, 600);
-        } else {
+        if (gamepad_for_player(1)) {
+            SDL_RumbleGamepad(gamepad_for_player(1), RumbleLeft, RumbleRight, 600);
+        } else if (JoystickInput[0]) {
             SDL_RumbleJoystick(JoystickInput[0], RumbleLeft, RumbleRight, 600);
         }
         RumbleData = 0;
@@ -2492,9 +2533,9 @@ void UpdateVFrame(void)
 
     if (SNESRumble && !MultiTap) {
         DoRumble();
-    } else if (GamepadInput[0]) {
-        SDL_RumbleGamepad(GamepadInput[0], 0, 0, 1); // Stop vibration
-    } else {
+    } else if (gamepad_for_player(1)) {
+        SDL_RumbleGamepad(gamepad_for_player(1), 0, 0, 1); // Stop vibration
+    } else if (JoystickInput[0]) {
         SDL_RumbleJoystick(JoystickInput[0], 0, 0, 1); // Stop vibration
     }
 }

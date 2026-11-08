@@ -207,7 +207,7 @@ static void GUIClickCButtonM(s4 const eax, s4 const edx, s4 const p1, s4 const p
 {
     if (GUIClickArea(eax, edx, p1 + 1, p2 + 3, p1 + 6, p2 + 8)) {
         *p3 ^= 1;
-        MultiTap = pl12s34 != 1 && (pl3contrl != 0 || pl4contrl != 0 || pl5contrl != 0);
+        MultiTap = pl12s34 != 1 && (pl3contrl != 0 || pl4contrl != 0 || pl5contrl != 0 || GamepadCount() >= 3);
     }
 }
 
