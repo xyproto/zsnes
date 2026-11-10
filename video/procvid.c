@@ -85,11 +85,18 @@ u1 const ASCII2Font[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x4D, 0x8D, 0x4B, 0x4A, 0x45, 0x46, 0x47, 0x48, 0x49
 };
 
+/* The GUI's own symbol strings ("\xF7".."\xFF": window buttons and arrows)
+   are lone bytes no UTF-8 text holds. utf8_next hands them back as private-use
+   codepoints GUI_SYMBOL_CP + byte, which glyph_for_codepoint draws. */
+#define GUI_SYMBOL_CP 0xF700
+static u1 const GUISymbolGlyph[] = { 0x4D, 0x4C, 0x4B, 0x4A, 0x45, 0x46, 0x47, 0x48, 0x49 }; // 0xF7..0xFF
+
 /* Decode one UTF-8 codepoint at *p and step *p past it. Returns 0 at the
    terminating NUL (leaving *p on it) and 0xFFFD for a malformed byte (stepping
-   one byte). Text through the GUI is UTF-8, so filenames and typed input share
-   one encoding. Reads never run past the NUL: a truncated sequence fails its
-   continuation-byte test and is treated as malformed. */
+   one byte), except a GUI symbol byte (see GUI_SYMBOL_CP). Text through the GUI
+   is UTF-8, so filenames and typed input share one encoding. Reads never run
+   past the NUL: a truncated sequence fails its continuation-byte test and is
+   treated as malformed. */
 u4 utf8_next(char const** p)
 {
     unsigned char const* const s = (unsigned char const*)*p;
@@ -116,7 +123,7 @@ u4 utf8_next(char const** p)
             | ((u4)(s[2] & 0x3F) << 6) | (u4)(s[3] & 0x3F);
     }
     *p += 1;
-    return 0xFFFD;
+    return c >= 0xF7 ? GUI_SYMBOL_CP + c : 0xFFFD;
 }
 
 /* Which font glyph draws a codepoint. ASCII and the handful of Latin-1 letters
@@ -126,6 +133,9 @@ u1 glyph_for_codepoint(u4 cp)
 {
     if (cp < 0x80) {
         return ASCII2Font[cp];
+    }
+    if (GUI_SYMBOL_CP + 0xF7 <= cp && cp <= GUI_SYMBOL_CP + 0xFF) {
+        return GUISymbolGlyph[cp - (GUI_SYMBOL_CP + 0xF7)];
     }
     switch (cp) {
     case 0xC5: /* Aring */
