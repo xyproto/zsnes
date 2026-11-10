@@ -50,6 +50,8 @@ void FrameSemaphore(void);
 void clear_display(void);
 char CheckTVRatioReq(void);
 void KeepTVRatio(void);
+char BorderlessFullScreen(void);
+void MoveMainWindow(void);
 
 void CheckAlwaysOnTop(void);
 void CheckPriority(void);

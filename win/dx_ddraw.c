@@ -39,6 +39,27 @@ static void resolve_dest_rect(LPDIRECTDRAWSURFACE7 dst_surf,
     const RECT* src_rect, RECT* out)
 {
     *out = rcWindow;
+    if (BorderlessFullScreen() && src_rect) {
+        // Fit src into the monitor-sized window, preserving aspect.
+        LONG const aw = out->right - out->left;
+        LONG const ah = out->bottom - out->top;
+        LONG const sw = src_rect->right - src_rect->left;
+        LONG const sh = src_rect->bottom - src_rect->top;
+        if (aw <= 0 || ah <= 0 || sw <= 0 || sh <= 0) {
+            return;
+        }
+        LONG fit_w = aw;
+        LONG fit_h = (LONG)(((LONGLONG)sh * aw) / sw);
+        if (fit_h > ah) {
+            fit_h = ah;
+            fit_w = (LONG)(((LONGLONG)sw * ah) / sh);
+        }
+        out->left += (aw - fit_w) / 2;
+        out->top += (ah - fit_h) / 2;
+        out->right = out->left + fit_w;
+        out->bottom = out->top + fit_h;
+        return;
+    }
     if (FullScreen != 1 || !dst_surf || !src_rect) {
         return;
     }
@@ -79,7 +100,17 @@ static void resolve_dest_rect(LPDIRECTDRAWSURFACE7 dst_surf,
 void DDDrawScreen(void)
 {
     RECT dst;
-    if (FullScreen == 1) {
+    if (BorderlessFullScreen()) {
+        if (vsyncon == 1 && curblank != 0x40) {
+            if (IDirectDraw7_WaitForVerticalBlank(lpDD, DDWAITVB_BLOCKBEGIN, NULL) != DD_OK) {
+                DDrawError();
+            }
+        }
+        resolve_dest_rect(DD_Primary, &BlitArea, &dst);
+        if (IDirectDrawSurface7_Blt(DD_Primary, &dst, AltSurface == 0 ? DD_CFB : DD_CFB16, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST) {
+            IDirectDrawSurface7_Restore(DD_Primary);
+        }
+    } else if (FullScreen == 1) {
         if (TripleBufferWin == 1 || KitchenSync == 1 || (KitchenSyncPAL == 1 && totlines == 314)) {
             resolve_dest_rect(DD_BackBuffer, &BlitArea, &dst);
             if (IDirectDrawSurface7_Blt(DD_BackBuffer, &dst, DD_CFB, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST) {
@@ -299,7 +330,7 @@ int InitDirectDraw(void)
             MainWindowY = Y;
         }
 
-        MoveWindow(hMainWindow, X, Y, WindowWidth, WindowHeight, TRUE);
+        MoveMainWindow();
 
         wndpl.length = sizeof(wndpl);
         GetWindowPlacement(hMainWindow, &wndpl);
@@ -376,7 +407,9 @@ int InitDirectDraw(void)
         return FALSE;
     }
 
-    if (FullScreen == 1) {
+    int const exclusive = FullScreen == 1 && !BorderlessFullScreen();
+
+    if (exclusive) {
         if (IDirectDraw7_SetCooperativeLevel(lpDD, hMainWindow,
                 DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE | DDSCL_ALLOWREBOOT)
             != DD_OK) {
@@ -406,7 +439,7 @@ int InitDirectDraw(void)
     ddsd2.dwFlags = DDSD_CAPS;
     ddsd2.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
 
-    if (FullScreen == 1) {
+    if (exclusive) {
         ddsd2.dwFlags |= DDSD_BACKBUFFERCOUNT;
         ddsd2.dwBackBufferCount = 2;
         ddsd2.ddsCaps.dwCaps |= DDSCAPS_FLIP | DDSCAPS_COMPLEX;
@@ -414,7 +447,7 @@ int InitDirectDraw(void)
 
     HRESULT hRes = IDirectDraw7_CreateSurface(lpDD, &ddsd2, &DD_Primary, NULL);
 
-    if (FullScreen == 1) {
+    if (exclusive) {
         if ((hRes == DDERR_OUTOFMEMORY) || (hRes == DDERR_OUTOFVIDEOMEMORY)) {
             ddsd2.dwBackBufferCount = 1;
             hRes = IDirectDraw7_CreateSurface(lpDD, &ddsd2, &DD_Primary, NULL);
@@ -426,7 +459,7 @@ int InitDirectDraw(void)
         return FALSE;
     }
 
-    if (FullScreen == 1) {
+    if (exclusive) {
         ddsd2.ddsCaps.dwCaps = DDSCAPS_BACKBUFFER;
         if (IDirectDrawSurface7_GetAttachedSurface(DD_Primary, &ddsd2.ddsCaps, &DD_BackBuffer) != DD_OK) {
             MessageBox(NULL, "IDirectDrawSurface7::GetAttachedSurface failed.", "DirectDraw Error",
@@ -534,6 +567,8 @@ void ReleaseDirectDraw(void)
         IDirectDrawSurface7_Release(DD_Primary);
         DD_Primary = NULL;
     }
+    // Released along with the primary flip chain.
+    DD_BackBuffer = NULL;
 
     if (lpDD) {
         IDirectDraw7_Release(lpDD);
@@ -549,8 +584,8 @@ void clear_ddraw(void)
         ddbltfx.dwSize = sizeof(ddbltfx);
         ddbltfx.dwFillColor = 0;
 
-        if (TripleBufferWin == 1) {
-            if ((DD_Primary != NULL) && (DD_BackBuffer != NULL)) {
+        if (TripleBufferWin == 1 && DD_BackBuffer != NULL) {
+            if (DD_Primary != NULL) {
                 if (IDirectDrawSurface7_Blt(DD_BackBuffer, NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx) == DDERR_SURFACELOST) {
                     IDirectDrawSurface7_Restore(DD_Primary);
                 }
