@@ -1371,6 +1371,27 @@ WINDOWPLACEMENT wndpl;
 RECT rc1;
 DWORD newmode = 0;
 
+// DirectDraw fullscreen covers the monitor at its current mode instead of
+// switching to an exclusive 16-bit mode, which modern drivers may not provide.
+char BorderlessFullScreen(void)
+{
+    return FullScreen == 1 && !CheckOGLMode();
+}
+
+void MoveMainWindow(void)
+{
+    if (BorderlessFullScreen()) {
+        MONITORINFO mi;
+        mi.cbSize = sizeof(mi);
+        if (GetMonitorInfo(MonitorFromWindow(hMainWindow, MONITOR_DEFAULTTOPRIMARY), &mi)) {
+            RECT const* const r = &mi.rcMonitor;
+            MoveWindow(hMainWindow, r->left, r->top, r->right - r->left, r->bottom - r->top, TRUE);
+            return;
+        }
+    }
+    MoveWindow(hMainWindow, X, Y, WindowWidth, WindowHeight, TRUE);
+}
+
 void initwinvideo(void)
 {
     DWORD HQMode = 0;
@@ -1586,7 +1607,7 @@ void initwinvideo(void)
             MainWindowY = Y;
         }
 
-        MoveWindow(hMainWindow, X, Y, WindowWidth, WindowHeight, TRUE);
+        MoveMainWindow();
 
         wndpl.length = sizeof(wndpl);
         GetWindowPlacement(hMainWindow, &wndpl);
@@ -1637,6 +1658,7 @@ void initwinvideo(void)
         if (!hMainWindow) {
             return;
         }
+        MoveMainWindow();
 
         // Hide the cursor
         ShowCursor(0);
