@@ -25,7 +25,7 @@ HOST_ARCH := $(if $(filter arm64,$(HOST_CPU_FAMILY)),aarch64,$(if $(filter riscv
 NAMED_TARGETS := linux_i686 linux_x86_64 linux_aarch64 linux_riscv64 \
                  macos_aarch64 macos_x86_64 \
                  freebsd_aarch64 freebsd_x86_64 \
-                 win_i686 win_x86_64 win32 win64
+                 win_i686 win_x86_64 win_aarch64 win32 win64
 HOST_TARGET := $(filter $(NAMED_TARGETS),$(patsubst DARWIN,macos,$(patsubst LINUX,linux,$(patsubst FREEBSD,freebsd,$(patsubst WIN,win,$(HOST_OS)))))_$(HOST_ARCH))
 
 ARCH ?= $(HOST_OS)
@@ -56,11 +56,16 @@ ifeq ($(filter -j% --jobs%,$(MAKEFLAGS)),)
 endif
 
 ifeq ($(origin CC),default)
-CC := $(if $(filter WIN,$(HOST_OS)),gcc,cc)
+# MSYS2 CLANGARM64 ships clang but no gcc.
+CC := $(if $(filter WIN,$(HOST_OS)),$(if $(shell command -v gcc 2>/dev/null),gcc,clang),cc)
 endif
 CC_TARGET  ?= $(CC)
 WINDRES ?= windres
 CC_TARGET_TRIPLE := $(shell $(CC_TARGET) -dumpmachine 2>/dev/null)
+# MSYS2 on ARM64 Windows runs emulated and reports x86_64; trust the compiler.
+ifeq ($(HOST_OS)/$(findstring aarch64,$(CC_TARGET_TRIPLE)),WIN/aarch64)
+HOST_TARGET := win_aarch64
+endif
 CC_IS_CLANG := $(if $(shell printf '' | $(CC_TARGET) -dM -E -x c - 2>/dev/null | grep __clang__),yes,)
 WIN_PORT_AVAILABLE := $(if $(wildcard win/c_winintrf.c),yes,)
 
@@ -124,6 +129,9 @@ CPU ?= x86
 else ifneq ($(findstring x86_64,$(CC_TARGET_TRIPLE)),)
 BITS ?= 64
 CPU ?= x86
+else ifneq ($(findstring aarch64,$(CC_TARGET_TRIPLE)),)
+BITS ?= 64
+CPU ?= arm64
 endif
 endif
 BITS ?= $(HOST_BITS)
@@ -288,7 +296,7 @@ WRAPPER_GOALS := clean distclean debug linux_pi4 \
                  linux_i686 linux_x86_64 linux_aarch64 linux_riscv64 \
                  macos_aarch64 macos_x86_64 \
                  freebsd_aarch64 freebsd_x86_64 freebsd_rpi4 \
-                 win_i686 win_x86_64 portcheck help test fmt unused win32 win64
+                 win_i686 win_x86_64 win_aarch64 portcheck help test fmt unused win32 win64
 # Empty command-line backend variables are explicit opt-outs.
 BACKENDS_OPTOUT := $(if $(filter command line,$(origin WITH_SDL) \
                      $(origin WITH_PIPEWIRE) $(origin WITH_AO)),yes)
@@ -790,7 +798,9 @@ SRCS += win/safelib.c
 SRCS += win/winlink.c
 
 # xinput9_1_0 is available on a clean Windows installation.
-LDFLAGS += -ldxguid -ldinput -lxinput9_1_0 -lgdi32 -lole32 -lwinmm -lws2_32
+# MinGW ships no arm64 import library for it; xinput1_4 is on every ARM64 Windows.
+WIN_XINPUT_LIB := $(if $(filter arm64,$(CPU)),-lxinput1_4,-lxinput9_1_0)
+LDFLAGS += -ldxguid -ldinput $(WIN_XINPUT_LIB) -lgdi32 -lole32 -lwinmm -lws2_32
 
 ifdef WITH_OPENGL
 SRCS += win/gl_draw.c
@@ -873,6 +883,7 @@ endef
 
 MINGW32_PREFIX ?= i686-w64-mingw32
 MINGW64_PREFIX ?= x86_64-w64-mingw32
+MINGWARM64_PREFIX ?= aarch64-w64-mingw32
 LINUX_I686_PREFIX ?= i686-linux-gnu
 LINUX_X86_64_PREFIX ?= x86_64-linux-gnu
 LINUX_AARCH64_PREFIX ?= aarch64-linux-gnu
@@ -888,6 +899,7 @@ FREEBSD_X86_64_NATIVE := $(if $(and $(filter FREEBSD,$(HOST_OS)),$(filter x86_64
 FREEBSD_AARCH64_NATIVE := $(if $(and $(filter FREEBSD,$(HOST_OS)),$(filter aarch64 arm64,$(HOST_CPU))),yes)
 MINGW32_NATIVE := $(if $(and $(filter WIN,$(HOST_OS)),$(findstring i686,$(CC_TARGET_TRIPLE))),yes)
 MINGW64_NATIVE := $(if $(and $(filter WIN,$(HOST_OS)),$(findstring x86_64,$(CC_TARGET_TRIPLE))),yes)
+MINGWARM64_NATIVE := $(if $(and $(filter WIN,$(HOST_OS)),$(findstring aarch64,$(CC_TARGET_TRIPLE))),yes)
 
 LINUX_I686_CC ?= $(if $(LINUX_I686_NATIVE),$(CC),$(LINUX_I686_PREFIX)-gcc)
 LINUX_X86_64_CC ?= $(if $(LINUX_X86_64_NATIVE),$(CC),$(LINUX_X86_64_PREFIX)-gcc)
@@ -909,12 +921,16 @@ MINGW32_PKG_CONFIG ?= $(if $(MINGW32_NATIVE),pkg-config,$(MINGW32_PREFIX)-pkg-co
 MINGW64_PKG_CONFIG ?= $(if $(MINGW64_NATIVE),pkg-config,$(MINGW64_PREFIX)-pkg-config)
 MINGW32_WINDRES ?= $(if $(MINGW32_NATIVE),windres,$(MINGW32_PREFIX)-windres)
 MINGW64_WINDRES ?= $(if $(MINGW64_NATIVE),windres,$(MINGW64_PREFIX)-windres)
+# There is no aarch64 mingw gcc; llvm-mingw and MSYS2 CLANGARM64 use clang.
+MINGWARM64_CC ?= $(if $(MINGWARM64_NATIVE),$(CC),$(MINGWARM64_PREFIX)-clang)
+MINGWARM64_PKG_CONFIG ?= $(if $(MINGWARM64_NATIVE),pkg-config,$(MINGWARM64_PREFIX)-pkg-config)
+MINGWARM64_WINDRES ?= $(if $(MINGWARM64_NATIVE),windres,$(MINGWARM64_PREFIX)-windres)
 
 .PHONY: linux_pi4
 .PHONY: linux_i686 linux_x86_64 linux_aarch64 linux_riscv64
 .PHONY: macos_aarch64 macos_x86_64
 .PHONY: freebsd_aarch64 freebsd_x86_64 freebsd_rpi4
-.PHONY: win_i686 win_x86_64 help win32 win64
+.PHONY: win_i686 win_x86_64 win_aarch64 help win32 win64
 
 linux_i686:
 	$(call need_tool,$(LINUX_I686_CC),an i686 Linux C compiler)
@@ -988,6 +1004,13 @@ win_x86_64:
 	  CC=$(MINGW64_CC) CC_TARGET=$(MINGW64_CC) \
 	  WINDRES=$(MINGW64_WINDRES) PKG_CONFIG=$(MINGW64_PKG_CONFIG) all
 
+win_aarch64:
+	$(call need_tool,$(MINGWARM64_CC),an aarch64 mingw toolchain)
+	$(call need_tool,$(MINGWARM64_WINDRES),the aarch64 mingw resource compiler)
+	$(MAKE) ARCH=WIN BITS=64 CPU=arm64 \
+	  CC=$(MINGWARM64_CC) CC_TARGET=$(MINGWARM64_CC) \
+	  WINDRES=$(MINGWARM64_WINDRES) PKG_CONFIG=$(MINGWARM64_PKG_CONFIG) all
+
 help:
 	@echo 'Targets:'
 	@echo '  all            this machine, through the target naming it (the default)'
@@ -1004,6 +1027,7 @@ help:
 	@echo '  freebsd_x86_64   64-bit x86 FreeBSD'
 	@echo '  win_i686       32-bit Windows'
 	@echo '  win_x86_64     64-bit Windows'
+	@echo '  win_aarch64    64-bit ARM Windows'
 	@echo '  portcheck      compile every source for x86-64, aarch64, and riscv64'
 	@echo '  test           run the unit tests'
 	@echo '  asmalign       check what C may assume about inline-asm data alignment'

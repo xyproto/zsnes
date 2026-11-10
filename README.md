@@ -37,6 +37,7 @@ These specific targets are available (all but `linux_x86_64` may be a bit experi
 ```sh
 make win_i686
 make win_x86_64
+make win_aarch64
 make linux_i686
 make linux_x86_64
 make linux_aarch64
@@ -153,6 +154,18 @@ make
 ```
 
 Use `make win_i686` or `make win_x86_64` when selecting an architecture explicitly.
+
+### Compiling for Windows on ARM with MSYS2
+
+Use the MSYS2 CLANGARM64 shell. This builds a native ARM64 `zsnes.exe`.
+
+```sh
+pacman -Syu
+pacman -S --needed git make mingw-w64-clang-aarch64-clang mingw-w64-clang-aarch64-python mingw-w64-clang-aarch64-pkgconf mingw-w64-clang-aarch64-libpng mingw-w64-clang-aarch64-zlib
+make
+```
+
+Tested on Windows 11 ARM64 with MSYS2 CLANGARM64.
 
 ### Pull requests
 
