@@ -53,12 +53,13 @@ configuration, including PIE.
 SDL3 and audio
 --------------
 
-The package declares SDL3 directly in Build-Depends.
+The package declares SDL3, PipeWire, and libao development dependencies and
+explicitly enables all three backends for the build and tests.
 
-The package disables upstream's optional PipeWire and libao autodetection at
-build time and uses SDL3 as the deterministic audio backend. This avoids build
-results changing according to whichever optional development package happens
-to be installed in the build environment.
+Use `-ad pipewire` for the native PipeWire backend. Use `-ad ao:pulse` or
+`-ad ao:alsa` to select the corresponding libao plugins. To compare the
+SDL3 drivers, use `-ad sdl` with `SDL_AUDIO_DRIVER=pipewire`,
+`SDL_AUDIO_DRIVER=pulseaudio`, or `SDL_AUDIO_DRIVER=alsa`.
 
 Rendering
 ---------

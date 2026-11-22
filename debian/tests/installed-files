@@ -57,6 +57,14 @@ case "$architecture" in
         ;;
 esac
 
+dynamic_section=$(LC_ALL=C readelf -d "$binary")
+for library in libSDL3.so.0 libpipewire-0.3.so.0 libao.so.4; do
+    if ! printf '%s\n' "$dynamic_section" | grep -Fq "Shared library: [$library]"; then
+        echo "Expected audio library missing from zsnes2: $library" >&2
+        exit 1
+    fi
+done
+
 if ldd "$binary" | grep -q 'not found'; then
     echo "Unresolved runtime dependency:" >&2
     ldd "$binary" >&2

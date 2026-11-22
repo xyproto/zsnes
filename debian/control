@@ -6,7 +6,9 @@ Build-Depends:
  debhelper-compat (= 13),
  gcc-multilib [amd64],
  libc6-dev-i386 [amd64],
+ libao-dev,
  libgl-dev,
+ libpipewire-0.3-dev,
  libpng-dev,
  libsdl3-dev,
  pkgconf,
@@ -29,5 +31,5 @@ Description: ZSNES 2 Super Nintendo emulator
  .
  The original x86 assembly implementation has been ported to C11 and the
  current upstream release supports multiple CPU architectures. The package
- provides SDL3 rendering and audio together with OpenGL rendering support.
+ supports SDL3 and OpenGL rendering, and SDL3, PipeWire and libao audio.
  Game ROM images are not included.
