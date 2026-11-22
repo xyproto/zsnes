@@ -50,8 +50,9 @@ override_dh_auto_build:
 		CPU=$(UPSTREAM_CPU) \
 		BINARY=zsnes2 \
 		EXTRA_CFLAGS='-DZCONF=\"zsnes2\"' \
-		WITH_PIPEWIRE= \
-		WITH_AO=
+		WITH_SDL=yes \
+		WITH_PIPEWIRE=yes \
+		WITH_AO=yes
 
 override_dh_auto_test:
 ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
@@ -61,8 +62,9 @@ ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
 		CPU=$(UPSTREAM_CPU) \
 		BINARY=zsnes2 \
 		EXTRA_CFLAGS='-DZCONF=\"zsnes2\"' \
-		WITH_PIPEWIRE= \
-		WITH_AO=
+		WITH_SDL=yes \
+		WITH_PIPEWIRE=yes \
+		WITH_AO=yes
 endif
 
 override_dh_auto_install:
