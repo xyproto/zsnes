@@ -2252,6 +2252,7 @@ void drawscreenwin(void)
 
 void WinUpdateDevices(void)
 {
+    static bool alt_enter_down;
     int i;
     unsigned char* keys;
     unsigned char keys2[256];
@@ -2280,10 +2281,13 @@ void WinUpdateDevices(void)
     if (keys2[0x38] != 0 && keys2[0x3E] != 0) {
         zexit();
     }
-    if ((keys2[0xB8] != 0 && keys2[0x1C] != 0) || (keys2[0x38] != 0 && keys2[0x1C] != 0)) {
+    bool const alt_enter = (keys2[0x38] != 0 || keys2[0xB8] != 0) && keys2[0x1C] != 0;
+    if (alt_enter && !alt_enter_down) {
+        alt_enter_down = true;
         SwitchFullScreen();
         return;
     }
+    alt_enter_down = alt_enter;
 
     for (i = 0; i < 256; i++) {
         if (keys2[i] == 0) {
