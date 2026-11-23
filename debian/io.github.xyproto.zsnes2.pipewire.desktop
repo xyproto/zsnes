@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.4
+Type=Application
+Name=ZSNES 2 (Native PipeWire)
+Comment=Super Nintendo emulator with native PipeWire audio
+Exec=/usr/bin/zsnes2 -ad pipewire %f
+TryExec=zsnes2
+Icon=io.github.xyproto.zsnes2
+Terminal=false
+Categories=Game;Emulator;

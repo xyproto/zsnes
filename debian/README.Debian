@@ -1,0 +1,28 @@
+ZSNES 2 desktop audio
+=====================
+
+On the maintainer's Ubuntu 24.04 (Noble) system, ZSNES 2.2.3 (i386)
+was the last known-good release for audio. Playback worked with the
+default SDL3 backend without forcing libao. SDL3 selected its system
+audio driver automatically, and the launcher did not force PulseAudio.
+The regression appeared after 2.2.3 and was present in 2.3.4. The first
+affected release and the cause are unknown.
+
+With 2.3.4 and PipeWire 1.0.5 on that system, the default audio selection
+used SDL3 and playback stuttered. Forcing SDL3's PulseAudio driver also
+stuttered. Selecting either the native PipeWire backend or SDL3's
+PipeWire driver produced no sound. Playback through libao's PulseAudio
+output worked on the same system.
+
+The package provides three desktop launchers so users can play with
+the working audio path and compare backends when testing the regression.
+
+- "ZSNES 2" defaults to libao's PulseAudio output (-ad ao:pulse).
+- "ZSNES 2 (SDL3/PulseAudio)" forces SDL3's PulseAudio driver
+  (SDL_AUDIO_DRIVER=pulseaudio with -ad sdl).
+- "ZSNES 2 (Native PipeWire)" selects the emulator's native PipeWire
+  backend (-ad pipewire).
+
+To try the native PipeWire backend from a terminal, run
+
+    zsnes2 -ad pipewire

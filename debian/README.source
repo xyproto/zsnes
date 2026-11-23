@@ -61,6 +61,9 @@ Use `-ad pipewire` for the native PipeWire backend. Use `-ad ao:pulse` or
 SDL3 drivers, use `-ad sdl` with `SDL_AUDIO_DRIVER=pipewire`,
 `SDL_AUDIO_DRIVER=pulseaudio`, or `SDL_AUDIO_DRIVER=alsa`.
 
+See `debian/README.Debian` for the desktop launcher choices and the
+PipeWire playback results on Ubuntu 24.04 (Noble).
+
 Rendering
 ---------
 
