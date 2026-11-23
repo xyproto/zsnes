@@ -1,11 +1,13 @@
 Name:           zsnes2
 Version:        2.3.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        ZSNES 2 Super Nintendo emulator
 
 License:        GPL-2.0-only AND LGPL-2.1-or-later AND Zlib
 URL:            https://github.com/xyproto/zsnes
 Source0:        %{name}-%{version}.tar.gz
+Source1:        io.github.xyproto.zsnes2.sdl3-pulseaudio.desktop
+Source2:        io.github.xyproto.zsnes2.pipewire.desktop
 
 # ZSNES 2.3.4 is C11 throughout and supports these Linux targets upstream.
 # Keep the Fedora package constrained to architectures with an explicit
@@ -43,7 +45,9 @@ BuildRequires:  gcc
 BuildRequires:  make
 BuildRequires:  python3
 BuildRequires:  pkgconf-pkg-config
+BuildRequires:  pkgconfig(ao)
 BuildRequires:  pkgconfig(gl)
+BuildRequires:  pkgconfig(libpipewire-0.3)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(sdl3)
 BuildRequires:  pkgconfig(zlib)
@@ -64,8 +68,8 @@ low-overhead implementation and familiar interface.
 
 The current codebase is C11 throughout and supports native 64-bit x86,
 AArch64 and RISC-V builds in addition to 32-bit x86. The Fedora package
-provides SDL3 software rendering and OpenGL rendering. Game ROM images are
-not included.
+provides SDL3 and OpenGL rendering, plus SDL3, PipeWire and libao audio.
+Game ROM images are not included.
 
 %prep
 %autosetup -n %{name}-%{version}
@@ -86,8 +90,9 @@ export LDFLAGS="$LDFLAGS -Wl,-z,now"
     CPU=%{zsnes_cpu} \
     BINARY=zsnes2 \
     EXTRA_CFLAGS='-DZCONF=\"zsnes2\"' \
-    WITH_PIPEWIRE= \
-    WITH_AO=
+    WITH_SDL=yes \
+    WITH_PIPEWIRE=yes \
+    WITH_AO=yes
 
 %install
 install -Dm0755 zsnes2 %{buildroot}%{_bindir}/zsnes2
@@ -100,12 +105,14 @@ done
 install -d %{buildroot}%{_datadir}/applications
 sed \
     -e 's/^Name=ZSNES$/Name=ZSNES 2/' \
-    -e 's/^Exec=zsnes /Exec=zsnes2 /' \
+    -e 's/^Comment=Super Nintendo emulator$/Comment=Super Nintendo emulator with libao audio via PulseAudio/' \
+    -e 's|^Exec=zsnes |Exec=%{_bindir}/zsnes2 -ad ao:pulse |' \
     -e 's/^TryExec=zsnes$/TryExec=zsnes2/' \
     -e 's/^Icon=io\.github\.xyproto\.zsnes$/Icon=io.github.xyproto.zsnes2/' \
     -e 's/^StartupWMClass=zsnes$/StartupWMClass=zsnes2/' \
     linux/zsnes.desktop \
     > %{buildroot}%{_datadir}/applications/io.github.xyproto.zsnes2.desktop
+install -m0644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_datadir}/applications/
 
 install -d %{buildroot}%{_datadir}/metainfo
 sed \
@@ -131,8 +138,9 @@ sed \
     CPU=%{zsnes_cpu} \
     BINARY=zsnes2 \
     EXTRA_CFLAGS='-DZCONF=\"zsnes2\"' \
-    WITH_PIPEWIRE= \
-    WITH_AO=
+    WITH_SDL=yes \
+    WITH_PIPEWIRE=yes \
+    WITH_AO=yes
 
 # Verify the installed executable's ABI directly from the ELF header.
 elf_header="$(readelf -hW %{buildroot}%{_bindir}/zsnes2)"
@@ -161,17 +169,34 @@ if ldd %{buildroot}%{_bindir}/zsnes2 | grep -q 'not found'; then
     exit 1
 fi
 
-desktop-file-validate \
-    %{buildroot}%{_datadir}/applications/io.github.xyproto.zsnes2.desktop
+needed="$(readelf -dW %{buildroot}%{_bindir}/zsnes2)"
+for lib in libSDL3.so.0 libpipewire-0.3.so.0 libao.so.4; do
+    if ! printf '%s\n' "$needed" | grep -Fq "Shared library: [$lib]"; then
+        echo "Missing expected audio library: $lib" >&2
+        exit 1
+    fi
+done
 
-grep -qx 'Name=ZSNES 2' \
-    %{buildroot}%{_datadir}/applications/io.github.xyproto.zsnes2.desktop
-grep -qx 'Exec=zsnes2 %f' \
-    %{buildroot}%{_datadir}/applications/io.github.xyproto.zsnes2.desktop
-grep -qx 'TryExec=zsnes2' \
-    %{buildroot}%{_datadir}/applications/io.github.xyproto.zsnes2.desktop
-grep -qx 'Icon=io.github.xyproto.zsnes2' \
-    %{buildroot}%{_datadir}/applications/io.github.xyproto.zsnes2.desktop
+applications=%{buildroot}%{_datadir}/applications
+main="$applications/io.github.xyproto.zsnes2.desktop"
+sdl="$applications/io.github.xyproto.zsnes2.sdl3-pulseaudio.desktop"
+pipewire="$applications/io.github.xyproto.zsnes2.pipewire.desktop"
+desktop-file-validate "$main" "$sdl" "$pipewire"
+for launcher in "$main" "$sdl" "$pipewire"; do
+    grep -Fxq 'TryExec=zsnes2' "$launcher"
+    grep -Fxq 'Icon=io.github.xyproto.zsnes2' "$launcher"
+done
+grep -Fxq 'Name=ZSNES 2' "$main"
+grep -Fxq 'Exec=%{_bindir}/zsnes2 -ad ao:pulse %f' "$main"
+grep -Fxq 'Name=ZSNES 2 (SDL3/PulseAudio)' "$sdl"
+grep -Fxq 'Exec=env SDL_AUDIO_DRIVER=pulseaudio %{_bindir}/zsnes2 -ad sdl %f' "$sdl"
+grep -Fxq 'Name=ZSNES 2 (Native PipeWire)' "$pipewire"
+grep -Fxq 'Exec=%{_bindir}/zsnes2 -ad pipewire %f' "$pipewire"
+grep -q '^MimeType=' "$main"
+if grep -q '^MimeType=' "$sdl" "$pipewire"; then
+    echo 'Only the default launcher should register ROM file types.' >&2
+    exit 1
+fi
 grep -q '<id>io.github.xyproto.zsnes2</id>' \
     %{buildroot}%{_datadir}/metainfo/io.github.xyproto.zsnes2.metainfo.xml
 grep -q '<binary>zsnes2</binary>' \
@@ -182,6 +207,8 @@ grep -q '<binary>zsnes2</binary>' \
 %doc README.md
 %{_bindir}/zsnes2
 %{_datadir}/applications/io.github.xyproto.zsnes2.desktop
+%{_datadir}/applications/io.github.xyproto.zsnes2.sdl3-pulseaudio.desktop
+%{_datadir}/applications/io.github.xyproto.zsnes2.pipewire.desktop
 %{_datadir}/metainfo/io.github.xyproto.zsnes2.metainfo.xml
 %{_datadir}/icons/hicolor/16x16/apps/io.github.xyproto.zsnes2.png
 %{_datadir}/icons/hicolor/32x32/apps/io.github.xyproto.zsnes2.png
@@ -191,6 +218,11 @@ grep -q '<binary>zsnes2</binary>' \
 %{_mandir}/man1/zsnes2.1*
 
 %changelog
+* Mon Nov 23 2026 Reaper <JohnGrimmReaper@disroot.org> - 2.3.4-2
+- Enable SDL3, native PipeWire and libao audio.
+- Default the desktop launcher to libao via PulseAudio.
+- Add explicit SDL3/PulseAudio and native PipeWire launchers.
+
 * Sun Sep 27 2026 Reaper <JohnGrimmReaper@disroot.org> - 2.3.4-1
 - Update to ZSNES 2 2.3.4.
 - Adapt the package to upstream's C11 multi-architecture Linux build interface.
