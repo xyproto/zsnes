@@ -938,7 +938,7 @@ static void record_pad(uint8_t pad, uint8_t* flag, uint8_t* buffer, size_t* skip
         break;
     }
 
-    if ((current_state != *last_state) || ((zmv_vars.inputs_enabled & BIT(0x8)) && ((zmv_vars.last_joy_state.latchx != latchx) || (zmv_vars.last_joy_state.latchy != latchy)))) {
+    if ((last_state != NULL && current_state != *last_state) || ((zmv_vars.inputs_enabled & BIT(0x8)) && ((zmv_vars.last_joy_state.latchx != latchx) || (zmv_vars.last_joy_state.latchy != latchy)))) {
         zmv_vars.last_joy_state.latchx = latchx;
         zmv_vars.last_joy_state.latchy = latchy;
 
@@ -1226,7 +1226,9 @@ static void replay_pad(uint8_t pad, uint8_t flag, uint8_t* buffer, size_t* skip_
             *skip_bits = pad_bit_decoder(pad, buffer, *skip_bits);
         }
     }
-    *current_state = *last_state;
+    if (last_state != NULL) {
+        *current_state = *last_state;
+    }
     latchx = zmv_vars.last_joy_state.latchx;
     latchy = zmv_vars.last_joy_state.latchy;
 }
