@@ -13,7 +13,6 @@ Build-Depends:
  libsdl3-dev,
  pkgconf,
  python3,
- zlib1g-dev,
 Standards-Version: 4.7.4.1
 Rules-Requires-Root: no
 Homepage: https://github.com/xyproto/zsnes

@@ -1,3 +1,14 @@
+zsnes2 (2.3.9-1) unstable; urgency=medium
+
+  * New upstream release 2.3.9.
+  * Keep full Debian PIE hardening on amd64 and match upstream's non-PIE
+    i386 build.
+  * Drop the zlib build dependency and document the licenses of
+    upstream's bundled miniz.
+  * Recognize v-prefixed upstream tags in debian/watch.
+
+ -- Reaper <JohnGrimmReaper@disroot.org>  Mon, 23 Nov 2026 18:23:28 +0000
+
 zsnes2 (2.3.4-1) unstable; urgency=medium
 
   * New upstream release 2.3.4.

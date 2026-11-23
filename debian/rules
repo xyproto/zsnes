@@ -3,9 +3,9 @@
 include /usr/share/dpkg/architecture.mk
 
 # Match upstream's architecture-specific position-independence policy.
-# x86 uses absolute addressing and links non-PIE; arm64 and riscv64 require
-# position-independent code and retain Debian's PIE hardening.
-ifneq (,$(filter amd64 i386,$(DEB_HOST_ARCH)))
+# Upstream links 32-bit x86 non-PIE. Retain Debian's PIE hardening on
+# amd64, arm64 and riscv64.
+ifeq ($(DEB_HOST_ARCH),i386)
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all,-pie
 else
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
