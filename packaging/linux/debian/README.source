@@ -1,6 +1,13 @@
 ZSNES 2 Debian packaging notes
 ==============================
 
+Preparing the source tree
+-------------------------
+
+The Debian packaging files are maintained under `packaging/linux/debian/`.
+When preparing a Debian source package, stage this directory as `debian/`
+at the root of the source tree.
+
 Package identity and coexistence
 --------------------------------
 
