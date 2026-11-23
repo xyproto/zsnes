@@ -1,25 +1,22 @@
 Name:           zsnes2
-Version:        2.3.4
-Release:        2%{?dist}
+Version:        2.3.9
+Release:        1%{?dist}
 Summary:        ZSNES 2 Super Nintendo emulator
 
-License:        GPL-2.0-only AND LGPL-2.1-or-later AND Zlib
+License:        GPL-2.0-only AND LGPL-2.1-or-later AND Zlib AND MIT AND Unlicense
 URL:            https://github.com/xyproto/zsnes
 Source0:        %{name}-%{version}.tar.gz
 Source1:        io.github.xyproto.zsnes2.sdl3-pulseaudio.desktop
 Source2:        io.github.xyproto.zsnes2.pipewire.desktop
 
-# ZSNES 2.3.4 is C11 throughout and supports these Linux targets upstream.
+# Upstream supports these Linux targets.
 # Keep the Fedora package constrained to architectures with an explicit
 # upstream build mapping instead of silently attempting unsupported arches.
 ExclusiveArch:  x86_64 i686 aarch64 riscv64
 
-# Upstream x86 deliberately uses absolute addressing and links a non-PIE
-# executable. Fedora's hardened GCC specs inject -fPIE/-pie even when upstream
-# later passes -fno-pic/-no-pie, so disable that RPM hardening layer only on
-# x86. Other Fedora hardening flags remain, and -z now is restored explicitly
-# below. arm64 and riscv64 retain Fedora's normal PIE hardening.
-%ifarch x86_64 i686
+# Upstream builds 32-bit x86 without PIE. The 64-bit targets retain Fedora's
+# normal hardening, including PIE.
+%ifarch i686
 %undefine _hardened_build
 %endif
 
@@ -50,7 +47,6 @@ BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libpipewire-0.3)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(sdl3)
-BuildRequires:  pkgconfig(zlib)
 BuildRequires:  desktop-file-utils
 # Upstream intentionally exercises the portable x86 test suite as 32-bit
 # even when the emulator itself is built as x86_64. Fedora's 32-bit GCC
@@ -60,6 +56,8 @@ BuildRequires:  glibc-devel(x86-32)
 BuildRequires:  libatomic(x86-64)
 BuildRequires:  libatomic(x86-32)
 %endif
+
+Provides:       bundled(miniz) = 3.0.0
 
 %description
 ZSNES 2 is a maintained continuation of the classic ZSNES emulator,
@@ -73,15 +71,16 @@ Game ROM images are not included.
 
 %prep
 %autosetup -n %{name}-%{version}
+# Include the embedded miniz notices in the binary package.
+sed -n '/Copyright 2013-2014/,/THE SOFTWARE\./p; /THE SOFTWARE\./q' miniz.c > miniz-LICENSE
+sed -n '/This is free and unencumbered software/,/For more information/p' miniz.c >> miniz-LICENSE
+grep -q 'Permission is hereby granted' miniz-LICENSE
+grep -q 'unlicense.org' miniz-LICENSE
 
 %build
-# Preserve Fedora's compiler/linker hardening where it is compatible with
-# upstream's architecture policy. Upstream deliberately builds x86 non-PIE
-# with -fno-pic/-no-pie, while arm64 and riscv64 remain position-independent.
 %set_build_flags
-%ifarch x86_64 i686
-# %undefine _hardened_build removes Fedora's PIE specs and their -z now;
-# retain immediate binding while allowing upstream's required non-PIE link.
+%ifarch i686
+# Restore immediate binding when the Fedora PIE specs are disabled.
 export LDFLAGS="$LDFLAGS -Wl,-z,now"
 %endif
 %make_build \
@@ -203,7 +202,7 @@ grep -q '<binary>zsnes2</binary>' \
     %{buildroot}%{_datadir}/metainfo/io.github.xyproto.zsnes2.metainfo.xml
 
 %files
-%license COPYING
+%license COPYING miniz-LICENSE
 %doc README.md
 %{_bindir}/zsnes2
 %{_datadir}/applications/io.github.xyproto.zsnes2.desktop
@@ -218,6 +217,10 @@ grep -q '<binary>zsnes2</binary>' \
 %{_mandir}/man1/zsnes2.1*
 
 %changelog
+* Mon Nov 23 2026 Reaper <JohnGrimmReaper@disroot.org> - 2.3.9-1
+- Update to upstream 2.3.9 and retain Fedora PIE hardening on x86_64.
+- Record the bundled miniz library and ship its license notices.
+
 * Mon Nov 23 2026 Reaper <JohnGrimmReaper@disroot.org> - 2.3.4-2
 - Enable SDL3, native PipeWire and libao audio.
 - Default the desktop launcher to libao via PulseAudio.
