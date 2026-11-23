@@ -8,6 +8,7 @@
 .vscode/
 build-align/
 build/
+build-win*/
 config.default
 include.txt
 parsegen
