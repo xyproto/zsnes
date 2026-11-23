@@ -42,13 +42,16 @@ Hardening and PIE
 The package follows upstream's architecture-specific position-independence
 policy.
 
-On amd64 and i386, upstream uses absolute addressing and explicitly links
-non-PIE. Debian PIE hardening is therefore disabled on those architectures,
-while the remaining Debian hardening features stay enabled.
+Upstream links i386 non-PIE. The package therefore disables PIE on i386
+and retains the remaining Debian hardening options. On amd64, arm64 and
+riscv64, the package retains the full hardening configuration, including
+PIE.
 
-On arm64 and riscv64, upstream requires position-independent code and does not
-disable PIE. These architectures therefore retain the full Debian hardening
-configuration, including PIE.
+Compression
+-----------
+
+The package builds the miniz sources bundled by upstream. ZSNES uses miniz
+for DEFLATE and adds its own compatibility layer for gzip file streams.
 
 SDL3 and audio
 --------------

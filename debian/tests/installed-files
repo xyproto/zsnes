@@ -22,8 +22,8 @@ fi
 case "$architecture" in
     amd64)
         printf '%s\n' "$binary_info" | grep -Eq 'ELF 64-bit.*x86-64'
-        [ "$elf_type" = "EXEC" ] || {
-            echo "amd64 ZSNES 2 must follow upstream's non-PIE x86 build policy" >&2
+        [ "$elf_type" = "DYN" ] || {
+            echo "amd64 ZSNES 2 must retain PIE" >&2
             echo "ELF type: $elf_type" >&2
             exit 1
         }
