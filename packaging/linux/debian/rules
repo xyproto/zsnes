@@ -77,17 +77,17 @@ override_dh_auto_install:
 	install -d "$(CURDIR)/debian/zsnes2/usr/share/applications"
 	sed \
 		-e 's/^Name=ZSNES$$/Name=ZSNES 2/' \
-		-e 's/^Comment=Super Nintendo emulator$$/Comment=Super Nintendo emulator with libao audio via PulseAudio/' \
-		-e 's|^Exec=zsnes |Exec=/usr/bin/zsnes2 -ad ao:pulse |' \
+		-e 's|^Exec=zsnes |Exec=/usr/bin/zsnes2 |' \
 		-e 's/^TryExec=zsnes$$/TryExec=zsnes2/' \
 		-e 's/^Icon=io\.github\.xyproto\.zsnes$$/Icon=io.github.xyproto.zsnes2/' \
 		-e 's/^StartupWMClass=zsnes$$/StartupWMClass=zsnes2/' \
 		linux/zsnes.desktop \
 		> "$(CURDIR)/debian/zsnes2/usr/share/applications/io.github.xyproto.zsnes2.desktop"
-	install -m644 debian/io.github.xyproto.zsnes2.sdl3-pulseaudio.desktop \
-		"$(CURDIR)/debian/zsnes2/usr/share/applications/io.github.xyproto.zsnes2.sdl3-pulseaudio.desktop"
-	install -m644 debian/io.github.xyproto.zsnes2.pipewire.desktop \
-		"$(CURDIR)/debian/zsnes2/usr/share/applications/io.github.xyproto.zsnes2.pipewire.desktop"
+	install -m644 \
+		debian/io.github.xyproto.zsnes2.pipewire.desktop \
+		debian/io.github.xyproto.zsnes2.sdl3.desktop \
+		debian/io.github.xyproto.zsnes2.libao.desktop \
+		"$(CURDIR)/debian/zsnes2/usr/share/applications/"
 	install -d "$(CURDIR)/debian/zsnes2/usr/share/metainfo"
 	sed \
 		-e 's/io\.github\.xyproto\.zsnes/io.github.xyproto.zsnes2/g' \

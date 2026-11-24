@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.4
+Type=Application
+Name=ZSNES 2 (libao)
+Comment=Super Nintendo emulator with libao audio with automatic plugin selection
+Exec=/usr/bin/zsnes2 -ad ao %f
+TryExec=zsnes2
+Icon=io.github.xyproto.zsnes2
+Terminal=false
+Categories=Game;Emulator;

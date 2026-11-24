@@ -3,8 +3,6 @@ set -eu
 
 binary=/usr/bin/zsnes2
 desktop=/usr/share/applications/io.github.xyproto.zsnes2.desktop
-sdl_pulseaudio_desktop=/usr/share/applications/io.github.xyproto.zsnes2.sdl3-pulseaudio.desktop
-pipewire_desktop=/usr/share/applications/io.github.xyproto.zsnes2.pipewire.desktop
 metainfo=/usr/share/metainfo/io.github.xyproto.zsnes2.metainfo.xml
 manpage=/usr/share/man/man1/zsnes2.1.gz
 
@@ -75,21 +73,30 @@ fi
 
 [ -r "$manpage" ]
 [ -r "$metainfo" ]
-desktop-file-validate "$desktop" "$sdl_pulseaudio_desktop" "$pipewire_desktop"
-grep -qx 'Name=ZSNES 2' "$desktop"
-grep -Fxq 'Comment=Super Nintendo emulator with libao audio via PulseAudio' "$desktop"
-grep -Fxq 'Exec=/usr/bin/zsnes2 -ad ao:pulse %f' "$desktop"
-grep -qx 'TryExec=zsnes2' "$desktop"
-grep -qx 'Icon=io.github.xyproto.zsnes2' "$desktop"
-grep -Fxq 'Name=ZSNES 2 (SDL3/PulseAudio)' "$sdl_pulseaudio_desktop"
-grep -Fxq 'Exec=env SDL_AUDIO_DRIVER=pulseaudio /usr/bin/zsnes2 -ad sdl %f' "$sdl_pulseaudio_desktop"
-grep -Fxq 'TryExec=zsnes2' "$sdl_pulseaudio_desktop"
-grep -Fxq 'Icon=io.github.xyproto.zsnes2' "$sdl_pulseaudio_desktop"
-grep -Fxq 'Name=ZSNES 2 (Native PipeWire)' "$pipewire_desktop"
-grep -Fxq 'Comment=Super Nintendo emulator with native PipeWire audio' "$pipewire_desktop"
-grep -Fxq 'Exec=/usr/bin/zsnes2 -ad pipewire %f' "$pipewire_desktop"
-grep -Fxq 'TryExec=zsnes2' "$pipewire_desktop"
-grep -Fxq 'Icon=io.github.xyproto.zsnes2' "$pipewire_desktop"
+desktop-file-validate "$desktop"
+grep -Fxq 'Name=ZSNES 2' "$desktop"
+grep -Fxq 'Comment=Super Nintendo emulator' "$desktop"
+grep -Fxq 'Exec=/usr/bin/zsnes2 %f' "$desktop"
+grep -Fxq 'TryExec=zsnes2' "$desktop"
+grep -Fxq 'Icon=io.github.xyproto.zsnes2' "$desktop"
+grep -q '^MimeType=' "$desktop"
+
+check_launcher() {
+    launcher="/usr/share/applications/io.github.xyproto.zsnes2.$1.desktop"
+    desktop-file-validate "$launcher"
+    grep -Fxq "Name=ZSNES 2 ($2)" "$launcher"
+    grep -Fxq "Exec=$3" "$launcher"
+    grep -Fxq 'TryExec=zsnes2' "$launcher"
+    grep -Fxq 'Icon=io.github.xyproto.zsnes2' "$launcher"
+    if grep -q '^MimeType=' "$launcher"; then
+        echo "Only the default launcher should register ROM file types: $launcher" >&2
+        exit 1
+    fi
+}
+
+check_launcher pipewire 'PipeWire' '/usr/bin/zsnes2 -ad pipewire %f'
+check_launcher sdl3 'SDL3' '/usr/bin/zsnes2 -ad sdl %f'
+check_launcher libao 'libao' '/usr/bin/zsnes2 -ad ao %f'
 grep -q '<id>io.github.xyproto.zsnes2</id>' "$metainfo"
 grep -q '<binary>zsnes2</binary>' "$metainfo"
 
