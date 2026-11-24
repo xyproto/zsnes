@@ -6,8 +6,9 @@ Summary:        ZSNES 2 Super Nintendo emulator
 License:        GPL-2.0-only AND LGPL-2.1-or-later AND Zlib AND MIT AND Unlicense
 URL:            https://github.com/xyproto/zsnes
 Source0:        %{name}-%{version}.tar.gz
-Source1:        io.github.xyproto.zsnes2.sdl3-pulseaudio.desktop
-Source2:        io.github.xyproto.zsnes2.pipewire.desktop
+Source1:        io.github.xyproto.zsnes2.pipewire.desktop
+Source2:        io.github.xyproto.zsnes2.sdl3.desktop
+Source3:        io.github.xyproto.zsnes2.libao.desktop
 
 # Upstream supports these Linux targets.
 # Keep the Fedora package constrained to architectures with an explicit
@@ -104,14 +105,17 @@ done
 install -d %{buildroot}%{_datadir}/applications
 sed \
     -e 's/^Name=ZSNES$/Name=ZSNES 2/' \
-    -e 's/^Comment=Super Nintendo emulator$/Comment=Super Nintendo emulator with libao audio via PulseAudio/' \
-    -e 's|^Exec=zsnes |Exec=%{_bindir}/zsnes2 -ad ao:pulse |' \
+    -e 's|^Exec=zsnes |Exec=%{_bindir}/zsnes2 |' \
     -e 's/^TryExec=zsnes$/TryExec=zsnes2/' \
     -e 's/^Icon=io\.github\.xyproto\.zsnes$/Icon=io.github.xyproto.zsnes2/' \
     -e 's/^StartupWMClass=zsnes$/StartupWMClass=zsnes2/' \
     linux/zsnes.desktop \
     > %{buildroot}%{_datadir}/applications/io.github.xyproto.zsnes2.desktop
-install -m0644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_datadir}/applications/
+install -m0644 \
+    %{SOURCE1} \
+    %{SOURCE2} \
+    %{SOURCE3} \
+    %{buildroot}%{_datadir}/applications/
 
 install -d %{buildroot}%{_datadir}/metainfo
 sed \
@@ -178,24 +182,30 @@ done
 
 applications=%{buildroot}%{_datadir}/applications
 main="$applications/io.github.xyproto.zsnes2.desktop"
-sdl="$applications/io.github.xyproto.zsnes2.sdl3-pulseaudio.desktop"
-pipewire="$applications/io.github.xyproto.zsnes2.pipewire.desktop"
-desktop-file-validate "$main" "$sdl" "$pipewire"
-for launcher in "$main" "$sdl" "$pipewire"; do
+desktop-file-validate "$main"
+grep -Fxq 'Name=ZSNES 2' "$main"
+grep -Fxq 'Comment=Super Nintendo emulator' "$main"
+grep -Fxq 'Exec=%{_bindir}/zsnes2 %f' "$main"
+grep -Fxq 'TryExec=zsnes2' "$main"
+grep -Fxq 'Icon=io.github.xyproto.zsnes2' "$main"
+grep -q '^MimeType=' "$main"
+
+check_launcher() {
+    launcher="$applications/io.github.xyproto.zsnes2.$1.desktop"
+    desktop-file-validate "$launcher"
+    grep -Fxq "Name=ZSNES 2 ($2)" "$launcher"
+    grep -Fxq "Exec=$3" "$launcher"
     grep -Fxq 'TryExec=zsnes2' "$launcher"
     grep -Fxq 'Icon=io.github.xyproto.zsnes2' "$launcher"
-done
-grep -Fxq 'Name=ZSNES 2' "$main"
-grep -Fxq 'Exec=%{_bindir}/zsnes2 -ad ao:pulse %f' "$main"
-grep -Fxq 'Name=ZSNES 2 (SDL3/PulseAudio)' "$sdl"
-grep -Fxq 'Exec=env SDL_AUDIO_DRIVER=pulseaudio %{_bindir}/zsnes2 -ad sdl %f' "$sdl"
-grep -Fxq 'Name=ZSNES 2 (Native PipeWire)' "$pipewire"
-grep -Fxq 'Exec=%{_bindir}/zsnes2 -ad pipewire %f' "$pipewire"
-grep -q '^MimeType=' "$main"
-if grep -q '^MimeType=' "$sdl" "$pipewire"; then
-    echo 'Only the default launcher should register ROM file types.' >&2
-    exit 1
-fi
+    if grep -q '^MimeType=' "$launcher"; then
+        echo "Only the default launcher should register ROM file types: $launcher" >&2
+        exit 1
+    fi
+}
+
+check_launcher pipewire 'PipeWire' '%{_bindir}/zsnes2 -ad pipewire %f'
+check_launcher sdl3 'SDL3' '%{_bindir}/zsnes2 -ad sdl %f'
+check_launcher libao 'libao' '%{_bindir}/zsnes2 -ad ao %f'
 grep -q '<id>io.github.xyproto.zsnes2</id>' \
     %{buildroot}%{_datadir}/metainfo/io.github.xyproto.zsnes2.metainfo.xml
 grep -q '<binary>zsnes2</binary>' \
@@ -206,8 +216,9 @@ grep -q '<binary>zsnes2</binary>' \
 %doc README.md
 %{_bindir}/zsnes2
 %{_datadir}/applications/io.github.xyproto.zsnes2.desktop
-%{_datadir}/applications/io.github.xyproto.zsnes2.sdl3-pulseaudio.desktop
 %{_datadir}/applications/io.github.xyproto.zsnes2.pipewire.desktop
+%{_datadir}/applications/io.github.xyproto.zsnes2.sdl3.desktop
+%{_datadir}/applications/io.github.xyproto.zsnes2.libao.desktop
 %{_datadir}/metainfo/io.github.xyproto.zsnes2.metainfo.xml
 %{_datadir}/icons/hicolor/16x16/apps/io.github.xyproto.zsnes2.png
 %{_datadir}/icons/hicolor/32x32/apps/io.github.xyproto.zsnes2.png
