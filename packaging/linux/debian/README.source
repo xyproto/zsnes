@@ -1,4 +1,4 @@
-ZSNES 2 Debian packaging notes
+ZSNES Debian packaging notes
 ==============================
 
 Preparing the source tree
@@ -8,21 +8,12 @@ The Debian packaging files are maintained under `packaging/linux/debian/`.
 When preparing a Debian source package, stage this directory as `debian/`
 at the root of the source tree.
 
-Package identity and coexistence
---------------------------------
+Package identity
+----------------
 
-The Debian source and binary package names are intentionally `zsnes2`, not
-`zsnes`. ZSNES 2 is packaged as a separate maintained continuation and must be
-co-installable with the historical `zsnes` package.
-
-The package therefore does not declare `Provides`, `Replaces`, `Breaks`, or
-`Conflicts` against `zsnes`. It installs the executable as `/usr/bin/zsnes2`,
-uses zsnes2-specific desktop, AppStream, icon, and manual-page names, and
-builds with `ZCONF="zsnes2"`.
-
-This prevents ZSNES 2 from adopting the legacy `~/.zsnes` directory and gives
-it its own XDG configuration directory, `$XDG_CONFIG_HOME/zsnes2` (normally
-`~/.config/zsnes2`).
+The Debian source and binary package are named zsnes, following upstream.
+The executable, desktop entries, AppStream metadata, icon and manual page
+use the upstream names. Configuration paths follow upstream defaults.
 
 Architecture
 ------------

@@ -1,5 +1,5 @@
-ZSNES 2 desktop audio
-=====================
+ZSNES desktop audio
+===================
 
 The audio regression reported on Ubuntu 24.04 for ZSNES 2.3.4 was no
 longer reproducible with 2.3.9. The default desktop launcher therefore
@@ -7,10 +7,10 @@ uses automatic audio backend selection again.
 
 The package provides four desktop launchers:
 
-  ZSNES 2            zsnes2
-  ZSNES 2 (PipeWire) zsnes2 -ad pipewire
-  ZSNES 2 (SDL3)     zsnes2 -ad sdl
-  ZSNES 2 (libao)    zsnes2 -ad ao
+  ZSNES           zsnes
+  ZSNES (PipeWire) zsnes -ad pipewire
+  ZSNES (SDL3)     zsnes -ad sdl
+  ZSNES (libao)    zsnes -ad ao
 
 The default backend selection tries native PipeWire first and falls
 back to SDL3. The SDL3 and libao launchers let their respective
@@ -21,16 +21,16 @@ Advanced troubleshooting
 
 Individual audio drivers can be selected from a terminal, for example:
 
-  SDL_AUDIO_DRIVER=pipewire zsnes2 -ad sdl
-  SDL_AUDIO_DRIVER=pulseaudio zsnes2 -ad sdl
-  SDL_AUDIO_DRIVER=alsa zsnes2 -ad sdl
-  zsnes2 -ad ao:pulse
-  zsnes2 -ad ao:alsa
+  SDL_AUDIO_DRIVER=pipewire zsnes -ad sdl
+  SDL_AUDIO_DRIVER=pulseaudio zsnes -ad sdl
+  SDL_AUDIO_DRIVER=alsa zsnes -ad sdl
+  zsnes -ad ao:pulse
+  zsnes -ad ao:alsa
 
 Other drivers, such as sndio, JACK, OSS or NAS, may be available
 depending on the installed SDL3 or libao build. They can be selected
 using SDL_AUDIO_DRIVER or -ad ao:<name> as appropriate. See
-zsnes2 --help for the available live libao plugins.
+zsnes --help for the available live libao plugins.
 
 Explicit drivers require a corresponding library driver or plugin
 and a working audio device or server. Use the default launcher for

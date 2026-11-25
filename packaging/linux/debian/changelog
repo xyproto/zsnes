@@ -1,3 +1,9 @@
+zsnes (2.3.9-2) unstable; urgency=medium
+
+  * Align the package, executable and desktop identifiers with upstream.
+
+ -- Reaper <JohnGrimmReaper@disroot.org>  Wed, 25 Nov 2026 13:38:52 +0000
+
 zsnes2 (2.3.9-1) unstable; urgency=medium
 
   * New upstream release 2.3.9.
