@@ -1,14 +1,14 @@
-Name:           zsnes2
+Name:           zsnes
 Version:        2.3.9
-Release:        1%{?dist}
-Summary:        ZSNES 2 Super Nintendo emulator
+Release:        2%{?dist}
+Summary:        ZSNES Super Nintendo emulator
 
 License:        GPL-2.0-only AND LGPL-2.1-or-later AND Zlib AND MIT AND Unlicense
 URL:            https://github.com/xyproto/zsnes
 Source0:        %{name}-%{version}.tar.gz
-Source1:        io.github.xyproto.zsnes2.pipewire.desktop
-Source2:        io.github.xyproto.zsnes2.sdl3.desktop
-Source3:        io.github.xyproto.zsnes2.libao.desktop
+Source1:        io.github.xyproto.zsnes.pipewire.desktop
+Source2:        io.github.xyproto.zsnes.sdl3.desktop
+Source3:        io.github.xyproto.zsnes.libao.desktop
 
 # Upstream supports these Linux targets.
 # Keep the Fedora package constrained to architectures with an explicit
@@ -61,7 +61,7 @@ BuildRequires:  libatomic(x86-32)
 Provides:       bundled(miniz) = 3.0.0
 
 %description
-ZSNES 2 is a maintained continuation of the classic ZSNES emulator,
+ZSNES is a maintained continuation of the classic ZSNES emulator,
 updated to build and run on modern Unix-like systems while retaining its
 low-overhead implementation and familiar interface.
 
@@ -88,65 +88,42 @@ export LDFLAGS="$LDFLAGS -Wl,-z,now"
     ARCH=LINUX \
     BITS=%{zsnes_bits} \
     CPU=%{zsnes_cpu} \
-    BINARY=zsnes2 \
-    EXTRA_CFLAGS='-DZCONF=\"zsnes2\"' \
     WITH_SDL=yes \
     WITH_PIPEWIRE=yes \
     WITH_AO=yes
 
 %install
-install -Dm0755 zsnes2 %{buildroot}%{_bindir}/zsnes2
+install -Dm0755 zsnes %{buildroot}%{_bindir}/zsnes
 
 for icon_size in 16x16 32x32 48x48 64x64 128x128; do
     install -Dm0644 "img/${icon_size}x32.png" \
-        "%{buildroot}%{_datadir}/icons/hicolor/${icon_size}/apps/io.github.xyproto.zsnes2.png"
+        "%{buildroot}%{_datadir}/icons/hicolor/${icon_size}/apps/io.github.xyproto.zsnes.png"
 done
 
 install -d %{buildroot}%{_datadir}/applications
-sed \
-    -e 's/^Name=ZSNES$/Name=ZSNES 2/' \
-    -e 's|^Exec=zsnes |Exec=%{_bindir}/zsnes2 |' \
-    -e 's/^TryExec=zsnes$/TryExec=zsnes2/' \
-    -e 's/^Icon=io\.github\.xyproto\.zsnes$/Icon=io.github.xyproto.zsnes2/' \
-    -e 's/^StartupWMClass=zsnes$/StartupWMClass=zsnes2/' \
-    linux/zsnes.desktop \
-    > %{buildroot}%{_datadir}/applications/io.github.xyproto.zsnes2.desktop
+sed 's|^Exec=zsnes |Exec=%{_bindir}/zsnes |' linux/zsnes.desktop \
+    > %{buildroot}%{_datadir}/applications/io.github.xyproto.zsnes.desktop
 install -m0644 \
     %{SOURCE1} \
     %{SOURCE2} \
     %{SOURCE3} \
     %{buildroot}%{_datadir}/applications/
 
-install -d %{buildroot}%{_datadir}/metainfo
-sed \
-    -e 's/io\.github\.xyproto\.zsnes/io.github.xyproto.zsnes2/g' \
-    -e 's#<name>ZSNES</name>#<name>ZSNES 2</name>#' \
-    -e 's#<binary>zsnes</binary>#<binary>zsnes2</binary>#' \
-    linux/io.github.xyproto.zsnes.metainfo.xml \
-    > %{buildroot}%{_datadir}/metainfo/io.github.xyproto.zsnes2.metainfo.xml
-
-install -d %{buildroot}%{_mandir}/man1
-sed \
-    -e 's/^ZSNES -/zsnes2 -/' \
-    -e 's/^\.B ZSNES$/.B zsnes2/' \
-    -e 's/^ZSNES$/zsnes2/' \
-    -e 's#~/.zsnes#~/.config/zsnes2#g' \
-    man/zsnes.1 \
-    > %{buildroot}%{_mandir}/man1/zsnes2.1
+install -Dm0644 linux/io.github.xyproto.zsnes.metainfo.xml \
+    %{buildroot}%{_datadir}/metainfo/io.github.xyproto.zsnes.metainfo.xml
+install -Dm0644 man/zsnes.1 %{buildroot}%{_mandir}/man1/zsnes.1
 
 %check
 %make_build test \
     ARCH=LINUX \
     BITS=%{zsnes_bits} \
     CPU=%{zsnes_cpu} \
-    BINARY=zsnes2 \
-    EXTRA_CFLAGS='-DZCONF=\"zsnes2\"' \
     WITH_SDL=yes \
     WITH_PIPEWIRE=yes \
     WITH_AO=yes
 
 # Verify the installed executable's ABI directly from the ELF header.
-elf_header="$(readelf -hW %{buildroot}%{_bindir}/zsnes2)"
+elf_header="$(readelf -hW %{buildroot}%{_bindir}/zsnes)"
 case "%{_arch}" in
     x86_64)
         printf '%s\n' "$elf_header" | grep -Eq 'Class:[[:space:]]+ELF64'
@@ -166,13 +143,13 @@ case "%{_arch}" in
         ;;
 esac
 
-if ldd %{buildroot}%{_bindir}/zsnes2 | grep -q 'not found'; then
+if ldd %{buildroot}%{_bindir}/zsnes | grep -q 'not found'; then
     echo 'Unresolved runtime dependency:' >&2
-    ldd %{buildroot}%{_bindir}/zsnes2 >&2
+    ldd %{buildroot}%{_bindir}/zsnes >&2
     exit 1
 fi
 
-needed="$(readelf -dW %{buildroot}%{_bindir}/zsnes2)"
+needed="$(readelf -dW %{buildroot}%{_bindir}/zsnes)"
 for lib in libSDL3.so.0 libpipewire-0.3.so.0 libao.so.4; do
     if ! printf '%s\n' "$needed" | grep -Fq "Shared library: [$lib]"; then
         echo "Missing expected audio library: $lib" >&2
@@ -181,53 +158,56 @@ for lib in libSDL3.so.0 libpipewire-0.3.so.0 libao.so.4; do
 done
 
 applications=%{buildroot}%{_datadir}/applications
-main="$applications/io.github.xyproto.zsnes2.desktop"
+main="$applications/io.github.xyproto.zsnes.desktop"
 desktop-file-validate "$main"
-grep -Fxq 'Name=ZSNES 2' "$main"
+grep -Fxq 'Name=ZSNES' "$main"
 grep -Fxq 'Comment=Super Nintendo emulator' "$main"
-grep -Fxq 'Exec=%{_bindir}/zsnes2 %f' "$main"
-grep -Fxq 'TryExec=zsnes2' "$main"
-grep -Fxq 'Icon=io.github.xyproto.zsnes2' "$main"
+grep -Fxq 'Exec=%{_bindir}/zsnes %f' "$main"
+grep -Fxq 'TryExec=zsnes' "$main"
+grep -Fxq 'Icon=io.github.xyproto.zsnes' "$main"
 grep -q '^MimeType=' "$main"
 
 check_launcher() {
-    launcher="$applications/io.github.xyproto.zsnes2.$1.desktop"
+    launcher="$applications/io.github.xyproto.zsnes.$1.desktop"
     desktop-file-validate "$launcher"
-    grep -Fxq "Name=ZSNES 2 ($2)" "$launcher"
+    grep -Fxq "Name=ZSNES ($2)" "$launcher"
     grep -Fxq "Exec=$3" "$launcher"
-    grep -Fxq 'TryExec=zsnes2' "$launcher"
-    grep -Fxq 'Icon=io.github.xyproto.zsnes2' "$launcher"
+    grep -Fxq 'TryExec=zsnes' "$launcher"
+    grep -Fxq 'Icon=io.github.xyproto.zsnes' "$launcher"
     if grep -q '^MimeType=' "$launcher"; then
         echo "Only the default launcher should register ROM file types: $launcher" >&2
         exit 1
     fi
 }
 
-check_launcher pipewire 'PipeWire' '%{_bindir}/zsnes2 -ad pipewire %f'
-check_launcher sdl3 'SDL3' '%{_bindir}/zsnes2 -ad sdl %f'
-check_launcher libao 'libao' '%{_bindir}/zsnes2 -ad ao %f'
-grep -q '<id>io.github.xyproto.zsnes2</id>' \
-    %{buildroot}%{_datadir}/metainfo/io.github.xyproto.zsnes2.metainfo.xml
-grep -q '<binary>zsnes2</binary>' \
-    %{buildroot}%{_datadir}/metainfo/io.github.xyproto.zsnes2.metainfo.xml
+check_launcher pipewire 'PipeWire' '%{_bindir}/zsnes -ad pipewire %f'
+check_launcher sdl3 'SDL3' '%{_bindir}/zsnes -ad sdl %f'
+check_launcher libao 'libao' '%{_bindir}/zsnes -ad ao %f'
+grep -q '<id>io.github.xyproto.zsnes</id>' \
+    %{buildroot}%{_datadir}/metainfo/io.github.xyproto.zsnes.metainfo.xml
+grep -q '<binary>zsnes</binary>' \
+    %{buildroot}%{_datadir}/metainfo/io.github.xyproto.zsnes.metainfo.xml
 
 %files
 %license COPYING miniz-LICENSE
 %doc README.md
-%{_bindir}/zsnes2
-%{_datadir}/applications/io.github.xyproto.zsnes2.desktop
-%{_datadir}/applications/io.github.xyproto.zsnes2.pipewire.desktop
-%{_datadir}/applications/io.github.xyproto.zsnes2.sdl3.desktop
-%{_datadir}/applications/io.github.xyproto.zsnes2.libao.desktop
-%{_datadir}/metainfo/io.github.xyproto.zsnes2.metainfo.xml
-%{_datadir}/icons/hicolor/16x16/apps/io.github.xyproto.zsnes2.png
-%{_datadir}/icons/hicolor/32x32/apps/io.github.xyproto.zsnes2.png
-%{_datadir}/icons/hicolor/48x48/apps/io.github.xyproto.zsnes2.png
-%{_datadir}/icons/hicolor/64x64/apps/io.github.xyproto.zsnes2.png
-%{_datadir}/icons/hicolor/128x128/apps/io.github.xyproto.zsnes2.png
-%{_mandir}/man1/zsnes2.1*
+%{_bindir}/zsnes
+%{_datadir}/applications/io.github.xyproto.zsnes.desktop
+%{_datadir}/applications/io.github.xyproto.zsnes.pipewire.desktop
+%{_datadir}/applications/io.github.xyproto.zsnes.sdl3.desktop
+%{_datadir}/applications/io.github.xyproto.zsnes.libao.desktop
+%{_datadir}/metainfo/io.github.xyproto.zsnes.metainfo.xml
+%{_datadir}/icons/hicolor/16x16/apps/io.github.xyproto.zsnes.png
+%{_datadir}/icons/hicolor/32x32/apps/io.github.xyproto.zsnes.png
+%{_datadir}/icons/hicolor/48x48/apps/io.github.xyproto.zsnes.png
+%{_datadir}/icons/hicolor/64x64/apps/io.github.xyproto.zsnes.png
+%{_datadir}/icons/hicolor/128x128/apps/io.github.xyproto.zsnes.png
+%{_mandir}/man1/zsnes.1*
 
 %changelog
+* Wed Nov 25 2026 Reaper <JohnGrimmReaper@disroot.org> - 2.3.9-2
+- Align package, executable and desktop identifiers with upstream.
+
 * Mon Nov 23 2026 Reaper <JohnGrimmReaper@disroot.org> - 2.3.9-1
 - Update to upstream 2.3.9 and retain Fedora PIE hardening on x86_64.
 - Record the bundled miniz library and ship its license notices.
