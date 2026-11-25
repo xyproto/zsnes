@@ -1,5 +1,5 @@
-Source: zsnes2
-Section: games
+Source: zsnes
+Section: otherosfs
 Priority: optional
 Maintainer: Reaper <JohnGrimmReaper@disroot.org>
 Build-Depends:
@@ -19,13 +19,13 @@ Homepage: https://github.com/xyproto/zsnes
 Vcs-Browser: https://github.com/johngrimmreaper/zsnes/tree/debian/unstable
 Vcs-Git: https://github.com/johngrimmreaper/zsnes.git -b debian/unstable
 
-Package: zsnes2
+Package: zsnes
 Architecture: amd64 i386 arm64 riscv64
 Depends:
  ${misc:Depends},
  ${shlibs:Depends},
-Description: ZSNES 2 Super Nintendo emulator
- ZSNES 2 is a maintained continuation of the classic ZSNES emulator,
+Description: Super Nintendo emulator
+ ZSNES is a maintained continuation of the classic ZSNES emulator,
  updated to build and run on modern Unix-like systems.
  .
  The original x86 assembly implementation has been ported to C11 and the

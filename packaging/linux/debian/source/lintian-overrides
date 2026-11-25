@@ -1,0 +1,17 @@
+# These are the original, editable XHTML documentation files from ZSNES 1.51.
+# Older Lintian versions mistake long prose lines for generated/minified code.
+# Restrict the override to the reviewed files; see Debian bugs #996111 and #1019980.
+source-is-missing [doc/advanced.html]
+source-is-missing [doc/faq.html]
+source-is-missing [doc/games.html]
+source-is-missing [doc/gui.html]
+source-is-missing [doc/history.html]
+source-is-missing [doc/html/advanced.htm]
+source-is-missing [doc/html/faq.htm]
+source-is-missing [doc/html/games.htm]
+source-is-missing [doc/html/gui.htm]
+source-is-missing [doc/html/history.htm]
+source-is-missing [doc/html/readme.htm]
+source-is-missing [doc/html/support.htm]
+source-is-missing [doc/readme.html]
+source-is-missing [doc/support.html]

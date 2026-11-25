@@ -1,5 +1,5 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: ZSNES 2
+Upstream-Name: ZSNES
 Source: https://github.com/xyproto/zsnes
 
 Files: *
@@ -53,6 +53,13 @@ Copyright: 2013-2014 RAD Game Tools and Valve Software
 License: MIT and Unlicense
 Comment: The amalgamated source includes sections with MIT notices and
  sections released into the public domain.
+
+Files: linux/io.github.xyproto.zsnes.metainfo.xml
+Copyright: 2023-2026 AppStream metadata contributors
+           (JakobDev, Miepee, Alexander F. Rødseth)
+License: CC0-1.0
+Comment: The file explicitly declares CC0-1.0 as its metadata license.
+ The contributors are identified in the upstream Git history.
 
 Files: debian/*
 Copyright: 2026 Reaper <JohnGrimmReaper@disroot.org>
@@ -178,3 +185,8 @@ License: Unlicense
  OTHER DEALINGS IN THE SOFTWARE.
  .
  For more information, please refer to <http://unlicense.org/>
+
+License: CC0-1.0
+ CC0 1.0 Universal public domain dedication.
+ On Debian systems, the complete text can be found in
+ /usr/share/common-licenses/CC0-1.0.

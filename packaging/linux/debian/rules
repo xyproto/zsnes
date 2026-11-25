@@ -37,7 +37,7 @@ override_dh_auto_configure:
 	@case " $(SUPPORTED_ARCHES) " in \
 		*" $(DEB_HOST_ARCH) "*) ;; \
 		*) \
-			echo "Unsupported ZSNES 2 architecture: $(DEB_HOST_ARCH)" >&2; \
+			echo "Unsupported ZSNES architecture: $(DEB_HOST_ARCH)" >&2; \
 			echo "Supported architectures: $(SUPPORTED_ARCHES)" >&2; \
 			exit 1; \
 			;; \
@@ -48,8 +48,6 @@ override_dh_auto_build:
 		ARCH=LINUX \
 		BITS=$(UPSTREAM_BITS) \
 		CPU=$(UPSTREAM_CPU) \
-		BINARY=zsnes2 \
-		EXTRA_CFLAGS='-DZCONF=\"zsnes2\"' \
 		WITH_SDL=yes \
 		WITH_PIPEWIRE=yes \
 		WITH_AO=yes
@@ -60,53 +58,32 @@ ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
 		ARCH=LINUX \
 		BITS=$(UPSTREAM_BITS) \
 		CPU=$(UPSTREAM_CPU) \
-		BINARY=zsnes2 \
-		EXTRA_CFLAGS='-DZCONF=\"zsnes2\"' \
 		WITH_SDL=yes \
 		WITH_PIPEWIRE=yes \
 		WITH_AO=yes
 endif
 
 override_dh_auto_install:
-	install -Dm755 zsnes2 "$(CURDIR)/debian/zsnes2/usr/bin/zsnes2"
+	install -Dm755 zsnes "$(CURDIR)/debian/zsnes/usr/bin/zsnes"
 	set -e; \
 	for ICON_SIZE in 16x16 32x32 48x48 64x64 128x128; do \
 		install -Dm644 "img/$${ICON_SIZE}x32.png" \
-			"$(CURDIR)/debian/zsnes2/usr/share/icons/hicolor/$$ICON_SIZE/apps/io.github.xyproto.zsnes2.png"; \
+			"$(CURDIR)/debian/zsnes/usr/share/icons/hicolor/$$ICON_SIZE/apps/io.github.xyproto.zsnes.png"; \
 	done
-	install -d "$(CURDIR)/debian/zsnes2/usr/share/applications"
-	sed \
-		-e 's/^Name=ZSNES$$/Name=ZSNES 2/' \
-		-e 's/^Comment=Super Nintendo emulator$$/Comment=Super Nintendo emulator with libao audio via PulseAudio/' \
-		-e 's|^Exec=zsnes |Exec=/usr/bin/zsnes2 -ad ao:pulse |' \
-		-e 's/^TryExec=zsnes$$/TryExec=zsnes2/' \
-		-e 's/^Icon=io\.github\.xyproto\.zsnes$$/Icon=io.github.xyproto.zsnes2/' \
-		-e 's/^StartupWMClass=zsnes$$/StartupWMClass=zsnes2/' \
-		linux/zsnes.desktop \
-		> "$(CURDIR)/debian/zsnes2/usr/share/applications/io.github.xyproto.zsnes2.desktop"
-	install -m644 debian/io.github.xyproto.zsnes2.sdl3-pulseaudio.desktop \
-		"$(CURDIR)/debian/zsnes2/usr/share/applications/io.github.xyproto.zsnes2.sdl3-pulseaudio.desktop"
-	install -m644 debian/io.github.xyproto.zsnes2.pipewire.desktop \
-		"$(CURDIR)/debian/zsnes2/usr/share/applications/io.github.xyproto.zsnes2.pipewire.desktop"
-	install -d "$(CURDIR)/debian/zsnes2/usr/share/metainfo"
-	sed \
-		-e 's/io\.github\.xyproto\.zsnes/io.github.xyproto.zsnes2/g' \
-		-e 's#<name>ZSNES</name>#<name>ZSNES 2</name>#' \
-		-e 's#<binary>zsnes</binary>#<binary>zsnes2</binary>#' \
-		linux/io.github.xyproto.zsnes.metainfo.xml \
-		> "$(CURDIR)/debian/zsnes2/usr/share/metainfo/io.github.xyproto.zsnes2.metainfo.xml"
-	install -d "$(CURDIR)/debian/zsnes2/usr/share/man/man1"
-	sed \
-		-e 's/^ZSNES -/zsnes2 -/' \
-		-e 's/^\.B ZSNES$$/.B zsnes2/' \
-		-e 's/^ZSNES$$/zsnes2/' \
-		-e 's#~/.zsnes#~/.config/zsnes2#g' \
-		man/zsnes.1 \
-		> "$(CURDIR)/debian/zsnes2/usr/share/man/man1/zsnes2.1"
-	chmod 0644 "$(CURDIR)/debian/zsnes2/usr/share/applications/io.github.xyproto.zsnes2.desktop"
-	chmod 0644 "$(CURDIR)/debian/zsnes2/usr/share/metainfo/io.github.xyproto.zsnes2.metainfo.xml"
-	chmod 0644 "$(CURDIR)/debian/zsnes2/usr/share/man/man1/zsnes2.1"
+	install -d "$(CURDIR)/debian/zsnes/usr/share/applications"
+	sed 's|^Exec=zsnes |Exec=/usr/bin/zsnes |' linux/zsnes.desktop \
+		> "$(CURDIR)/debian/zsnes/usr/share/applications/io.github.xyproto.zsnes.desktop"
+	chmod 0644 "$(CURDIR)/debian/zsnes/usr/share/applications/io.github.xyproto.zsnes.desktop"
+	install -m644 \
+		debian/io.github.xyproto.zsnes.pipewire.desktop \
+		debian/io.github.xyproto.zsnes.sdl3.desktop \
+		debian/io.github.xyproto.zsnes.libao.desktop \
+		"$(CURDIR)/debian/zsnes/usr/share/applications/"
+	install -Dm644 linux/io.github.xyproto.zsnes.metainfo.xml \
+		"$(CURDIR)/debian/zsnes/usr/share/metainfo/io.github.xyproto.zsnes.metainfo.xml"
+	install -Dm644 man/zsnes.1 \
+		"$(CURDIR)/debian/zsnes/usr/share/man/man1/zsnes.1"
 
 override_dh_auto_clean:
-	dh_auto_clean -- BINARY=zsnes2
+	dh_auto_clean
 	$(MAKE) -C test clean

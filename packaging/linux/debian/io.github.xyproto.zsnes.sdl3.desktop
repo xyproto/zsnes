@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.4
+Type=Application
+Name=ZSNES (SDL3)
+Comment=Super Nintendo emulator with SDL3 audio with automatic driver selection
+Exec=/usr/bin/zsnes -ad sdl %f
+TryExec=zsnes
+Icon=io.github.xyproto.zsnes
+Terminal=false
+Categories=Game;Emulator;
