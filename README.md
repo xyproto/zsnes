@@ -1,16 +1,16 @@
 # ZSNES 2
 
-[![CI](https://github.com/xyproto/zsnes/actions/workflows/build.yml/badge.svg)](https://github.com/xyproto/zsnes/actions/workflows/build.yml)
-
 <img align="right" width="128" height="128" alt="logo" src="img/128x128x32.png">
 
-A classic SNES (Super Nintendo) emulator.
+[![CI](https://github.com/xyproto/zsnes/actions/workflows/build.yml/badge.svg)](https://github.com/xyproto/zsnes/actions/workflows/build.yml)
 
-[![Packaging status](https://repology.org/badge/vertical-allrepos/zsnes.svg?minversion=2&columns=4)](https://repology.org/project/zsnes/versions)
+A classic SNES (Super Nintendo) emulator.
 
 The last release of [ZSNES](http://zsnes.sourceforge.net/) was over 18 years ago (2007-10-31). The development of ZSNES started in 1997. It requires heavy patching and tweaking of compilation flags to build and run on a modern Linux distro. Most of it was written in 32-bit x86 Assembly, with MMX instructions.
 
 This is a fork that aims to solve this.
+
+[![Packaging status](https://repology.org/badge/vertical-allrepos/zsnes.svg?minversion=2&columns=4)](https://repology.org/project/zsnes/versions)
 
 Goals and non-goals:
 
