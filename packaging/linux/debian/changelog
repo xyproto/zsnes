@@ -1,3 +1,21 @@
+zsnes (2.3.10-1) unstable; urgency=medium
+
+  * New upstream release 2.3.10.
+  * Add native Windows ARM64 builds using MSYS2 CLANGARM64.
+  * Restore GUI window-button and arrow glyphs in UTF-8 rendering.
+  * Fix Windows colour-math saturation and undefined bit shifts.
+  * Use aspect-preserving borderless DirectDraw fullscreen on Windows.
+  * Prevent repeated fullscreen toggles while Alt+Enter is held (issue #80).
+  * Guard against null pointers in movie input recording and replay.
+  * Document Windows ARM64 builds and update release metadata.
+  * Ignore Windows build directories.
+  * Align Linux package and executable names with upstream.
+  * Restore automatic audio selection and provide explicit backend launchers.
+  * Correct package metadata and AppStream licensing.
+  * Add targeted Lintian overrides for legacy HTML documentation.
+
+ -- Reaper <JohnGrimmReaper@disroot.org>  Wed, 25 Nov 2026 16:49:56 +0000
+
 zsnes (2.3.9-2) unstable; urgency=medium
 
   * Align the package, executable and desktop identifiers with upstream.

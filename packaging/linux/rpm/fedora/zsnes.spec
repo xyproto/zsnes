@@ -1,6 +1,6 @@
 Name:           zsnes
-Version:        2.3.9
-Release:        2%{?dist}
+Version:        2.3.10
+Release:        1%{?dist}
 Summary:        ZSNES Super Nintendo emulator
 
 License:        GPL-2.0-only AND LGPL-2.1-or-later AND Zlib AND MIT AND Unlicense AND CC0-1.0
@@ -205,6 +205,20 @@ grep -q '<binary>zsnes</binary>' \
 %{_mandir}/man1/zsnes.1*
 
 %changelog
+* Wed Nov 25 2026 Reaper <JohnGrimmReaper@disroot.org> - 2.3.10-1
+- New upstream release 2.3.10.
+- Add native Windows ARM64 builds using MSYS2 CLANGARM64.
+- Restore GUI window-button and arrow glyphs in UTF-8 rendering.
+- Fix Windows colour-math saturation and undefined bit shifts.
+- Use aspect-preserving borderless DirectDraw fullscreen on Windows.
+- Prevent repeated fullscreen toggles while Alt+Enter is held (issue #80).
+- Guard against null pointers in movie input recording and replay.
+- Document Windows ARM64 builds and update release metadata.
+- Ignore Windows build directories.
+- Align Linux package and executable names with upstream.
+- Restore automatic audio selection and provide explicit backend launchers.
+- Correct package metadata and AppStream licensing.
+
 * Wed Nov 25 2026 Reaper <JohnGrimmReaper@disroot.org> - 2.3.9-2
 - Align package, executable and desktop identifiers with upstream.
 
