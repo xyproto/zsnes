@@ -3,7 +3,7 @@ Version:        2.3.9
 Release:        2%{?dist}
 Summary:        ZSNES Super Nintendo emulator
 
-License:        GPL-2.0-only AND LGPL-2.1-or-later AND Zlib AND MIT AND Unlicense
+License:        GPL-2.0-only AND LGPL-2.1-or-later AND Zlib AND MIT AND Unlicense AND CC0-1.0
 URL:            https://github.com/xyproto/zsnes
 Source0:        %{name}-%{version}.tar.gz
 Source1:        io.github.xyproto.zsnes.pipewire.desktop
