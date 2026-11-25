@@ -1,4 +1,4 @@
-# ZSNES 2
+# ZSNES
 
 <img align="right" width="128" height="128" alt="logo" src="img/128x128x32.png">
 
