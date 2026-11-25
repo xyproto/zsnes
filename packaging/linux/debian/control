@@ -1,5 +1,5 @@
 Source: zsnes
-Section: games
+Section: otherosfs
 Priority: optional
 Maintainer: Reaper <JohnGrimmReaper@disroot.org>
 Build-Depends:
@@ -24,7 +24,7 @@ Architecture: amd64 i386 arm64 riscv64
 Depends:
  ${misc:Depends},
  ${shlibs:Depends},
-Description: ZSNES Super Nintendo emulator
+Description: Super Nintendo emulator
  ZSNES is a maintained continuation of the classic ZSNES emulator,
  updated to build and run on modern Unix-like systems.
  .
